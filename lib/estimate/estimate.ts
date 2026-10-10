@@ -44,7 +44,15 @@ export function enforceRange(
     l = mid * (1 - min / 2);
     h = mid * (1 + min / 2);
   }
-  return [Math.round(l), Math.round(h)];
+  let rl = Math.round(l);
+  let rh = Math.round(h);
+  // Rounding can collapse small ranges (e.g. 3.6–4.4 -> 4–4); never emit a point value.
+  if (rl === rh) {
+    rl = Math.floor(l);
+    rh = Math.ceil(h);
+    if (rl === rh) rh = rl + 1;
+  }
+  return [rl, rh];
 }
 
 /** Deterministic post-processing: official-table arithmetic, confidence policy, guards. */

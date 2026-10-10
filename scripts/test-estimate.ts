@@ -48,6 +48,8 @@ test("enforceRange widens narrow ranges per confidence and fixes order", () => {
   assert.deepEqual(enforceRange(100, 100, "medium"), [85, 115]);
   assert.deepEqual(enforceRange(90, 110, "high"), [90, 110]); // already 20% wide
   assert.deepEqual(enforceRange(-5, 0, "low"), [0, 1]);
+  assert.deepEqual(enforceRange(3.6, 4.4, "high"), [3, 5]); // rounding must not collapse to 4–4
+  assert.deepEqual(enforceRange(1, 1, "high"), [0, 2]);
 });
 
 const base: ModelOutput = {

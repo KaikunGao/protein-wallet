@@ -190,5 +190,17 @@
     "amount_usd": null,
     "items_count": 1,
     "truth_source": "USDA: 2 eggs (143/13) + 1 tomato (22/1) + 1 tbsp oil (120/0) + 1.5 cup rice (308/6) ≈ 590 / 20"
+  },
+  {
+    "id": "receipt-synthetic-chipotle",
+    "type": "receipt",
+    "set": "chain",
+    "file": "receipt-synthetic-chipotle.jpg",
+    "merchant": "Chipotle",
+    "kcal": 1680,
+    "protein_g": 60,
+    "amount_usd": 21.65,
+    "items_count": 3,
+    "truth_source": "Synthetic receipt rendered from HTML (not a real purchase). chains.json: chicken bowl 660/51 + chips & guac 770/9 + 22oz fountain soda assumed regular cola ~250/0"
   }
 ]

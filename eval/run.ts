@@ -45,6 +45,16 @@ interface Row {
   ms: number;
 }
 
+// tsx does not load Next's .env files; read .env.local ourselves (never overrides real env).
+for (const envFile of [".env.local", ".env"]) {
+  const fp = path.resolve(process.cwd(), envFile);
+  if (!fs.existsSync(fp)) continue;
+  for (const line of fs.readFileSync(fp, "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+  }
+}
+
 const ROOT = path.resolve(process.cwd(), "eval");
 const args = process.argv.slice(2);
 const flag = (name: string) => {
