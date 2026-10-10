@@ -1,0 +1,1873 @@
+{
+  "_meta": {
+    "compiled_on": "2026-10-10",
+    "note": "Hand-transcribed from each chain's public nutrition page (URLs below). Values are per standard serving as listed by the chain. price_hint is a typical Chicago menu price in USD (null = unknown). No scraping. Items marked in `verify` should be spot-checked against the source page before the eval set is finalized.",
+    "verify": "All values were entered from memory of the official pages and must be spot-checked against source_url before being used as eval ground truth.",
+    "unit": "kcal and protein_g per one serving of the named item"
+  },
+  "chains": [
+    {
+      "merchant": "Chipotle",
+      "aliases": [
+        "chipotle",
+        "chipotle mexican grill"
+      ],
+      "source_url": "https://www.chipotle.com/nutrition-calculator",
+      "items": [
+        {
+          "name": "Chicken",
+          "kcal": 180,
+          "protein_g": 32,
+          "price_hint": null
+        },
+        {
+          "name": "Steak",
+          "kcal": 150,
+          "protein_g": 21,
+          "price_hint": null
+        },
+        {
+          "name": "Barbacoa",
+          "kcal": 170,
+          "protein_g": 24,
+          "price_hint": null
+        },
+        {
+          "name": "Carnitas",
+          "kcal": 210,
+          "protein_g": 23,
+          "price_hint": null
+        },
+        {
+          "name": "Sofritas",
+          "kcal": 150,
+          "protein_g": 8,
+          "price_hint": null
+        },
+        {
+          "name": "Chicken al Pastor",
+          "kcal": 170,
+          "protein_g": 30,
+          "price_hint": null
+        },
+        {
+          "name": "White Rice",
+          "kcal": 210,
+          "protein_g": 4,
+          "price_hint": null
+        },
+        {
+          "name": "Brown Rice",
+          "kcal": 210,
+          "protein_g": 5,
+          "price_hint": null
+        },
+        {
+          "name": "Black Beans",
+          "kcal": 130,
+          "protein_g": 8,
+          "price_hint": null
+        },
+        {
+          "name": "Pinto Beans",
+          "kcal": 130,
+          "protein_g": 8,
+          "price_hint": null
+        },
+        {
+          "name": "Fajita Veggies",
+          "kcal": 20,
+          "protein_g": 1,
+          "price_hint": null
+        },
+        {
+          "name": "Fresh Tomato Salsa",
+          "kcal": 25,
+          "protein_g": 1,
+          "price_hint": null
+        },
+        {
+          "name": "Roasted Chili-Corn Salsa",
+          "kcal": 80,
+          "protein_g": 3,
+          "price_hint": null
+        },
+        {
+          "name": "Tomatillo Green-Chili Salsa",
+          "kcal": 15,
+          "protein_g": 0,
+          "price_hint": null
+        },
+        {
+          "name": "Tomatillo Red-Chili Salsa",
+          "kcal": 30,
+          "protein_g": 1,
+          "price_hint": null
+        },
+        {
+          "name": "Sour Cream",
+          "kcal": 110,
+          "protein_g": 2,
+          "price_hint": null
+        },
+        {
+          "name": "Cheese",
+          "kcal": 110,
+          "protein_g": 6,
+          "price_hint": null
+        },
+        {
+          "name": "Guacamole",
+          "kcal": 230,
+          "protein_g": 2,
+          "price_hint": 2.95
+        },
+        {
+          "name": "Queso Blanco",
+          "kcal": 120,
+          "protein_g": 5,
+          "price_hint": 1.95
+        },
+        {
+          "name": "Romaine Lettuce",
+          "kcal": 5,
+          "protein_g": 0,
+          "price_hint": null
+        },
+        {
+          "name": "Flour Tortilla (burrito)",
+          "kcal": 320,
+          "protein_g": 8,
+          "price_hint": null
+        },
+        {
+          "name": "Crispy Corn Tortilla (1 taco shell)",
+          "kcal": 70,
+          "protein_g": 1,
+          "price_hint": null
+        },
+        {
+          "name": "Chips",
+          "kcal": 540,
+          "protein_g": 7,
+          "price_hint": 2.25
+        },
+        {
+          "name": "Chips & Guacamole",
+          "kcal": 770,
+          "protein_g": 9,
+          "price_hint": 5.2
+        },
+        {
+          "name": "Chicken Bowl (typical: chicken, white rice, black beans, tomato salsa, cheese, lettuce)",
+          "kcal": 660,
+          "protein_g": 51,
+          "price_hint": 11.25
+        },
+        {
+          "name": "Steak Bowl (typical: steak, white rice, black beans, tomato salsa, cheese, lettuce)",
+          "kcal": 630,
+          "protein_g": 40,
+          "price_hint": 13
+        },
+        {
+          "name": "Chicken Burrito (typical: tortilla, chicken, white rice, black beans, tomato salsa, cheese)",
+          "kcal": 975,
+          "protein_g": 59,
+          "price_hint": 11.25
+        }
+      ]
+    },
+    {
+      "merchant": "McDonald's",
+      "aliases": [
+        "mcdonalds",
+        "mcdonald's",
+        "mcd",
+        "麦当劳",
+        "金拱门"
+      ],
+      "source_url": "https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html",
+      "items": [
+        {
+          "name": "Big Mac",
+          "kcal": 590,
+          "protein_g": 25,
+          "price_hint": 5.69
+        },
+        {
+          "name": "Quarter Pounder with Cheese",
+          "kcal": 520,
+          "protein_g": 30,
+          "price_hint": 6.29
+        },
+        {
+          "name": "Double Quarter Pounder with Cheese",
+          "kcal": 740,
+          "protein_g": 48,
+          "price_hint": 8.29
+        },
+        {
+          "name": "McDouble",
+          "kcal": 400,
+          "protein_g": 22,
+          "price_hint": 3.19
+        },
+        {
+          "name": "Double Cheeseburger",
+          "kcal": 450,
+          "protein_g": 25,
+          "price_hint": 3.99
+        },
+        {
+          "name": "Cheeseburger",
+          "kcal": 300,
+          "protein_g": 15,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Hamburger",
+          "kcal": 250,
+          "protein_g": 12,
+          "price_hint": 2.19
+        },
+        {
+          "name": "McChicken",
+          "kcal": 400,
+          "protein_g": 14,
+          "price_hint": 2.99
+        },
+        {
+          "name": "McCrispy (Crispy Chicken Sandwich)",
+          "kcal": 470,
+          "protein_g": 26,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Spicy McCrispy",
+          "kcal": 530,
+          "protein_g": 27,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Filet-O-Fish",
+          "kcal": 390,
+          "protein_g": 16,
+          "price_hint": 5.19
+        },
+        {
+          "name": "Chicken McNuggets (4 pc)",
+          "kcal": 170,
+          "protein_g": 9,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Chicken McNuggets (6 pc)",
+          "kcal": 250,
+          "protein_g": 14,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Chicken McNuggets (10 pc)",
+          "kcal": 410,
+          "protein_g": 23,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Chicken McNuggets (20 pc)",
+          "kcal": 830,
+          "protein_g": 46,
+          "price_hint": 9.99
+        },
+        {
+          "name": "French Fries (small)",
+          "kcal": 230,
+          "protein_g": 3,
+          "price_hint": 2.49
+        },
+        {
+          "name": "French Fries (medium)",
+          "kcal": 320,
+          "protein_g": 4,
+          "price_hint": 3.49
+        },
+        {
+          "name": "French Fries (large)",
+          "kcal": 480,
+          "protein_g": 7,
+          "price_hint": 4.19
+        },
+        {
+          "name": "Egg McMuffin",
+          "kcal": 310,
+          "protein_g": 17,
+          "price_hint": 4.39
+        },
+        {
+          "name": "Sausage McMuffin with Egg",
+          "kcal": 480,
+          "protein_g": 20,
+          "price_hint": 4.79
+        },
+        {
+          "name": "Sausage McMuffin",
+          "kcal": 400,
+          "protein_g": 14,
+          "price_hint": 3.19
+        },
+        {
+          "name": "Bacon, Egg & Cheese Biscuit",
+          "kcal": 460,
+          "protein_g": 19,
+          "price_hint": 4.79
+        },
+        {
+          "name": "Sausage Burrito",
+          "kcal": 310,
+          "protein_g": 13,
+          "price_hint": 2.79
+        },
+        {
+          "name": "Hash Browns",
+          "kcal": 140,
+          "protein_g": 2,
+          "price_hint": 2.29
+        },
+        {
+          "name": "Hotcakes (3)",
+          "kcal": 580,
+          "protein_g": 9,
+          "price_hint": 4.49
+        }
+      ]
+    },
+    {
+      "merchant": "Subway",
+      "aliases": [
+        "subway",
+        "赛百味"
+      ],
+      "source_url": "https://www.subway.com/en-us/menunutrition/nutrition",
+      "items": [
+        {
+          "name": "Oven Roasted Turkey 6-inch",
+          "kcal": 270,
+          "protein_g": 18,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Black Forest Ham 6-inch",
+          "kcal": 280,
+          "protein_g": 18,
+          "price_hint": 7.29
+        },
+        {
+          "name": "Italian B.M.T. 6-inch",
+          "kcal": 390,
+          "protein_g": 19,
+          "price_hint": 7.79
+        },
+        {
+          "name": "Meatball Marinara 6-inch",
+          "kcal": 470,
+          "protein_g": 21,
+          "price_hint": 7.29
+        },
+        {
+          "name": "Steak & Cheese 6-inch",
+          "kcal": 330,
+          "protein_g": 25,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Sweet Onion Chicken Teriyaki 6-inch",
+          "kcal": 380,
+          "protein_g": 26,
+          "price_hint": 8.29
+        },
+        {
+          "name": "Tuna 6-inch",
+          "kcal": 480,
+          "protein_g": 19,
+          "price_hint": 7.79
+        },
+        {
+          "name": "Veggie Delite 6-inch",
+          "kcal": 190,
+          "protein_g": 8,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Cold Cut Combo 6-inch",
+          "kcal": 350,
+          "protein_g": 18,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Rotisserie-Style Chicken 6-inch",
+          "kcal": 350,
+          "protein_g": 27,
+          "price_hint": 8.29
+        },
+        {
+          "name": "Spicy Italian 6-inch",
+          "kcal": 470,
+          "protein_g": 19,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Chicken & Bacon Ranch 6-inch",
+          "kcal": 580,
+          "protein_g": 36,
+          "price_hint": 8.99
+        },
+        {
+          "name": "American Cheese (6-inch portion)",
+          "kcal": 40,
+          "protein_g": 2,
+          "price_hint": null
+        },
+        {
+          "name": "Mayonnaise (6-inch portion)",
+          "kcal": 100,
+          "protein_g": 0,
+          "price_hint": null
+        },
+        {
+          "name": "Chocolate Chip Cookie",
+          "kcal": 210,
+          "protein_g": 2,
+          "price_hint": 1.19
+        }
+      ]
+    },
+    {
+      "merchant": "Panda Express",
+      "aliases": [
+        "panda express",
+        "panda",
+        "熊猫快餐"
+      ],
+      "source_url": "https://www.pandaexpress.com/nutritioninfo",
+      "items": [
+        {
+          "name": "Orange Chicken",
+          "kcal": 490,
+          "protein_g": 25,
+          "price_hint": null
+        },
+        {
+          "name": "Beijing Beef",
+          "kcal": 470,
+          "protein_g": 14,
+          "price_hint": null
+        },
+        {
+          "name": "Kung Pao Chicken",
+          "kcal": 290,
+          "protein_g": 16,
+          "price_hint": null
+        },
+        {
+          "name": "Broccoli Beef",
+          "kcal": 150,
+          "protein_g": 9,
+          "price_hint": null
+        },
+        {
+          "name": "Grilled Teriyaki Chicken",
+          "kcal": 275,
+          "protein_g": 33,
+          "price_hint": null
+        },
+        {
+          "name": "String Bean Chicken Breast",
+          "kcal": 190,
+          "protein_g": 14,
+          "price_hint": null
+        },
+        {
+          "name": "Honey Walnut Shrimp",
+          "kcal": 360,
+          "protein_g": 13,
+          "price_hint": 1.5
+        },
+        {
+          "name": "Black Pepper Chicken",
+          "kcal": 280,
+          "protein_g": 19,
+          "price_hint": null
+        },
+        {
+          "name": "Mushroom Chicken",
+          "kcal": 220,
+          "protein_g": 13,
+          "price_hint": null
+        },
+        {
+          "name": "Black Pepper Angus Steak",
+          "kcal": 210,
+          "protein_g": 19,
+          "price_hint": 1.5
+        },
+        {
+          "name": "Honey Sesame Chicken Breast",
+          "kcal": 340,
+          "protein_g": 16,
+          "price_hint": null
+        },
+        {
+          "name": "SweetFire Chicken Breast",
+          "kcal": 360,
+          "protein_g": 15,
+          "price_hint": null
+        },
+        {
+          "name": "Chow Mein",
+          "kcal": 510,
+          "protein_g": 13,
+          "price_hint": null
+        },
+        {
+          "name": "Fried Rice",
+          "kcal": 520,
+          "protein_g": 11,
+          "price_hint": null
+        },
+        {
+          "name": "White Steamed Rice",
+          "kcal": 380,
+          "protein_g": 7,
+          "price_hint": null
+        },
+        {
+          "name": "Brown Steamed Rice",
+          "kcal": 420,
+          "protein_g": 9,
+          "price_hint": null
+        },
+        {
+          "name": "Super Greens",
+          "kcal": 90,
+          "protein_g": 6,
+          "price_hint": null
+        },
+        {
+          "name": "Chicken Egg Roll (1)",
+          "kcal": 200,
+          "protein_g": 6,
+          "price_hint": 2.2
+        },
+        {
+          "name": "Veggie Spring Roll (2)",
+          "kcal": 240,
+          "protein_g": 4,
+          "price_hint": 2.2
+        },
+        {
+          "name": "Cream Cheese Rangoon (3)",
+          "kcal": 190,
+          "protein_g": 5,
+          "price_hint": 2.2
+        },
+        {
+          "name": "Bowl (1 side + 1 entree) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 9.5
+        },
+        {
+          "name": "Plate (1 side + 2 entrees) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 11.2
+        },
+        {
+          "name": "Bigger Plate (1 side + 3 entrees) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 12.9
+        }
+      ]
+    },
+    {
+      "merchant": "Chick-fil-A",
+      "aliases": [
+        "chick-fil-a",
+        "chick fil a",
+        "chickfila",
+        "cfa"
+      ],
+      "source_url": "https://www.chick-fil-a.com/nutrition-allergens",
+      "items": [
+        {
+          "name": "Chicken Sandwich",
+          "kcal": 420,
+          "protein_g": 29,
+          "price_hint": 5.65
+        },
+        {
+          "name": "Deluxe Chicken Sandwich",
+          "kcal": 500,
+          "protein_g": 32,
+          "price_hint": 6.45
+        },
+        {
+          "name": "Spicy Chicken Sandwich",
+          "kcal": 450,
+          "protein_g": 30,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Spicy Deluxe Sandwich",
+          "kcal": 530,
+          "protein_g": 33,
+          "price_hint": 6.75
+        },
+        {
+          "name": "Grilled Chicken Sandwich",
+          "kcal": 390,
+          "protein_g": 28,
+          "price_hint": 6.79
+        },
+        {
+          "name": "Grilled Chicken Club Sandwich",
+          "kcal": 520,
+          "protein_g": 39,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Chick-fil-A Nuggets (8 ct)",
+          "kcal": 250,
+          "protein_g": 27,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Chick-fil-A Nuggets (12 ct)",
+          "kcal": 380,
+          "protein_g": 40,
+          "price_hint": 8.29
+        },
+        {
+          "name": "Grilled Nuggets (8 ct)",
+          "kcal": 130,
+          "protein_g": 25,
+          "price_hint": 6.79
+        },
+        {
+          "name": "Grilled Nuggets (12 ct)",
+          "kcal": 200,
+          "protein_g": 38,
+          "price_hint": 9.29
+        },
+        {
+          "name": "Chick-n-Strips (3 ct)",
+          "kcal": 310,
+          "protein_g": 29,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Chick-n-Strips (4 ct)",
+          "kcal": 410,
+          "protein_g": 39,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Waffle Potato Fries (small)",
+          "kcal": 320,
+          "protein_g": 4,
+          "price_hint": 2.79
+        },
+        {
+          "name": "Waffle Potato Fries (medium)",
+          "kcal": 420,
+          "protein_g": 5,
+          "price_hint": 3.09
+        },
+        {
+          "name": "Waffle Potato Fries (large)",
+          "kcal": 520,
+          "protein_g": 6,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Cobb Salad (no dressing)",
+          "kcal": 540,
+          "protein_g": 40,
+          "price_hint": 10.99
+        },
+        {
+          "name": "Spicy Southwest Salad (no dressing)",
+          "kcal": 450,
+          "protein_g": 33,
+          "price_hint": 10.99
+        },
+        {
+          "name": "Market Salad (no dressing)",
+          "kcal": 340,
+          "protein_g": 28,
+          "price_hint": 10.99
+        },
+        {
+          "name": "Mac & Cheese (medium)",
+          "kcal": 440,
+          "protein_g": 19,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Chicken Biscuit",
+          "kcal": 460,
+          "protein_g": 19,
+          "price_hint": 4.15
+        },
+        {
+          "name": "Chick-n-Minis (4 ct)",
+          "kcal": 360,
+          "protein_g": 19,
+          "price_hint": 5.25
+        },
+        {
+          "name": "Egg White Grill",
+          "kcal": 290,
+          "protein_g": 26,
+          "price_hint": 5.29
+        },
+        {
+          "name": "Hash Brown Scramble Bowl with Nuggets",
+          "kcal": 470,
+          "protein_g": 29,
+          "price_hint": 6.19
+        }
+      ]
+    },
+    {
+      "merchant": "Starbucks",
+      "aliases": [
+        "starbucks",
+        "星巴克"
+      ],
+      "source_url": "https://www.starbucks.com/menu",
+      "items": [
+        {
+          "name": "Bacon, Gouda & Egg Sandwich",
+          "kcal": 360,
+          "protein_g": 18,
+          "price_hint": 5.75
+        },
+        {
+          "name": "Sausage, Cheddar & Egg Sandwich",
+          "kcal": 480,
+          "protein_g": 19,
+          "price_hint": 5.25
+        },
+        {
+          "name": "Turkey Bacon, Cheddar & Egg White Sandwich",
+          "kcal": 230,
+          "protein_g": 17,
+          "price_hint": 5.45
+        },
+        {
+          "name": "Spinach, Feta & Egg White Wrap",
+          "kcal": 290,
+          "protein_g": 20,
+          "price_hint": 5.45
+        },
+        {
+          "name": "Impossible Breakfast Sandwich",
+          "kcal": 420,
+          "protein_g": 22,
+          "price_hint": 6.25
+        },
+        {
+          "name": "Double-Smoked Bacon, Cheddar & Egg Sandwich",
+          "kcal": 500,
+          "protein_g": 21,
+          "price_hint": 6.25
+        },
+        {
+          "name": "Egg Bites: Bacon & Gruyere",
+          "kcal": 300,
+          "protein_g": 19,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Egg Bites: Egg White & Roasted Red Pepper",
+          "kcal": 170,
+          "protein_g": 12,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Egg Bites: Kale & Mushroom",
+          "kcal": 230,
+          "protein_g": 15,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Turkey, Provolone & Pesto on Ciabatta",
+          "kcal": 420,
+          "protein_g": 25,
+          "price_hint": 7.95
+        },
+        {
+          "name": "Chicken Caprese on Ciabatta",
+          "kcal": 530,
+          "protein_g": 32,
+          "price_hint": 7.95
+        },
+        {
+          "name": "Chicken & Hummus Protein Box",
+          "kcal": 300,
+          "protein_g": 19,
+          "price_hint": 7.45
+        },
+        {
+          "name": "Eggs & Cheddar Protein Box",
+          "kcal": 470,
+          "protein_g": 24,
+          "price_hint": 7.45
+        },
+        {
+          "name": "Caffe Latte (grande, 2% milk)",
+          "kcal": 190,
+          "protein_g": 13,
+          "price_hint": 5.25
+        },
+        {
+          "name": "Cappuccino (grande, 2% milk)",
+          "kcal": 140,
+          "protein_g": 9,
+          "price_hint": 5.05
+        },
+        {
+          "name": "Flat White (grande, whole milk)",
+          "kcal": 220,
+          "protein_g": 13,
+          "price_hint": 5.65
+        },
+        {
+          "name": "Caffe Americano (grande)",
+          "kcal": 15,
+          "protein_g": 1,
+          "price_hint": 4.15
+        },
+        {
+          "name": "Pike Place Roast (grande)",
+          "kcal": 5,
+          "protein_g": 1,
+          "price_hint": 3.45
+        },
+        {
+          "name": "Cold Brew (grande)",
+          "kcal": 5,
+          "protein_g": 0,
+          "price_hint": 4.75
+        },
+        {
+          "name": "Caramel Macchiato (grande, 2% milk)",
+          "kcal": 250,
+          "protein_g": 10,
+          "price_hint": 5.95
+        },
+        {
+          "name": "Iced Caffe Latte (grande, 2% milk)",
+          "kcal": 130,
+          "protein_g": 8,
+          "price_hint": 5.25
+        },
+        {
+          "name": "Matcha Latte (grande, 2% milk)",
+          "kcal": 240,
+          "protein_g": 12,
+          "price_hint": 5.75
+        },
+        {
+          "name": "Plain Bagel",
+          "kcal": 280,
+          "protein_g": 9,
+          "price_hint": 2.45
+        },
+        {
+          "name": "Butter Croissant",
+          "kcal": 260,
+          "protein_g": 5,
+          "price_hint": 3.75
+        }
+      ]
+    },
+    {
+      "merchant": "Shake Shack",
+      "aliases": [
+        "shake shack",
+        "shakeshack"
+      ],
+      "source_url": "https://shakeshack.com/allergens-nutrition",
+      "items": [
+        {
+          "name": "Hamburger (single)",
+          "kcal": 440,
+          "protein_g": 25,
+          "price_hint": 7.29
+        },
+        {
+          "name": "Cheeseburger (single)",
+          "kcal": 490,
+          "protein_g": 29,
+          "price_hint": 7.99
+        },
+        {
+          "name": "ShackBurger (single)",
+          "kcal": 530,
+          "protein_g": 30,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Double ShackBurger",
+          "kcal": 850,
+          "protein_g": 51,
+          "price_hint": 11.49
+        },
+        {
+          "name": "SmokeShack (single)",
+          "kcal": 650,
+          "protein_g": 35,
+          "price_hint": 9.99
+        },
+        {
+          "name": "'Shroom Burger",
+          "kcal": 560,
+          "protein_g": 22,
+          "price_hint": 9.49
+        },
+        {
+          "name": "Chicken Shack",
+          "kcal": 620,
+          "protein_g": 40,
+          "price_hint": 9.29
+        },
+        {
+          "name": "Chicken Bites (6 pc)",
+          "kcal": 330,
+          "protein_g": 22,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Shack-cago Dog",
+          "kcal": 320,
+          "protein_g": 13,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Fries",
+          "kcal": 470,
+          "protein_g": 6,
+          "price_hint": 4.29
+        },
+        {
+          "name": "Cheese Fries",
+          "kcal": 690,
+          "protein_g": 15,
+          "price_hint": 5.69
+        },
+        {
+          "name": "Bacon Cheese Fries",
+          "kcal": 790,
+          "protein_g": 21,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Vanilla Shake",
+          "kcal": 580,
+          "protein_g": 13,
+          "price_hint": 6.99
+        }
+      ]
+    },
+    {
+      "merchant": "Raising Cane's",
+      "aliases": [
+        "raising cane's",
+        "raising canes",
+        "cane's",
+        "canes"
+      ],
+      "source_url": "https://www.raisingcanes.com/nutrition",
+      "items": [
+        {
+          "name": "Chicken Finger (1)",
+          "kcal": 130,
+          "protein_g": 12,
+          "price_hint": 1.79
+        },
+        {
+          "name": "Crinkle-Cut Fries",
+          "kcal": 390,
+          "protein_g": 5,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Texas Toast",
+          "kcal": 150,
+          "protein_g": 4,
+          "price_hint": 1.29
+        },
+        {
+          "name": "Coleslaw",
+          "kcal": 120,
+          "protein_g": 1,
+          "price_hint": 1.99
+        },
+        {
+          "name": "Cane's Sauce (1)",
+          "kcal": 190,
+          "protein_g": 0,
+          "price_hint": 0.59
+        },
+        {
+          "name": "The Box Combo (4 fingers, fries, slaw, toast, sauce)",
+          "kcal": 1370,
+          "protein_g": 53,
+          "price_hint": 11.49
+        },
+        {
+          "name": "The 3 Finger Combo (3 fingers, fries, toast, sauce)",
+          "kcal": 1120,
+          "protein_g": 40,
+          "price_hint": 9.49
+        },
+        {
+          "name": "The Caniac Combo (6 fingers, fries, slaw, toast, 2 sauce)",
+          "kcal": 1880,
+          "protein_g": 77,
+          "price_hint": 14.99
+        },
+        {
+          "name": "The Sandwich Combo (3 fingers on bun w/ lettuce+sauce, fries)",
+          "kcal": 1200,
+          "protein_g": 42,
+          "price_hint": 10.49
+        }
+      ]
+    },
+    {
+      "merchant": "Sweetgreen",
+      "aliases": [
+        "sweetgreen",
+        "sweet green"
+      ],
+      "source_url": "https://www.sweetgreen.com/menu",
+      "items": [
+        {
+          "name": "Harvest Bowl",
+          "kcal": 705,
+          "protein_g": 32,
+          "price_hint": 13.95
+        },
+        {
+          "name": "Kale Caesar",
+          "kcal": 550,
+          "protein_g": 36,
+          "price_hint": 13.5
+        },
+        {
+          "name": "Chicken Pesto Parm",
+          "kcal": 560,
+          "protein_g": 37,
+          "price_hint": 14.45
+        },
+        {
+          "name": "Crispy Rice Bowl",
+          "kcal": 730,
+          "protein_g": 35,
+          "price_hint": 14.45
+        },
+        {
+          "name": "Guacamole Greens",
+          "kcal": 620,
+          "protein_g": 30,
+          "price_hint": 14.25
+        },
+        {
+          "name": "Super Green Goddess",
+          "kcal": 500,
+          "protein_g": 13,
+          "price_hint": 12.5
+        },
+        {
+          "name": "Shroomami",
+          "kcal": 580,
+          "protein_g": 20,
+          "price_hint": 13.25
+        },
+        {
+          "name": "Hot Honey Chicken",
+          "kcal": 690,
+          "protein_g": 35,
+          "price_hint": 14.45
+        },
+        {
+          "name": "Miso Glazed Salmon",
+          "kcal": 650,
+          "protein_g": 35,
+          "price_hint": 16.95
+        },
+        {
+          "name": "Buffalo Chicken Bowl",
+          "kcal": 630,
+          "protein_g": 35,
+          "price_hint": 13.95
+        },
+        {
+          "name": "Roasted Chicken (add-on portion)",
+          "kcal": 160,
+          "protein_g": 26,
+          "price_hint": 4.5
+        },
+        {
+          "name": "Blackened Chicken (add-on portion)",
+          "kcal": 160,
+          "protein_g": 26,
+          "price_hint": 4.5
+        }
+      ]
+    },
+    {
+      "merchant": "Portillo's",
+      "aliases": [
+        "portillo's",
+        "portillos"
+      ],
+      "source_url": "https://www.portillos.com/nutrition/",
+      "items": [
+        {
+          "name": "Italian Beef Sandwich (regular)",
+          "kcal": 560,
+          "protein_g": 31,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Italian Beef & Sausage Combo",
+          "kcal": 850,
+          "protein_g": 48,
+          "price_hint": 10.49
+        },
+        {
+          "name": "Chicago-Style Hot Dog",
+          "kcal": 370,
+          "protein_g": 13,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Char-Grilled Maxwell Street Polish",
+          "kcal": 540,
+          "protein_g": 20,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Chargrilled Chicken Sandwich",
+          "kcal": 580,
+          "protein_g": 38,
+          "price_hint": 8.29
+        },
+        {
+          "name": "Crispy Chicken Sandwich",
+          "kcal": 620,
+          "protein_g": 30,
+          "price_hint": 8.29
+        },
+        {
+          "name": "Char-Broiled Hamburger",
+          "kcal": 640,
+          "protein_g": 32,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Char-Broiled Cheeseburger",
+          "kcal": 720,
+          "protein_g": 37,
+          "price_hint": 7.99
+        },
+        {
+          "name": "Beef & Cheddar Croissant",
+          "kcal": 800,
+          "protein_g": 37,
+          "price_hint": 9.49
+        },
+        {
+          "name": "French Fries (regular)",
+          "kcal": 440,
+          "protein_g": 5,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Cheese Fries (regular)",
+          "kcal": 580,
+          "protein_g": 10,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Chopped Salad (with chicken)",
+          "kcal": 640,
+          "protein_g": 35,
+          "price_hint": 10.99
+        },
+        {
+          "name": "Chocolate Cake Shake (regular)",
+          "kcal": 1000,
+          "protein_g": 15,
+          "price_hint": 6.49
+        }
+      ]
+    },
+    {
+      "merchant": "Five Guys",
+      "aliases": [
+        "five guys",
+        "fiveguys",
+        "5 guys"
+      ],
+      "source_url": "https://www.fiveguys.com/-/media/public-site/files/nutrition/five-guys-nutrition.pdf",
+      "items": [
+        {
+          "name": "Hamburger (2 patties)",
+          "kcal": 700,
+          "protein_g": 39,
+          "price_hint": 11.49
+        },
+        {
+          "name": "Cheeseburger (2 patties)",
+          "kcal": 840,
+          "protein_g": 47,
+          "price_hint": 12.49
+        },
+        {
+          "name": "Bacon Burger (2 patties)",
+          "kcal": 780,
+          "protein_g": 43,
+          "price_hint": 12.49
+        },
+        {
+          "name": "Bacon Cheeseburger (2 patties)",
+          "kcal": 920,
+          "protein_g": 51,
+          "price_hint": 13.49
+        },
+        {
+          "name": "Little Hamburger (1 patty)",
+          "kcal": 540,
+          "protein_g": 28,
+          "price_hint": 8.99
+        },
+        {
+          "name": "Little Cheeseburger (1 patty)",
+          "kcal": 610,
+          "protein_g": 32,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Little Bacon Cheeseburger (1 patty)",
+          "kcal": 690,
+          "protein_g": 36,
+          "price_hint": 10.99
+        },
+        {
+          "name": "Kosher Style Hot Dog",
+          "kcal": 545,
+          "protein_g": 20,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Fries (little)",
+          "kcal": 530,
+          "protein_g": 8,
+          "price_hint": 4.99
+        },
+        {
+          "name": "Fries (regular)",
+          "kcal": 950,
+          "protein_g": 15,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Fries (large)",
+          "kcal": 1310,
+          "protein_g": 20,
+          "price_hint": 7.99
+        }
+      ]
+    },
+    {
+      "merchant": "Potbelly",
+      "aliases": [
+        "potbelly",
+        "potbelly sandwich shop"
+      ],
+      "source_url": "https://www.potbelly.com/nutrition",
+      "items": [
+        {
+          "name": "Turkey Breast (Original)",
+          "kcal": 460,
+          "protein_g": 29,
+          "price_hint": 9.49
+        },
+        {
+          "name": "A Wreck (Original)",
+          "kcal": 700,
+          "protein_g": 43,
+          "price_hint": 10.49
+        },
+        {
+          "name": "Italian (Original)",
+          "kcal": 650,
+          "protein_g": 30,
+          "price_hint": 9.79
+        },
+        {
+          "name": "Chicken Club (Original)",
+          "kcal": 680,
+          "protein_g": 43,
+          "price_hint": 10.49
+        },
+        {
+          "name": "Roast Beef (Original)",
+          "kcal": 520,
+          "protein_g": 37,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Chicken Salad (Original)",
+          "kcal": 650,
+          "protein_g": 32,
+          "price_hint": 9.49
+        },
+        {
+          "name": "Mediterranean (Original)",
+          "kcal": 540,
+          "protein_g": 22,
+          "price_hint": 9.49
+        },
+        {
+          "name": "Veggie Melt (Original)",
+          "kcal": 490,
+          "protein_g": 21,
+          "price_hint": 8.99
+        },
+        {
+          "name": "Grilled Chicken & Cheddar (Original)",
+          "kcal": 560,
+          "protein_g": 39,
+          "price_hint": 10.29
+        },
+        {
+          "name": "Oatmeal Chocolate Chip Cookie",
+          "kcal": 420,
+          "protein_g": 5,
+          "price_hint": 2.49
+        }
+      ]
+    },
+    {
+      "merchant": "Jimmy John's",
+      "aliases": [
+        "jimmy john's",
+        "jimmy johns",
+        "jj's"
+      ],
+      "source_url": "https://www.jimmyjohns.com/nutrition/",
+      "items": [
+        {
+          "name": "#1 The Pepe (8-inch)",
+          "kcal": 560,
+          "protein_g": 31,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#2 Big John (8-inch)",
+          "kcal": 570,
+          "protein_g": 36,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#3 Totally Tuna (8-inch)",
+          "kcal": 620,
+          "protein_g": 30,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#4 Turkey Tom (8-inch)",
+          "kcal": 510,
+          "protein_g": 27,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#5 Vito (8-inch)",
+          "kcal": 630,
+          "protein_g": 31,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#6 The Veggie (8-inch)",
+          "kcal": 660,
+          "protein_g": 26,
+          "price_hint": 8.49
+        },
+        {
+          "name": "#9 Italian Night Club (8-inch)",
+          "kcal": 790,
+          "protein_g": 42,
+          "price_hint": 9.99
+        },
+        {
+          "name": "#10 Hunter's Club (8-inch)",
+          "kcal": 760,
+          "protein_g": 50,
+          "price_hint": 9.99
+        },
+        {
+          "name": "#11 Country Club (8-inch)",
+          "kcal": 760,
+          "protein_g": 45,
+          "price_hint": 9.99
+        },
+        {
+          "name": "#12 Beach Club (8-inch)",
+          "kcal": 800,
+          "protein_g": 41,
+          "price_hint": 9.99
+        },
+        {
+          "name": "#16 Club Lulu (8-inch)",
+          "kcal": 740,
+          "protein_g": 41,
+          "price_hint": 9.99
+        },
+        {
+          "name": "#17 Ultimate Porker (8-inch)",
+          "kcal": 800,
+          "protein_g": 41,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Unwich adjustment (lettuce wrap: subtract ~300 kcal, ~10 g protein)",
+          "kcal": -300,
+          "protein_g": -10,
+          "price_hint": null
+        }
+      ]
+    },
+    {
+      "merchant": "Taco Bell",
+      "aliases": [
+        "taco bell",
+        "tacobell",
+        "塔可钟"
+      ],
+      "source_url": "https://www.tacobell.com/nutrition/info",
+      "items": [
+        {
+          "name": "Crunchy Taco",
+          "kcal": 170,
+          "protein_g": 8,
+          "price_hint": 1.99
+        },
+        {
+          "name": "Soft Taco",
+          "kcal": 180,
+          "protein_g": 9,
+          "price_hint": 1.99
+        },
+        {
+          "name": "Chicken Soft Taco",
+          "kcal": 160,
+          "protein_g": 11,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Nacho Cheese Doritos Locos Taco",
+          "kcal": 170,
+          "protein_g": 8,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Bean Burrito",
+          "kcal": 350,
+          "protein_g": 13,
+          "price_hint": 2.29
+        },
+        {
+          "name": "Burrito Supreme (beef)",
+          "kcal": 390,
+          "protein_g": 16,
+          "price_hint": 4.99
+        },
+        {
+          "name": "Beefy 5-Layer Burrito",
+          "kcal": 490,
+          "protein_g": 18,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Cheesy Bean & Rice Burrito",
+          "kcal": 420,
+          "protein_g": 11,
+          "price_hint": 1.49
+        },
+        {
+          "name": "Chicken Quesadilla",
+          "kcal": 510,
+          "protein_g": 26,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Steak Quesadilla",
+          "kcal": 510,
+          "protein_g": 26,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Crunchwrap Supreme",
+          "kcal": 530,
+          "protein_g": 16,
+          "price_hint": 5.49
+        },
+        {
+          "name": "Cheesy Gordita Crunch",
+          "kcal": 500,
+          "protein_g": 20,
+          "price_hint": 4.99
+        },
+        {
+          "name": "Chalupa Supreme (beef)",
+          "kcal": 350,
+          "protein_g": 13,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Power Menu Bowl (chicken)",
+          "kcal": 470,
+          "protein_g": 26,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Cantina Chicken Bowl",
+          "kcal": 490,
+          "protein_g": 28,
+          "price_hint": 7.99
+        },
+        {
+          "name": "Cantina Chicken Burrito",
+          "kcal": 580,
+          "protein_g": 32,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Nachos BellGrande",
+          "kcal": 740,
+          "protein_g": 16,
+          "price_hint": 5.99
+        }
+      ]
+    },
+    {
+      "merchant": "Wendy's",
+      "aliases": [
+        "wendy's",
+        "wendys"
+      ],
+      "source_url": "https://www.wendys.com/nutrition-and-health",
+      "items": [
+        {
+          "name": "Dave's Single",
+          "kcal": 570,
+          "protein_g": 30,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Dave's Double",
+          "kcal": 810,
+          "protein_g": 49,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Baconator",
+          "kcal": 960,
+          "protein_g": 57,
+          "price_hint": 9.49
+        },
+        {
+          "name": "Son of Baconator",
+          "kcal": 630,
+          "protein_g": 36,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Jr. Bacon Cheeseburger",
+          "kcal": 380,
+          "protein_g": 18,
+          "price_hint": 3.29
+        },
+        {
+          "name": "Jr. Cheeseburger",
+          "kcal": 290,
+          "protein_g": 15,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Grilled Chicken Sandwich",
+          "kcal": 350,
+          "protein_g": 32,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Classic Chicken Sandwich",
+          "kcal": 490,
+          "protein_g": 28,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Spicy Chicken Sandwich",
+          "kcal": 500,
+          "protein_g": 28,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Chicken Nuggets (10 pc)",
+          "kcal": 450,
+          "protein_g": 23,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Spicy Chicken Nuggets (10 pc)",
+          "kcal": 470,
+          "protein_g": 23,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Chili (small)",
+          "kcal": 240,
+          "protein_g": 15,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Chili (large)",
+          "kcal": 340,
+          "protein_g": 23,
+          "price_hint": 4.79
+        },
+        {
+          "name": "Plain Baked Potato",
+          "kcal": 270,
+          "protein_g": 7,
+          "price_hint": 2.99
+        },
+        {
+          "name": "French Fries (medium)",
+          "kcal": 350,
+          "protein_g": 5,
+          "price_hint": 3.29
+        },
+        {
+          "name": "Parmesan Caesar Chicken Salad",
+          "kcal": 440,
+          "protein_g": 37,
+          "price_hint": 8.99
+        },
+        {
+          "name": "Apple Pecan Chicken Salad",
+          "kcal": 560,
+          "protein_g": 36,
+          "price_hint": 8.99
+        },
+        {
+          "name": "Chocolate Frosty (small)",
+          "kcal": 350,
+          "protein_g": 8,
+          "price_hint": 2.49
+        }
+      ]
+    },
+    {
+      "merchant": "Popeyes",
+      "aliases": [
+        "popeyes",
+        "popeyes louisiana kitchen",
+        "popeye's"
+      ],
+      "source_url": "https://www.popeyes.com/nutrition",
+      "items": [
+        {
+          "name": "Classic Chicken Sandwich",
+          "kcal": 700,
+          "protein_g": 28,
+          "price_hint": 5.49
+        },
+        {
+          "name": "Spicy Chicken Sandwich",
+          "kcal": 700,
+          "protein_g": 28,
+          "price_hint": 5.49
+        },
+        {
+          "name": "Blackened Chicken Sandwich",
+          "kcal": 390,
+          "protein_g": 28,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Handcrafted Tenders (3 pc, mild)",
+          "kcal": 340,
+          "protein_g": 31,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Handcrafted Tenders (5 pc, mild)",
+          "kcal": 560,
+          "protein_g": 51,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Signature Chicken Breast (mild)",
+          "kcal": 380,
+          "protein_g": 35,
+          "price_hint": null
+        },
+        {
+          "name": "Signature Chicken Thigh (mild)",
+          "kcal": 280,
+          "protein_g": 19,
+          "price_hint": null
+        },
+        {
+          "name": "Signature Chicken Leg (mild)",
+          "kcal": 160,
+          "protein_g": 13,
+          "price_hint": null
+        },
+        {
+          "name": "Signature Chicken Wing (mild)",
+          "kcal": 210,
+          "protein_g": 15,
+          "price_hint": null
+        },
+        {
+          "name": "2 pc Chicken Combo (breast + wing, fries, biscuit) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Cajun Fries (regular)",
+          "kcal": 270,
+          "protein_g": 3,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Red Beans & Rice (regular)",
+          "kcal": 230,
+          "protein_g": 7,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Mashed Potatoes with Cajun Gravy (regular)",
+          "kcal": 110,
+          "protein_g": 3,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Mac & Cheese (regular)",
+          "kcal": 320,
+          "protein_g": 10,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Buttermilk Biscuit",
+          "kcal": 260,
+          "protein_g": 4,
+          "price_hint": 1.29
+        }
+      ]
+    },
+    {
+      "merchant": "Nando's",
+      "aliases": [
+        "nando's",
+        "nandos",
+        "nando's peri-peri"
+      ],
+      "source_url": "https://www.nandosperiperi.com/menu/nutrition",
+      "items": [
+        {
+          "name": "1/4 Chicken (breast)",
+          "kcal": 420,
+          "protein_g": 52,
+          "price_hint": 12.49
+        },
+        {
+          "name": "1/4 Chicken (leg)",
+          "kcal": 370,
+          "protein_g": 40,
+          "price_hint": 12.49
+        },
+        {
+          "name": "1/2 Chicken",
+          "kcal": 790,
+          "protein_g": 92,
+          "price_hint": 16.49
+        },
+        {
+          "name": "Chicken Thighs (4)",
+          "kcal": 560,
+          "protein_g": 50,
+          "price_hint": 13.49
+        },
+        {
+          "name": "Chicken Pita",
+          "kcal": 650,
+          "protein_g": 42,
+          "price_hint": 11.99
+        },
+        {
+          "name": "Chicken Sandwich",
+          "kcal": 700,
+          "protein_g": 45,
+          "price_hint": 12.49
+        },
+        {
+          "name": "PERi-PERi Chips (regular)",
+          "kcal": 540,
+          "protein_g": 7,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Spicy Rice (regular)",
+          "kcal": 310,
+          "protein_g": 6,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Macho Peas (regular)",
+          "kcal": 140,
+          "protein_g": 9,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Coleslaw (regular)",
+          "kcal": 270,
+          "protein_g": 2,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Corn on the Cob",
+          "kcal": 140,
+          "protein_g": 4,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Garlic Bread",
+          "kcal": 310,
+          "protein_g": 7,
+          "price_hint": 3.99
+        }
+      ]
+    }
+  ]
+}
