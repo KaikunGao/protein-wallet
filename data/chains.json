@@ -9,7 +9,8 @@
       "verified_full": [
         "Sweetgreen (official nutrition guide, Sep 2026)",
         "Shake Shack (official PDF Apr 2024)",
-        "McDonald's (site item API, 2026-10-10)"
+        "McDonald's (site item API, 2026-10-10)",
+        "KFC (official Nutritionix menu, Oct 2026)"
       ],
       "verified_kcal_only": [
         "Nando's (official menu page; protein estimated)"
@@ -18,9 +19,7 @@
         "Chick-fil-A Chicken Sandwich",
         "Taco Bell Bean Burrito"
       ],
-      "blocked": [
-        "KFC: nutrition pages render nothing without store selection"
-      ],
+      "blocked": [],
       "note": "Per-chain `verified` field carries the detail. Rows with protein_estimated=true have official kcal but estimated protein.",
       "removed": [
         "Portillo's: official PDF is Cloudflare-blocked for automated access and for the user; removed rather than keep unverifiable rows labelled as official data"
@@ -2096,6 +2095,216 @@
         }
       ],
       "verified": "2026-10-10: kcal from the official US menu page; protein_g NOT on the menu page, estimated from kcal and typical grilled-chicken composition until the nutrition sheet is found"
+    },
+    {
+      "merchant": "KFC",
+      "aliases": [
+        "kfc",
+        "kentucky fried chicken",
+        "肯德基"
+      ],
+      "source_url": "https://www.kfc.com/nutrition (embeds https://www.nutritionix.com/kfc/menu/premium)",
+      "verified": "2026-10-10 all rows from KFC's official Nutritionix nutrition menu (last updated 10/02/2026); price_hint values are typical Chicago prices, unverified",
+      "items": [
+        {
+          "name": "Original Recipe Chicken Breast",
+          "kcal": 390,
+          "protein_g": 39,
+          "price_hint": null
+        },
+        {
+          "name": "Original Recipe Chicken Thigh",
+          "kcal": 280,
+          "protein_g": 19,
+          "price_hint": null
+        },
+        {
+          "name": "Original Recipe Chicken Drumstick",
+          "kcal": 130,
+          "protein_g": 12,
+          "price_hint": null
+        },
+        {
+          "name": "Original Recipe Chicken Whole Wing",
+          "kcal": 130,
+          "protein_g": 10,
+          "price_hint": null
+        },
+        {
+          "name": "Extra Crispy Chicken Breast",
+          "kcal": 530,
+          "protein_g": 35,
+          "price_hint": null
+        },
+        {
+          "name": "Extra Crispy Chicken Thigh",
+          "kcal": 330,
+          "protein_g": 22,
+          "price_hint": null
+        },
+        {
+          "name": "Extra Crispy Chicken Drumstick",
+          "kcal": 170,
+          "protein_g": 10,
+          "price_hint": null
+        },
+        {
+          "name": "Kentucky Grilled Chicken Breast",
+          "kcal": 210,
+          "protein_g": 38,
+          "price_hint": null
+        },
+        {
+          "name": "Kentucky Grilled Chicken Thigh",
+          "kcal": 150,
+          "protein_g": 17,
+          "price_hint": null
+        },
+        {
+          "name": "Kentucky Grilled Chicken Drumstick",
+          "kcal": 80,
+          "protein_g": 11,
+          "price_hint": null
+        },
+        {
+          "name": "Spicy Crispy Chicken Breast",
+          "kcal": 350,
+          "protein_g": 30,
+          "price_hint": null
+        },
+        {
+          "name": "Original Recipe Tender (1)",
+          "kcal": 170,
+          "protein_g": 11,
+          "price_hint": null
+        },
+        {
+          "name": "Kentucky Fried Nuggets (1)",
+          "kcal": 35,
+          "protein_g": 3,
+          "price_hint": null
+        },
+        {
+          "name": "Classic Chicken Sandwich",
+          "kcal": 650,
+          "protein_g": 34,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Spicy Chicken Sandwich",
+          "kcal": 620,
+          "protein_g": 34,
+          "price_hint": 5.99
+        },
+        {
+          "name": "KFC Snacker",
+          "kcal": 350,
+          "protein_g": 15,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Twister",
+          "kcal": 680,
+          "protein_g": 29,
+          "price_hint": 5.49
+        },
+        {
+          "name": "Popcorn Chicken",
+          "kcal": 620,
+          "protein_g": 23,
+          "price_hint": 5.49
+        },
+        {
+          "name": "KFC Famous Bowl",
+          "kcal": 590,
+          "protein_g": 31,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Chicken Pot Pie",
+          "kcal": 720,
+          "protein_g": 26,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Hot & Spicy Wings (1)",
+          "kcal": 90,
+          "protein_g": 5,
+          "price_hint": null
+        },
+        {
+          "name": "Secret Recipe Fries",
+          "kcal": 320,
+          "protein_g": 5,
+          "price_hint": 2.99
+        },
+        {
+          "name": "Mashed Potatoes With Gravy",
+          "kcal": 130,
+          "protein_g": 3,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Macaroni & Cheese",
+          "kcal": 140,
+          "protein_g": 5,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Coleslaw",
+          "kcal": 170,
+          "protein_g": 1,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Corn on the Cob",
+          "kcal": 70,
+          "protein_g": 2,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Green Beans",
+          "kcal": 25,
+          "protein_g": 1,
+          "price_hint": 2.49
+        },
+        {
+          "name": "BBQ Baked Beans",
+          "kcal": 190,
+          "protein_g": 11,
+          "price_hint": 2.49
+        },
+        {
+          "name": "Biscuit",
+          "kcal": 180,
+          "protein_g": 4,
+          "price_hint": 1.29
+        },
+        {
+          "name": "Chocolate Chunk Cookie",
+          "kcal": 190,
+          "protein_g": 2,
+          "price_hint": 1.49
+        },
+        {
+          "name": "2 pc Chicken Combo (breast + wing, 1 side, biscuit) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 9.49
+        },
+        {
+          "name": "3 pc Chicken Combo price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 11.49
+        },
+        {
+          "name": "8 pc Chicken Meal (2 large sides, 4 biscuits) price only",
+          "kcal": 0,
+          "protein_g": 0,
+          "price_hint": 29.99
+        }
+      ]
     }
   ]
 }

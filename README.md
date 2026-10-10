@@ -41,7 +41,7 @@ components/     Onboarding、ConfirmCard(可编辑确认卡)、ConfidenceBadge�
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
 lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报
-data/chains.json  16 家连锁营养数据(每家有 verified 字段标明验证状态;McDonald's / Shake Shack / Sweetgreen 为官方全量核对)
+data/chains.json  17 家连锁营养数据(每家有 verified 字段标明验证状态;McDonald's / KFC / Shake Shack / Sweetgreen 为官方全量核对)
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)
 docs/使用说明.md  给种子用户的一页说明
 ```
