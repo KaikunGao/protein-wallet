@@ -22,6 +22,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // IndexedDB reads are async; state is set after await, not synchronously in the effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load().then(() => logEvent("page_open", { page: "today" }));
   }, [load]);
 

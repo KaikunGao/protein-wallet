@@ -5,13 +5,22 @@ import { useRouter } from "next/navigation";
 import ConfirmCard from "@/components/ConfirmCard";
 import { addMeal, getSettings, logEvent } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
+import { compressImage } from "@/lib/image";
 import type { InputType, Meal, Settings } from "@/lib/types";
 
 type Phase =
   | { kind: "input" }
-  | { kind: "loading"; inputType: InputType }
+  | { kind: "loading"; inputType: InputType; preview?: string }
   | { kind: "confirm"; inputType: InputType; result: Extract<EstimateResponse, { ok: true }> }
   | { kind: "error"; inputType: InputType; message: string; retryable: boolean };
+
+type PhotoType = Exclude<InputType, "text">;
+
+const PHOTO_BUTTONS: { type: PhotoType; label: string; hint: string }[] = [
+  { type: "receipt", label: "拍餐厅小票", hint: "一张解决记账 + 记餐" },
+  { type: "photo", label: "拍餐食", hint: "食堂等没小票的场景" },
+  { type: "grocery", label: "拍买菜小票", hint: "只记花销,食材存档" },
+];
 
 export default function LogPage() {
   const router = useRouter();
@@ -26,8 +35,8 @@ export default function LogPage() {
     getSettings().then(setSettings);
   }, []);
 
-  async function runEstimate(body: { type: InputType; content: string; media_type?: string }) {
-    setPhase({ kind: "loading", inputType: body.type });
+  async function runEstimate(body: { type: InputType; content: string }, preview?: string) {
+    setPhase({ kind: "loading", inputType: body.type, preview });
     try {
       const res = await fetch("/api/estimate", {
         method: "POST",
@@ -59,6 +68,22 @@ export default function LogPage() {
     void runEstimate({ type: "text", content });
   }
 
+  async function onFile(type: PhotoType, file: File) {
+    let dataUrl: string;
+    try {
+      dataUrl = await compressImage(file);
+    } catch (e) {
+      setPhase({
+        kind: "error",
+        inputType: type,
+        message: e instanceof Error ? e.message : "图片无法读取",
+        retryable: true,
+      });
+      return;
+    }
+    void runEstimate({ type, content: dataUrl }, dataUrl);
+  }
+
   async function onSave(meals: Meal[], meta: { corrected: boolean }) {
     for (const m of meals) await addMeal(m);
     void logEvent("record_saved", {
@@ -86,10 +111,26 @@ export default function LogPage() {
 
       {phase.kind === "input" && (
         <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-2">
+            {PHOTO_BUTTONS.map((b) => (
+              <label
+                key={b.type}
+                className={`cursor-pointer rounded-2xl p-3 text-left shadow-sm ${
+                  b.type === "receipt" ? "bg-green-600 text-white" : "bg-white"
+                }`}
+              >
+                <PhotoInput type={b.type} onFile={onFile} />
+                <span className="block text-sm font-semibold">{b.label}</span>
+                <span className={`mt-1 block text-[11px] leading-tight ${b.type === "receipt" ? "text-green-100" : "text-zinc-500"}`}>
+                  {b.hint}
+                </span>
+              </label>
+            ))}
+          </div>
+
           <div className="space-y-2 rounded-2xl bg-white p-4 shadow-sm">
-            <label className="block text-sm font-medium text-zinc-700">一句话</label>
+            <label className="block text-sm font-medium text-zinc-700">或者一句话</label>
             <textarea
-              autoFocus
               rows={2}
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -105,20 +146,20 @@ export default function LogPage() {
             <button
               onClick={submitText}
               disabled={!text.trim()}
-              className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white disabled:opacity-40"
+              className="w-full rounded-xl bg-zinc-900 py-3 font-semibold text-white disabled:opacity-40"
             >
               解析
             </button>
           </div>
-          {/* Photo / receipt / grocery inputs arrive in Step 2.2 / 2.3 */}
-          <p className="px-1 text-xs text-zinc-400">
-            拍小票 / 拍餐食 / 买菜小票:下周上线。
-          </p>
         </div>
       )}
 
       {phase.kind === "loading" && (
-        <div className="flex flex-col items-center gap-3 py-16 text-zinc-500">
+        <div className="flex flex-col items-center gap-3 py-10 text-zinc-500">
+          {phase.preview && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={phase.preview} alt="" className="max-h-48 rounded-xl object-contain" />
+          )}
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-green-600" />
           <p>AI 解析中…</p>
         </div>
@@ -132,6 +173,12 @@ export default function LogPage() {
               <button onClick={submitText} className="flex-1 rounded-xl bg-green-600 py-3 font-semibold text-white">
                 重试
               </button>
+            )}
+            {phase.inputType !== "text" && (
+              <label className="flex-1 cursor-pointer rounded-xl bg-green-600 py-3 text-center font-semibold text-white">
+                <PhotoInput type={phase.inputType as PhotoType} onFile={onFile} />
+                重拍
+              </label>
             )}
             <button
               onClick={() => setPhase({ kind: "input" })}
@@ -153,5 +200,23 @@ export default function LogPage() {
         />
       )}
     </div>
+  );
+}
+
+/** Hidden file input; wrapped in a <label> so taps open the camera without JS click(). */
+function PhotoInput({ type, onFile }: { type: PhotoType; onFile: (t: PhotoType, f: File) => void }) {
+  return (
+    <input
+      type="file"
+      accept="image/*"
+      capture="environment"
+      className="hidden"
+      data-testid={`input-${type}`}
+      onChange={(e) => {
+        const f = e.target.files?.[0];
+        if (f) onFile(type, f);
+        e.target.value = "";
+      }}
+    />
   );
 }
