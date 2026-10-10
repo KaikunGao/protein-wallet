@@ -29,11 +29,11 @@
     "set": "chain",
     "content": "麦当劳 Big Mac 加一份中薯 $9.18",
     "merchant": "McDonald's",
-    "kcal": 910,
+    "kcal": 900,
     "protein_g": 29,
     "amount_usd": 9.18,
     "items_count": 2,
-    "truth_source": "chains.json: Big Mac 590/25 + medium fries 320/4"
+    "truth_source": "chains.json: Big Mac 580/25 (official page 2026-10-10) + medium fries 320/4"
   },
   {
     "id": "text-mcd-nuggets-10",
@@ -125,11 +125,11 @@
     "set": "chain",
     "content": "sweetgreen harvest bowl $13.95",
     "merchant": "Sweetgreen",
-    "kcal": 705,
-    "protein_g": 32,
+    "kcal": 760,
+    "protein_g": 40,
     "amount_usd": 13.95,
     "items_count": 1,
-    "truth_source": "chains.json"
+    "truth_source": "Sweetgreen official nutrition guide (Sep 2026)"
   },
   {
     "id": "text-starbucks-latte-eggbites",
@@ -159,13 +159,13 @@
     "id": "text-nandos-quarter-breast",
     "type": "text",
     "set": "chain",
-    "content": "Nando's 1/4 chicken breast with spicy rice",
+    "content": "Nando's 1/4 chicken breast with regular Portuguese rice",
     "merchant": "Nando's",
-    "kcal": 730,
-    "protein_g": 58,
+    "kcal": 470,
+    "protein_g": 43,
     "amount_usd": null,
     "items_count": 1,
-    "truth_source": "chains.json: 420/52 + 310/6"
+    "truth_source": "Nando's official menu kcal (320 + 150); protein estimated 40 + 3"
   },
   {
     "id": "text-dininghall-chicken-rice",

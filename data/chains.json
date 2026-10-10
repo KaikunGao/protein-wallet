@@ -2,8 +2,27 @@
   "_meta": {
     "compiled_on": "2026-10-10",
     "note": "Hand-transcribed from each chain's public nutrition page (URLs below). Values are per standard serving as listed by the chain. price_hint is a typical Chicago menu price in USD (null = unknown). No scraping. Items marked in `verify` should be spot-checked against the source page before the eval set is finalized.",
-    "verify": "All values were entered from memory of the official pages and must be spot-checked against source_url before being used as eval ground truth.",
-    "unit": "kcal and protein_g per one serving of the named item"
+    "verify": "See _meta.verification and each chain's `verified` field. Only Sweetgreen is fully official; use other chains as eval ground truth only after re-checking.",
+    "unit": "kcal and protein_g per one serving of the named item",
+    "verification": {
+      "date": "2026-10-10",
+      "verified_full": [
+        "Sweetgreen (official nutrition guide, Sep 2026)"
+      ],
+      "verified_kcal_only": [
+        "Nando's (official menu page; protein estimated)"
+      ],
+      "spot_checked": [
+        "McDonald's Big Mac",
+        "Chick-fil-A Chicken Sandwich",
+        "Taco Bell Bean Burrito"
+      ],
+      "blocked": [
+        "Portillo's (Cloudflare)",
+        "Shake Shack (PDF needs manual download)"
+      ],
+      "note": "Per-chain `verified` field carries the detail. Rows with protein_estimated=true have official kcal but estimated protein."
+    }
   },
   "chains": [
     {
@@ -176,7 +195,8 @@
           "protein_g": 59,
           "price_hint": 11.25
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "McDonald's",
@@ -191,7 +211,7 @@
       "items": [
         {
           "name": "Big Mac",
-          "kcal": 590,
+          "kcal": 580,
           "protein_g": 25,
           "price_hint": 5.69
         },
@@ -339,7 +359,8 @@
           "protein_g": 9,
           "price_hint": 4.49
         }
-      ]
+      ],
+      "verified": "2026-10-10 spot-check: Big Mac 580/25 confirmed on official product page (other rows unverified)"
     },
     {
       "merchant": "Subway",
@@ -439,7 +460,8 @@
           "protein_g": 2,
           "price_hint": 1.19
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Panda Express",
@@ -588,7 +610,8 @@
           "protein_g": 0,
           "price_hint": 12.9
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Chick-fil-A",
@@ -738,7 +761,8 @@
           "protein_g": 29,
           "price_hint": 6.19
         }
-      ]
+      ],
+      "verified": "2026-10-10 spot-check: Chicken Sandwich 420/29 confirmed on official menu page (other rows unverified)"
     },
     {
       "merchant": "Starbucks",
@@ -892,7 +916,8 @@
           "protein_g": 5,
           "price_hint": 3.75
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Shake Shack",
@@ -900,7 +925,7 @@
         "shake shack",
         "shakeshack"
       ],
-      "source_url": "https://shakeshack.com/allergens-nutrition",
+      "source_url": "https://shakeshack.com/sites/default/files/2024-04/4.9.24%20Allergen.pdf",
       "items": [
         {
           "name": "Hamburger (single)",
@@ -980,7 +1005,8 @@
           "protein_g": 13,
           "price_hint": 6.99
         }
-      ]
+      ],
+      "verified": "UNVERIFIED 2026-10-10: official nutrition PDF (Apr 2024, updated Aug 2026) found but not yet parsed; all rows are from memory."
     },
     {
       "merchant": "Raising Cane's",
@@ -1046,7 +1072,8 @@
           "protein_g": 42,
           "price_hint": 10.49
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Sweetgreen",
@@ -1054,81 +1081,82 @@
         "sweetgreen",
         "sweet green"
       ],
-      "source_url": "https://www.sweetgreen.com/menu",
+      "source_url": "https://www.sweetgreen.com/nutrition/",
       "items": [
         {
           "name": "Harvest Bowl",
-          "kcal": 705,
-          "protein_g": 32,
+          "kcal": 760,
+          "protein_g": 40,
           "price_hint": 13.95
         },
         {
           "name": "Kale Caesar",
-          "kcal": 550,
-          "protein_g": 36,
+          "kcal": 545,
+          "protein_g": 41,
           "price_hint": 13.5
         },
         {
           "name": "Chicken Pesto Parm",
-          "kcal": 560,
-          "protein_g": 37,
+          "kcal": 510,
+          "protein_g": 38,
           "price_hint": 14.45
         },
         {
           "name": "Crispy Rice Bowl",
-          "kcal": 730,
-          "protein_g": 35,
+          "kcal": 680,
+          "protein_g": 33,
           "price_hint": 14.45
         },
         {
           "name": "Guacamole Greens",
-          "kcal": 620,
-          "protein_g": 30,
+          "kcal": 555,
+          "protein_g": 29,
           "price_hint": 14.25
         },
         {
           "name": "Super Green Goddess",
-          "kcal": 500,
-          "protein_g": 13,
+          "kcal": 465,
+          "protein_g": 12,
           "price_hint": 12.5
         },
         {
           "name": "Shroomami",
-          "kcal": 580,
+          "kcal": 665,
           "protein_g": 20,
           "price_hint": 13.25
         },
         {
           "name": "Hot Honey Chicken",
-          "kcal": 690,
-          "protein_g": 35,
+          "kcal": 845,
+          "protein_g": 49,
           "price_hint": 14.45
         },
         {
           "name": "Miso Glazed Salmon",
-          "kcal": 650,
-          "protein_g": 35,
+          "kcal": 880,
+          "protein_g": 34,
           "price_hint": 16.95
         },
         {
-          "name": "Buffalo Chicken Bowl",
-          "kcal": 630,
-          "protein_g": 35,
+          "name": "Buffalo Chicken",
+          "kcal": 580,
+          "protein_g": 37,
           "price_hint": 13.95
         },
         {
-          "name": "Roasted Chicken (add-on portion)",
-          "kcal": 160,
-          "protein_g": 26,
-          "price_hint": 4.5
+          "name": "Caramelized Garlic Steak",
+          "kcal": 770,
+          "protein_g": 34,
+          "price_hint": 15.95
         },
         {
-          "name": "Blackened Chicken (add-on portion)",
-          "kcal": 160,
-          "protein_g": 26,
-          "price_hint": 4.5
+          "name": "Chicken Avocado Ranch",
+          "kcal": 725,
+          "protein_g": 28,
+          "price_hint": 14.45
         }
-      ]
+      ],
+      "verified": "2026-10-10 against Sweetgreen Nutrition Guide (last updated September 2026)"
     },
     {
       "merchant": "Portillo's",
@@ -1136,17 +1164,17 @@
         "portillo's",
         "portillos"
       ],
-      "source_url": "https://www.portillos.com/nutrition/",
+      "source_url": "https://www.portillos.com/assets/1/6/NutritionAllergen_July2026.pdf",
       "items": [
         {
           "name": "Italian Beef Sandwich (regular)",
-          "kcal": 560,
+          "kcal": 690,
           "protein_g": 31,
           "price_hint": 8.49
         },
         {
           "name": "Italian Beef & Sausage Combo",
-          "kcal": 850,
+          "kcal": 860,
           "protein_g": 48,
           "price_hint": 10.49
         },
@@ -1216,7 +1244,8 @@
           "protein_g": 15,
           "price_hint": 6.49
         }
-      ]
+      ],
+      "verified": "UNVERIFIED 2026-10-10: official PDF is Cloudflare-blocked for automated access. Italian Beef 690 / Combo 860 kcal taken from search-engine index of an older official PDF; protein values are estimates. Download the PDF manually and re-enter all rows."
     },
     {
       "merchant": "Five Guys",
@@ -1293,7 +1322,8 @@
           "protein_g": 20,
           "price_hint": 7.99
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Potbelly",
@@ -1363,7 +1393,8 @@
           "protein_g": 5,
           "price_hint": 2.49
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Jimmy John's",
@@ -1452,7 +1483,8 @@
           "protein_g": -10,
           "price_hint": null
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Taco Bell",
@@ -1489,7 +1521,7 @@
         },
         {
           "name": "Bean Burrito",
-          "kcal": 350,
+          "kcal": 360,
           "protein_g": 13,
           "price_hint": 2.29
         },
@@ -1565,7 +1597,8 @@
           "protein_g": 16,
           "price_hint": 5.99
         }
-      ]
+      ],
+      "verified": "2026-10-10 spot-check: Bean Burrito 360 kcal confirmed on official product page, protein not shown (other rows unverified)"
     },
     {
       "merchant": "Wendy's",
@@ -1683,7 +1716,8 @@
           "protein_g": 8,
           "price_hint": 2.49
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Popeyes",
@@ -1784,7 +1818,8 @@
           "protein_g": 4,
           "price_hint": 1.29
         }
-      ]
+      ],
+      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
     },
     {
       "merchant": "Nando's",
@@ -1793,81 +1828,199 @@
         "nandos",
         "nando's peri-peri"
       ],
-      "source_url": "https://www.nandosperiperi.com/menu/nutrition",
+      "source_url": "https://www.nandosperiperi.com/menu/",
       "items": [
         {
-          "name": "1/4 Chicken (breast)",
-          "kcal": 420,
-          "protein_g": 52,
-          "price_hint": 12.49
+          "name": "1/4 Chicken - Breast",
+          "kcal": 320,
+          "protein_g": 40,
+          "price_hint": 10.0,
+          "protein_estimated": true
         },
         {
-          "name": "1/4 Chicken (leg)",
-          "kcal": 370,
-          "protein_g": 40,
-          "price_hint": 12.49
+          "name": "1/4 Chicken - Leg",
+          "kcal": 260,
+          "protein_g": 30,
+          "price_hint": 10.0,
+          "protein_estimated": true
         },
         {
           "name": "1/2 Chicken",
-          "kcal": 790,
-          "protein_g": 92,
-          "price_hint": 16.49
-        },
-        {
-          "name": "Chicken Thighs (4)",
           "kcal": 560,
-          "protein_g": 50,
-          "price_hint": 13.49
+          "protein_g": 70,
+          "price_hint": 13.5,
+          "protein_estimated": true
         },
         {
-          "name": "Chicken Pita",
-          "kcal": 650,
-          "protein_g": 42,
-          "price_hint": 11.99
+          "name": "Two 1/4 Chicken Breasts",
+          "kcal": 640,
+          "protein_g": 80,
+          "price_hint": 14.2,
+          "protein_estimated": true
         },
         {
-          "name": "Chicken Sandwich",
-          "kcal": 700,
+          "name": "Boneless Butterflied Chicken Breast",
+          "kcal": 390,
           "protein_g": 45,
-          "price_hint": 12.49
+          "price_hint": 12.0,
+          "protein_estimated": true
         },
         {
-          "name": "PERi-PERi Chips (regular)",
-          "kcal": 540,
-          "protein_g": 7,
-          "price_hint": 4.49
+          "name": "3 Chicken Thighs",
+          "kcal": 660,
+          "protein_g": 55,
+          "price_hint": 11.5,
+          "protein_estimated": true
         },
         {
-          "name": "Spicy Rice (regular)",
-          "kcal": 310,
-          "protein_g": 6,
-          "price_hint": 4.49
+          "name": "Chicken Thigh Skewers",
+          "kcal": 480,
+          "protein_g": 40,
+          "price_hint": 13.0,
+          "protein_estimated": true
         },
         {
-          "name": "Macho Peas (regular)",
-          "kcal": 140,
-          "protein_g": 9,
-          "price_hint": 4.49
+          "name": "12 PERi-PERi Wings",
+          "kcal": 1190,
+          "protein_g": 90,
+          "price_hint": 18.0,
+          "protein_estimated": true
+        },
+        {
+          "name": "Chicken Breast Sandwich",
+          "kcal": 500,
+          "protein_g": 35,
+          "price_hint": 9.0,
+          "protein_estimated": true
+        },
+        {
+          "name": "The Chicken \"Burger\"",
+          "kcal": 600,
+          "protein_g": 38,
+          "price_hint": 10.0,
+          "protein_estimated": true
+        },
+        {
+          "name": "Thigh & Mighty Sandwich",
+          "kcal": 740,
+          "protein_g": 42,
+          "price_hint": 12.0,
+          "protein_estimated": true
+        },
+        {
+          "name": "Nandocas Choice",
+          "kcal": 870,
+          "protein_g": 50,
+          "price_hint": 13.0,
+          "protein_estimated": true
+        },
+        {
+          "name": "PERi-PERi Chicken Bowl",
+          "kcal": 490,
+          "protein_g": 35,
+          "price_hint": 13.99,
+          "protein_estimated": true
+        },
+        {
+          "name": "Rainbow Bowl",
+          "kcal": 790,
+          "protein_g": 40,
+          "price_hint": 14.99,
+          "protein_estimated": true
+        },
+        {
+          "name": "Spicy Chicken Caesar Salad",
+          "kcal": 450,
+          "protein_g": 35,
+          "price_hint": 13.99,
+          "protein_estimated": true
+        },
+        {
+          "name": "PERi Ranch Crunch Salad",
+          "kcal": 530,
+          "protein_g": 35,
+          "price_hint": 14.99,
+          "protein_estimated": true
+        },
+        {
+          "name": "PERi Chips (regular)",
+          "kcal": 330,
+          "protein_g": 4,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "PERi Chips (large)",
+          "kcal": 660,
+          "protein_g": 8,
+          "price_hint": 6.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Portuguese Rice (regular)",
+          "kcal": 150,
+          "protein_g": 3,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Garlic Bread (regular)",
+          "kcal": 370,
+          "protein_g": 8,
+          "price_hint": 3.99,
+          "protein_estimated": true
         },
         {
           "name": "Coleslaw (regular)",
-          "kcal": 270,
+          "kcal": 230,
           "protein_g": 2,
-          "price_hint": 4.49
+          "price_hint": 4.49,
+          "protein_estimated": true
         },
         {
-          "name": "Corn on the Cob",
-          "kcal": 140,
+          "name": "Red Skin Mashed Potatoes (regular)",
+          "kcal": 170,
+          "protein_g": 3,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Flame-Grilled Corn on the Cob (regular)",
+          "kcal": 120,
           "protein_g": 4,
-          "price_hint": 4.49
+          "price_hint": 4.49,
+          "protein_estimated": true
         },
         {
-          "name": "Garlic Bread",
-          "kcal": 310,
-          "protein_g": 7,
-          "price_hint": 3.99
+          "name": "PERi Mac (regular)",
+          "kcal": 320,
+          "protein_g": 12,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Brussels Sprouts (regular)",
+          "kcal": 90,
+          "protein_g": 4,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Portuguese Tomato & Cucumber Salad",
+          "kcal": 35,
+          "protein_g": 1,
+          "price_hint": 4.49,
+          "protein_estimated": true
+        },
+        {
+          "name": "Naughty Nata",
+          "kcal": 150,
+          "protein_g": 3,
+          "price_hint": 2.99,
+          "protein_estimated": true
         }
-      ]
+      ],
+      "verified": "2026-10-10: kcal from the official US menu page; protein_g NOT on the menu page, estimated from kcal and typical grilled-chicken composition until the nutrition sheet is found"
     }
   ]
 }
