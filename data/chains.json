@@ -7,7 +7,8 @@
     "verification": {
       "date": "2026-10-10",
       "verified_full": [
-        "Sweetgreen (official nutrition guide, Sep 2026)"
+        "Sweetgreen (official nutrition guide, Sep 2026)",
+        "Shake Shack (official PDF Apr 2024)"
       ],
       "verified_kcal_only": [
         "Nando's (official menu page; protein estimated)"
@@ -18,8 +19,7 @@
         "Taco Bell Bean Burrito"
       ],
       "blocked": [
-        "Portillo's (Cloudflare)",
-        "Shake Shack (PDF needs manual download)"
+        "Portillo's (Cloudflare, also blocks the user)"
       ],
       "note": "Per-chain `verified` field carries the detail. Rows with protein_estimated=true have official kcal but estimated protein."
     }
@@ -928,57 +928,93 @@
       "source_url": "https://shakeshack.com/sites/default/files/2024-04/4.9.24%20Allergen.pdf",
       "items": [
         {
+          "name": "ShackBurger (single)",
+          "kcal": 500,
+          "protein_g": 29,
+          "price_hint": 8.49
+        },
+        {
+          "name": "Double ShackBurger",
+          "kcal": 760,
+          "protein_g": 51,
+          "price_hint": 11.49
+        },
+        {
           "name": "Hamburger (single)",
-          "kcal": 440,
+          "kcal": 370,
           "protein_g": 25,
           "price_hint": 7.29
         },
         {
           "name": "Cheeseburger (single)",
-          "kcal": 490,
+          "kcal": 440,
           "protein_g": 29,
           "price_hint": 7.99
         },
         {
-          "name": "ShackBurger (single)",
-          "kcal": 530,
-          "protein_g": 30,
-          "price_hint": 8.49
-        },
-        {
-          "name": "Double ShackBurger",
-          "kcal": 850,
-          "protein_g": 51,
-          "price_hint": 11.49
-        },
-        {
           "name": "SmokeShack (single)",
-          "kcal": 650,
+          "kcal": 600,
+          "protein_g": 36,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Bacon Cheeseburger (single)",
+          "kcal": 530,
           "protein_g": 35,
+          "price_hint": 8.99
+        },
+        {
+          "name": "Avocado Bacon Burger (single)",
+          "kcal": 670,
+          "protein_g": 37,
           "price_hint": 9.99
         },
         {
           "name": "'Shroom Burger",
-          "kcal": 560,
-          "protein_g": 22,
+          "kcal": 510,
+          "protein_g": 18,
           "price_hint": 9.49
         },
         {
+          "name": "Veggie Shack (single)",
+          "kcal": 630,
+          "protein_g": 20,
+          "price_hint": 8.99
+        },
+        {
           "name": "Chicken Shack",
-          "kcal": 620,
-          "protein_g": 40,
+          "kcal": 550,
+          "protein_g": 33,
+          "price_hint": 9.29
+        },
+        {
+          "name": "Chicken Shack Lettuce Wrap",
+          "kcal": 420,
+          "protein_g": 27,
           "price_hint": 9.29
         },
         {
           "name": "Chicken Bites (6 pc)",
-          "kcal": 330,
-          "protein_g": 22,
+          "kcal": 350,
+          "protein_g": 18,
           "price_hint": 6.99
         },
         {
+          "name": "Chicken Bites (10 pc)",
+          "kcal": 580,
+          "protein_g": 31,
+          "price_hint": 9.99
+        },
+        {
+          "name": "Hot Dog",
+          "kcal": 350,
+          "protein_g": 16,
+          "price_hint": 5.49
+        },
+        {
           "name": "Shack-cago Dog",
-          "kcal": 320,
-          "protein_g": 13,
+          "kcal": 390,
+          "protein_g": 17,
           "price_hint": 5.99
         },
         {
@@ -989,24 +1025,36 @@
         },
         {
           "name": "Cheese Fries",
-          "kcal": 690,
-          "protein_g": 15,
+          "kcal": 710,
+          "protein_g": 12,
           "price_hint": 5.69
         },
         {
           "name": "Bacon Cheese Fries",
-          "kcal": 790,
+          "kcal": 850,
           "protein_g": 21,
           "price_hint": 6.99
         },
         {
           "name": "Vanilla Shake",
-          "kcal": 580,
-          "protein_g": 13,
+          "kcal": 680,
+          "protein_g": 18,
           "price_hint": 6.99
+        },
+        {
+          "name": "Chocolate Shake",
+          "kcal": 750,
+          "protein_g": 16,
+          "price_hint": 6.99
+        },
+        {
+          "name": "Grilled Cheese",
+          "kcal": 320,
+          "protein_g": 14,
+          "price_hint": 5.49
         }
       ],
-      "verified": "UNVERIFIED 2026-10-10: official nutrition PDF (Apr 2024, updated Aug 2026) found but not yet parsed; all rows are from memory."
+      "verified": "2026-10-10 all rows from the official Nutrition & Allergen PDF (4.9.24, file updated Aug 2026), parsed programmatically"
     },
     {
       "merchant": "Raising Cane's",
