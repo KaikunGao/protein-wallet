@@ -8,20 +8,23 @@
       "date": "2026-10-10",
       "verified_full": [
         "Sweetgreen (official nutrition guide, Sep 2026)",
-        "Shake Shack (official PDF Apr 2024)"
+        "Shake Shack (official PDF Apr 2024)",
+        "McDonald's (site item API, 2026-10-10)"
       ],
       "verified_kcal_only": [
         "Nando's (official menu page; protein estimated)"
       ],
       "spot_checked": [
-        "McDonald's Big Mac",
         "Chick-fil-A Chicken Sandwich",
         "Taco Bell Bean Burrito"
       ],
       "blocked": [
-        "Portillo's (Cloudflare, also blocks the user)"
+        "KFC: nutrition pages render nothing without store selection"
       ],
-      "note": "Per-chain `verified` field carries the detail. Rows with protein_estimated=true have official kcal but estimated protein."
+      "note": "Per-chain `verified` field carries the detail. Rows with protein_estimated=true have official kcal but estimated protein.",
+      "removed": [
+        "Portillo's: official PDF is Cloudflare-blocked for automated access and for the user; removed rather than keep unverifiable rows labelled as official data"
+      ]
     }
   },
   "chains": [
@@ -207,7 +210,7 @@
         "麦当劳",
         "金拱门"
       ],
-      "source_url": "https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html",
+      "source_url": "https://www.mcdonalds.com/us/en-us/full-menu.html (per-item nutrient_facts from the site API)",
       "items": [
         {
           "name": "Big Mac",
@@ -228,14 +231,26 @@
           "price_hint": 8.29
         },
         {
+          "name": "Bacon Quarter Pounder with Cheese",
+          "kcal": 630,
+          "protein_g": 36,
+          "price_hint": 7.49
+        },
+        {
+          "name": "Quarter Pounder with Cheese Deluxe",
+          "kcal": 630,
+          "protein_g": 30,
+          "price_hint": 7.29
+        },
+        {
           "name": "McDouble",
-          "kcal": 400,
+          "kcal": 390,
           "protein_g": 22,
           "price_hint": 3.19
         },
         {
           "name": "Double Cheeseburger",
-          "kcal": 450,
+          "kcal": 440,
           "protein_g": 25,
           "price_hint": 3.99
         },
@@ -252,8 +267,14 @@
           "price_hint": 2.19
         },
         {
+          "name": "Daily Double",
+          "kcal": 490,
+          "protein_g": 22,
+          "price_hint": 3.99
+        },
+        {
           "name": "McChicken",
-          "kcal": 400,
+          "kcal": 390,
           "protein_g": 14,
           "price_hint": 2.99
         },
@@ -270,8 +291,20 @@
           "price_hint": 5.99
         },
         {
+          "name": "Deluxe McCrispy",
+          "kcal": 530,
+          "protein_g": 27,
+          "price_hint": 6.59
+        },
+        {
+          "name": "McCrispy Strips (3 pc)",
+          "kcal": 400,
+          "protein_g": 31,
+          "price_hint": 5.99
+        },
+        {
           "name": "Filet-O-Fish",
-          "kcal": 390,
+          "kcal": 380,
           "protein_g": 16,
           "price_hint": 5.19
         },
@@ -285,19 +318,34 @@
           "name": "Chicken McNuggets (6 pc)",
           "kcal": 250,
           "protein_g": 14,
-          "price_hint": 4.49
+          "price_hint": 4.49,
+          "verified_note": "size variant not in the API list; consistent with the 4 pc / small values and McDonald's published figures"
         },
         {
           "name": "Chicken McNuggets (10 pc)",
           "kcal": 410,
           "protein_g": 23,
-          "price_hint": 6.49
+          "price_hint": 6.49,
+          "verified_note": "size variant not in the API list; consistent with the 4 pc / small values and McDonald's published figures"
         },
         {
           "name": "Chicken McNuggets (20 pc)",
           "kcal": 830,
           "protein_g": 46,
-          "price_hint": 9.99
+          "price_hint": 9.99,
+          "verified_note": "size variant not in the API list; consistent with the 4 pc / small values and McDonald's published figures"
+        },
+        {
+          "name": "Spicy Chicken McNuggets (10 pc)",
+          "kcal": 490,
+          "protein_g": 26,
+          "price_hint": 6.49
+        },
+        {
+          "name": "Snack Wrap (McCrispy Ranch)",
+          "kcal": 400,
+          "protein_g": 17,
+          "price_hint": 2.99
         },
         {
           "name": "French Fries (small)",
@@ -309,13 +357,15 @@
           "name": "French Fries (medium)",
           "kcal": 320,
           "protein_g": 4,
-          "price_hint": 3.49
+          "price_hint": 3.49,
+          "verified_note": "size variant not in the API list; consistent with the 4 pc / small values and McDonald's published figures"
         },
         {
           "name": "French Fries (large)",
           "kcal": 480,
           "protein_g": 7,
-          "price_hint": 4.19
+          "price_hint": 4.19,
+          "verified_note": "size variant not in the API list; consistent with the 4 pc / small values and McDonald's published figures"
         },
         {
           "name": "Egg McMuffin",
@@ -338,8 +388,32 @@
         {
           "name": "Bacon, Egg & Cheese Biscuit",
           "kcal": 460,
-          "protein_g": 19,
+          "protein_g": 17,
           "price_hint": 4.79
+        },
+        {
+          "name": "Sausage Biscuit with Egg",
+          "kcal": 530,
+          "protein_g": 17,
+          "price_hint": 4.29
+        },
+        {
+          "name": "Sausage, Egg & Cheese McGriddles",
+          "kcal": 550,
+          "protein_g": 19,
+          "price_hint": 5.19
+        },
+        {
+          "name": "Bacon, Egg & Cheese McGriddles",
+          "kcal": 430,
+          "protein_g": 17,
+          "price_hint": 5.19
+        },
+        {
+          "name": "Steak, Egg & Cheese Bagel",
+          "kcal": 680,
+          "protein_g": 34,
+          "price_hint": 5.99
         },
         {
           "name": "Sausage Burrito",
@@ -358,9 +432,51 @@
           "kcal": 580,
           "protein_g": 9,
           "price_hint": 4.49
+        },
+        {
+          "name": "Big Breakfast",
+          "kcal": 1060,
+          "protein_g": 26,
+          "price_hint": 5.99
+        },
+        {
+          "name": "Fruit & Maple Oatmeal",
+          "kcal": 320,
+          "protein_g": 6,
+          "price_hint": 3.29
+        },
+        {
+          "name": "Vanilla Cone",
+          "kcal": 200,
+          "protein_g": 5,
+          "price_hint": 1.99
+        },
+        {
+          "name": "McFlurry with Oreo Cookies",
+          "kcal": 410,
+          "protein_g": 10,
+          "price_hint": 4.49
+        },
+        {
+          "name": "Chocolate Shake (small)",
+          "kcal": 520,
+          "protein_g": 12,
+          "price_hint": 3.99
+        },
+        {
+          "name": "Latte (small)",
+          "kcal": 140,
+          "protein_g": 8,
+          "price_hint": 3.49
+        },
+        {
+          "name": "Iced Coffee (small)",
+          "kcal": 150,
+          "protein_g": 1,
+          "price_hint": 2.49
         }
       ],
-      "verified": "2026-10-10 spot-check: Big Mac 580/25 confirmed on official product page (other rows unverified)"
+      "verified": "2026-10-10 all rows from McDonald's site item API (nutrient_facts), except the 5 size variants flagged with verified_note"
     },
     {
       "merchant": "Subway",
@@ -1205,95 +1321,6 @@
         }
       ],
       "verified": "2026-10-10 against Sweetgreen Nutrition Guide (last updated September 2026)"
-    },
-    {
-      "merchant": "Portillo's",
-      "aliases": [
-        "portillo's",
-        "portillos"
-      ],
-      "source_url": "https://www.portillos.com/assets/1/6/NutritionAllergen_July2026.pdf",
-      "items": [
-        {
-          "name": "Italian Beef Sandwich (regular)",
-          "kcal": 690,
-          "protein_g": 31,
-          "price_hint": 8.49
-        },
-        {
-          "name": "Italian Beef & Sausage Combo",
-          "kcal": 860,
-          "protein_g": 48,
-          "price_hint": 10.49
-        },
-        {
-          "name": "Chicago-Style Hot Dog",
-          "kcal": 370,
-          "protein_g": 13,
-          "price_hint": 4.49
-        },
-        {
-          "name": "Char-Grilled Maxwell Street Polish",
-          "kcal": 540,
-          "protein_g": 20,
-          "price_hint": 5.99
-        },
-        {
-          "name": "Chargrilled Chicken Sandwich",
-          "kcal": 580,
-          "protein_g": 38,
-          "price_hint": 8.29
-        },
-        {
-          "name": "Crispy Chicken Sandwich",
-          "kcal": 620,
-          "protein_g": 30,
-          "price_hint": 8.29
-        },
-        {
-          "name": "Char-Broiled Hamburger",
-          "kcal": 640,
-          "protein_g": 32,
-          "price_hint": 7.49
-        },
-        {
-          "name": "Char-Broiled Cheeseburger",
-          "kcal": 720,
-          "protein_g": 37,
-          "price_hint": 7.99
-        },
-        {
-          "name": "Beef & Cheddar Croissant",
-          "kcal": 800,
-          "protein_g": 37,
-          "price_hint": 9.49
-        },
-        {
-          "name": "French Fries (regular)",
-          "kcal": 440,
-          "protein_g": 5,
-          "price_hint": 3.49
-        },
-        {
-          "name": "Cheese Fries (regular)",
-          "kcal": 580,
-          "protein_g": 10,
-          "price_hint": 4.49
-        },
-        {
-          "name": "Chopped Salad (with chicken)",
-          "kcal": 640,
-          "protein_g": 35,
-          "price_hint": 10.99
-        },
-        {
-          "name": "Chocolate Cake Shake (regular)",
-          "kcal": 1000,
-          "protein_g": 15,
-          "price_hint": 6.49
-        }
-      ],
-      "verified": "UNVERIFIED 2026-10-10: official PDF is Cloudflare-blocked for automated access. Italian Beef 690 / Combo 860 kcal taken from search-engine index of an older official PDF; protein values are estimates. Download the PDF manually and re-enter all rows."
     },
     {
       "merchant": "Five Guys",
