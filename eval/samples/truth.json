@@ -6,10 +6,10 @@
     "content": "Chipotle chicken bowl: chicken, white rice, black beans, fresh tomato salsa, cheese, lettuce. $11.25",
     "merchant": "Chipotle",
     "kcal": 660,
-    "protein_g": 51,
+    "protein_g": 50,
     "amount_usd": 11.25,
     "items_count": 1,
-    "truth_source": "chains.json (Chipotle nutrition calculator)"
+    "truth_source": "Chipotle nutrition calculator: chicken 32 + white rice 4 + black beans 8 + tomato salsa 0 + cheese 6 + lettuce 0"
   },
   {
     "id": "text-chipotle-steak-burrito",
@@ -18,10 +18,10 @@
     "content": "Chipotle steak burrito with brown rice, pinto beans, sour cream and guacamole, 13 dollars",
     "merchant": "Chipotle",
     "kcal": 1050,
-    "protein_g": 44,
+    "protein_g": 43,
     "amount_usd": 13,
     "items_count": 1,
-    "truth_source": "chains.json: tortilla 320/8 + steak 150/21 + brown rice 210/5 + pinto 130/8 + sour cream 110/2 + guac 230/2"
+    "truth_source": "calculator: tortilla 320/8 + steak 150/21 + brown rice 210/4 + pinto 130/8 + sour cream 110/2 + guac 230/2"
   },
   {
     "id": "text-mcd-big-mac-fries",
@@ -198,7 +198,7 @@
     "file": "receipt-synthetic-chipotle.jpg",
     "merchant": "Chipotle",
     "kcal": 1680,
-    "protein_g": 60,
+    "protein_g": 59,
     "amount_usd": 21.65,
     "items_count": 3,
     "truth_source": "Synthetic receipt rendered from HTML (not a real purchase). chains.json: chicken bowl 660/51 + chips & guac 770/9 + 22oz fountain soda assumed regular cola ~250/0"

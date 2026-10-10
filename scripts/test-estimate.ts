@@ -149,7 +149,7 @@ test("mock text pipeline end to end", () => {
   if (!r.ok || r.kind !== "meal") throw new Error("bad");
   assert.equal(r.items[0].source, "official_table");
   assert.equal(r.items[0].amount_usd, 11.5);
-  assert.deepEqual([r.items[0].protein_low_g, r.items[0].protein_high_g], [46, 56]); // 51 ±10%
+  assert.deepEqual([r.items[0].protein_low_g, r.items[0].protein_high_g], [45, 55]); // 50 ±10% (salsa protein is 0 per the official calculator)
 });
 
 test("ModelOutputSchema accepts a well-formed response", () => {

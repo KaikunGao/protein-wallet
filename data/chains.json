@@ -10,7 +10,8 @@
         "Sweetgreen (official nutrition guide, Sep 2026)",
         "Shake Shack (official PDF Apr 2024)",
         "McDonald's (site item API, 2026-10-10)",
-        "KFC (official Nutritionix menu, Oct 2026)"
+        "KFC (official Nutritionix menu, Oct 2026)",
+        "Chipotle (official nutrition calculator, Oct 2026)"
       ],
       "verified_kcal_only": [
         "Nando's (official menu page; protein estimated)"
@@ -66,12 +67,6 @@
           "price_hint": null
         },
         {
-          "name": "Chicken al Pastor",
-          "kcal": 170,
-          "protein_g": 30,
-          "price_hint": null
-        },
-        {
           "name": "White Rice",
           "kcal": 210,
           "protein_g": 4,
@@ -80,7 +75,7 @@
         {
           "name": "Brown Rice",
           "kcal": 210,
-          "protein_g": 5,
+          "protein_g": 4,
           "price_hint": null
         },
         {
@@ -104,7 +99,7 @@
         {
           "name": "Fresh Tomato Salsa",
           "kcal": 25,
-          "protein_g": 1,
+          "protein_g": 0,
           "price_hint": null
         },
         {
@@ -122,7 +117,7 @@
         {
           "name": "Tomatillo Red-Chili Salsa",
           "kcal": 30,
-          "protein_g": 1,
+          "protein_g": 0,
           "price_hint": null
         },
         {
@@ -162,10 +157,28 @@
           "price_hint": null
         },
         {
-          "name": "Crispy Corn Tortilla (1 taco shell)",
-          "kcal": 70,
-          "protein_g": 1,
+          "name": "Crispy Corn Tortillas (3 taco shells)",
+          "kcal": 200,
+          "protein_g": 3,
           "price_hint": null
+        },
+        {
+          "name": "Soft Flour Tortillas (3 soft tacos)",
+          "kcal": 250,
+          "protein_g": 7,
+          "price_hint": null
+        },
+        {
+          "name": "Chips & Queso Blanco",
+          "kcal": 780,
+          "protein_g": 17,
+          "price_hint": 5.2
+        },
+        {
+          "name": "Large Chips",
+          "kcal": 810,
+          "protein_g": 11,
+          "price_hint": 3.25
         },
         {
           "name": "Chips",
@@ -182,23 +195,23 @@
         {
           "name": "Chicken Bowl (typical: chicken, white rice, black beans, tomato salsa, cheese, lettuce)",
           "kcal": 660,
-          "protein_g": 51,
+          "protein_g": 50,
           "price_hint": 11.25
         },
         {
           "name": "Steak Bowl (typical: steak, white rice, black beans, tomato salsa, cheese, lettuce)",
           "kcal": 630,
-          "protein_g": 40,
+          "protein_g": 39,
           "price_hint": 13
         },
         {
           "name": "Chicken Burrito (typical: tortilla, chicken, white rice, black beans, tomato salsa, cheese)",
           "kcal": 975,
-          "protein_g": 59,
+          "protein_g": 58,
           "price_hint": 11.25
         }
       ],
-      "verified": "UNVERIFIED: entered from memory, spot-check against source_url"
+      "verified": "2026-10-10 all rows match the official nutrition calculator (burrito-bowl, burrito, tacos, chips & sides pages); typical-combo rows are sums of those components"
     },
     {
       "merchant": "McDonald's",
