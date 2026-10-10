@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Onboarding from "@/components/Onboarding";
 import { getSettings, logEvent } from "@/lib/db";
@@ -19,11 +20,17 @@ export default function Home() {
   if (settings === null) return <Onboarding onDone={setSettings} />;
 
   return (
-    <div className="py-8">
-      <h1 className="text-2xl font-bold">蛋白钱包</h1>
-      <p className="mt-2 text-zinc-600">
-        目标 {settings.protein_target_g} g/天,预算 ${settings.weekly_budget_usd}/周。今日页在 Step 1.6 实现。
+    <div className="space-y-6 py-2">
+      <h1 className="text-2xl font-bold">今日</h1>
+      <p className="text-zinc-600">
+        目标 {settings.protein_target_g} g/天,预算 ${settings.weekly_budget_usd}/周。差额卡片在 Step 1.6 实现。
       </p>
+      <Link
+        href="/log"
+        className="block rounded-2xl bg-green-600 py-4 text-center text-lg font-semibold text-white shadow"
+      >
+        + 记一餐
+      </Link>
     </div>
   );
 }
