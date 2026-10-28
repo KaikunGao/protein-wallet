@@ -38,10 +38,10 @@ npm run dev                  # http://localhost:3000
 
 ```
 app/            页面:/ 今日  /log 记录流  /weekly 周报  /settings 设置  /api/estimate 估算路由
-components/     Onboarding、ConfirmCard(可编辑确认卡)、ConfidenceBadge、BottomNav
+components/     Onboarding、ConfirmCard(可编辑确认卡)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
-lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报
+lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报;lib/money.ts 货币(美元 / 人民币,只管符号和 ¢/g 或 分/g,不做汇率)
 data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
 data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)
@@ -50,8 +50,9 @@ docs/使用说明.md  给种子用户的一页说明
 
 ## 估算 API
 
-`POST /api/estimate`,body `{ type: "text" | "photo" | "receipt" | "grocery", content, media_type?, dining_hall? }`,
-照片类 `content` 为 base64(可带 `data:` 前缀);`dining_hall` 是食堂 slug(`data/dining/uchicago/halls.json`),只对 photo / text 生效。返回:
+`POST /api/estimate`,body `{ type: "text" | "photo" | "receipt" | "grocery", content, media_type?, dining_hall?, currency? }`,
+照片类 `content` 为 base64(可带 `data:` 前缀);`dining_hall` 是食堂 slug(`data/dining/uchicago/halls.json`),只对 photo / text 生效;
+`currency` 是 `USD` / `CNY`,决定 `amount_usd` / `total_usd` 字段里的币种(字段名沿用,不换算,见 `lib/money.ts`)。返回:
 
 ```json
 { "ok": true, "kind": "meal", "merchant": "Chipotle", "total_usd": 11.5,

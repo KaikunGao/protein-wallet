@@ -60,6 +60,9 @@ export function userContent(input: EstimateInput): Anthropic.ContentBlockParam[]
   const dining = hall ? `这餐吃的是学校食堂:${hall.name}(${hall.short})。请用系统提示里的食堂菜品库做 dining_match。` : null;
   const blocks: Anthropic.ContentBlockParam[] = [];
   if (dining) blocks.push({ type: "text", text: dining });
+  if (input.currency === "CNY") {
+    blocks.push({ type: "text", text: "用户用人民币记账:amount_usd 和 total_usd 两个字段填人民币元的数值(字段名沿用,不要换算成美元)。" });
+  }
   if (input.type === "text") {
     blocks.push({ type: "text", text: `用户输入:「${input.content}」` });
     return blocks;

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { logEvent, saveSettings } from "@/lib/db";
+import { CURRENCIES, type Currency } from "@/lib/money";
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { Settings } from "@/lib/types";
 
@@ -10,6 +11,7 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
   const [step, setStep] = useState<0 | 1>(0);
   const [weight, setWeight] = useState("");
   const [budget, setBudget] = useState("");
+  const [currency, setCurrency] = useState<Currency>("USD");
 
   const target = proteinTargetFromWeight(weight ? Number(weight) : null);
 
@@ -17,6 +19,7 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
     const s = buildSettings({
       weight_kg: weight ? Number(weight) : null,
       weekly_budget_usd: Number(budget),
+      currency,
     });
     await saveSettings(s);
     void logEvent("page_open", { page: "onboarding_done", weight_given: !!weight });
@@ -33,7 +36,7 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
         <p className="mt-2 text-sm text-zinc-500">
           {step === 0
             ? "用来算每日蛋白质目标(体重 × 1.6g)。可以跳过,跳过则按 100g/天。"
-            : "包括外食和买菜。首页会显示本周还剩多少钱。"}
+            : "包括外食和买菜。首页会显示本周还剩多少钱。先选记账用的货币。"}
         </p>
       </div>
 
@@ -62,14 +65,29 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
         </>
       ) : (
         <>
+          <div className="grid grid-cols-2 gap-2">
+            {(Object.keys(CURRENCIES) as Currency[]).map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCurrency(c)}
+                aria-pressed={currency === c}
+                className={`rounded-xl border px-3 py-2 text-sm ${
+                  currency === c ? "border-green-600 bg-green-50 font-semibold text-green-800" : "border-zinc-300 bg-white text-zinc-600"
+                }`}
+              >
+                {CURRENCIES[c].symbol} {CURRENCIES[c].name}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center gap-2">
-            <span className="text-zinc-500">$</span>
+            <span className="text-zinc-500">{CURRENCIES[currency].symbol}</span>
             <input
               autoFocus
               inputMode="decimal"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              placeholder="120"
+              placeholder={currency === "CNY" ? "500" : "120"}
               className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-2xl outline-none focus:border-green-600"
             />
             <span className="text-zinc-500">/周</span>

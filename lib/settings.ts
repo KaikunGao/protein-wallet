@@ -1,3 +1,4 @@
+import { currencyOf, type Currency } from "./money";
 import { DEFAULT_PROTEIN_TARGET_G, PROTEIN_G_PER_KG, type Settings } from "./types";
 
 export function proteinTargetFromWeight(weightKg?: number | null): number {
@@ -11,6 +12,7 @@ export function buildSettings(input: {
   protein_target_g?: number | null;
   meal_swipe_usd?: number | null;
   dining_hall?: string | null;
+  currency?: Currency | null;
   created_at?: number;
 }): Settings {
   const s: Settings = {
@@ -24,5 +26,6 @@ export function buildSettings(input: {
   if (input.weight_kg && input.weight_kg > 0) s.weight_kg = input.weight_kg;
   if (input.meal_swipe_usd && input.meal_swipe_usd > 0) s.meal_swipe_usd = input.meal_swipe_usd;
   if (input.dining_hall) s.dining_hall = input.dining_hall;
+  s.currency = currencyOf(input.currency);
   return s;
 }

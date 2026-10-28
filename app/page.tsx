@@ -5,7 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import ConfidenceBadge, { confidenceBorder } from "@/components/ConfidenceBadge";
 import Onboarding from "@/components/Onboarding";
 import { deleteMeal, getSettings, listMealsByDay, listMealsByWeek, logEvent } from "@/lib/db";
-import { adviceSentence, centsPerGram, fmtMoney, proteinDeficit, proteinRange, spend } from "@/lib/derive";
+import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, proteinDeficit, proteinRange, spend } from "@/lib/derive";
+import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
 import type { Meal, Settings } from "@/lib/types";
 
@@ -41,6 +42,7 @@ export default function Home() {
   const deficit = proteinDeficit(today, settings);
   const weekSpent = spend(week);
   const budgetLeft = settings.weekly_budget_usd - weekSpent;
+  const cur = currencyOf(settings.currency);
 
   return (
     <div className="space-y-5 py-2">
@@ -60,16 +62,16 @@ export default function Home() {
         <div className="rounded-2xl bg-white p-4 shadow-sm" data-testid="budget-card">
           <p className="text-xs text-zinc-500">本周预算</p>
           <p className={`mt-1 text-3xl font-bold tabular-nums ${budgetLeft < 0 ? "text-red-600" : ""}`}>
-            {budgetLeft < 0 ? `-${fmtMoney(-budgetLeft)}` : fmtMoney(budgetLeft)}
+            {budgetLeft < 0 ? `-${fmtMoney(-budgetLeft, cur)}` : fmtMoney(budgetLeft, cur)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">
-            已花 {fmtMoney(weekSpent)} / 预算 {fmtMoney(settings.weekly_budget_usd)}
+            已花 {fmtMoney(weekSpent, cur)} / 预算 {fmtMoney(settings.weekly_budget_usd, cur)}
           </p>
         </div>
       </div>
 
       <p className="text-sm text-zinc-700" data-testid="advice">
-        {adviceSentence(deficit, budgetLeft)}
+        {adviceSentence(deficit, budgetLeft, cur)}
       </p>
 
       <Link
@@ -102,7 +104,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-semibold tabular-nums">{m.amount_usd != null ? fmtMoney(m.amount_usd) : "—"}</p>
+                  <p className="font-semibold tabular-nums">{m.amount_usd != null ? fmtMoney(m.amount_usd, cur) : "—"}</p>
                   <button onClick={() => remove(m)} className="text-xs text-zinc-400" aria-label={`删除 ${m.meal_name}`}>
                     删除
                   </button>
@@ -118,7 +120,7 @@ export default function Home() {
                   {cpg != null && (
                     <>
                       <span className="text-zinc-400">·</span>
-                      <span className="tabular-nums text-zinc-600">{cpg.toFixed(1)}¢/g</span>
+                      <span className="tabular-nums text-zinc-600">{cpg.toFixed(1)}{cpgUnit(cur)}</span>
                     </>
                   )}
                   <ConfidenceBadge confidence={m.confidence} source={m.source} />

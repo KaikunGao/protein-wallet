@@ -1,5 +1,6 @@
 // Shared domain types. Kept dependency-free so both the Next app and the
 // eval script (plain Node) can import them.
+import type { Currency } from "./money";
 
 export type Confidence = "high" | "medium" | "low";
 // DECISION (2026-10-28): three data tiers above pure guessing.
@@ -45,6 +46,7 @@ export interface Settings {
   weekly_budget_usd: number;
   meal_swipe_usd?: number; // optional default price for dining-hall swipes
   dining_hall?: string; // slug of the hall the user usually eats at (data/dining/uchicago/halls.json)
+  currency?: Currency; // absent = USD (records made before the setting existed)
   created_at: number;
 }
 

@@ -60,3 +60,10 @@ assert.equal(r2.delta, "上周没有记录,从这周开始有对比。");
 console.log("  ok - delta sentence");
 
 console.log("\nweekly report tests passed");
+
+import { fmtMoney, cpgUnit } from "../lib/money";
+assert.equal(fmtMoney(12.5, "CNY"), "¥12.50");
+assert.equal(fmtMoney(12, "USD"), "$12");
+assert.equal(cpgUnit("CNY"), "分/g");
+assert.equal(cpgUnit(), "¢/g");
+console.log("  ok - currency formatting");

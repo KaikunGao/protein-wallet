@@ -4,6 +4,7 @@ import { useState } from "react";
 import ConfidenceBadge, { confidenceBorder } from "./ConfidenceBadge";
 import type { EstimateResponse } from "@/lib/estimate/schema";
 import { logEvent, newId } from "@/lib/db";
+import { CURRENCIES, currencyOf, type Currency } from "@/lib/money";
 import type { Confidence, InputType, Meal, Source } from "@/lib/types";
 
 type OkResponse = Extract<EstimateResponse, { ok: true }>;
@@ -50,12 +51,14 @@ export default function ConfirmCard({
   result,
   inputType,
   defaultAmount,
+  currency,
   onSave,
   onCancel,
 }: {
   result: OkResponse;
   inputType: InputType;
   defaultAmount?: number | null;
+  currency?: Currency;
   onSave: (meals: Meal[], meta: { corrected: boolean }) => void;
   onCancel: () => void;
 }) {
@@ -68,6 +71,7 @@ export default function ConfirmCard({
     result.kind === "grocery" ? result.ingredients.join("\n") : "",
   );
   const [groceryCorrected, setGroceryCorrected] = useState(false);
+  const sym = CURRENCIES[currencyOf(currency)].symbol;
 
   function edit(key: string, field: keyof Draft, value: string) {
     // Side effects stay outside the updater (StrictMode double-invokes updaters).
@@ -149,7 +153,7 @@ export default function ConfirmCard({
               className={inp}
             />
           </Row>
-          <Row label="总金额 $">
+          <Row label={`总金额 ${sym}`}>
             <input
               inputMode="decimal"
               value={groceryAmount}
@@ -184,7 +188,7 @@ export default function ConfirmCard({
               )}
             </div>
             <ConfidenceBadge confidence={d.confidence} source={d.source} />
-            <Row label="金额 $">
+            <Row label={`金额 ${sym}`}>
               <input
                 inputMode="decimal"
                 value={d.amount}

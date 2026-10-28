@@ -13,6 +13,7 @@ import {
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { ExportBundle, Settings } from "@/lib/types";
 import halls from "@/data/dining/uchicago/halls.json";
+import { CURRENCIES, currencyOf, type Currency } from "@/lib/money";
 
 export default function SettingsPage() {
   const [loaded, setLoaded] = useState(false);
@@ -22,6 +23,7 @@ export default function SettingsPage() {
   const [budget, setBudget] = useState("");
   const [swipe, setSwipe] = useState("");
   const [hall, setHall] = useState("");
+  const [currency, setCurrency] = useState<Currency>("USD");
   const [msg, setMsg] = useState<string | null>(null);
   const [counts, setCounts] = useState({ meals: 0, events: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -41,6 +43,7 @@ export default function SettingsPage() {
         setBudget(String(s.weekly_budget_usd));
         setSwipe(s.meal_swipe_usd ? String(s.meal_swipe_usd) : "");
         setHall(s.dining_hall ?? "");
+        setCurrency(currencyOf(s.currency));
       }
       await refreshCounts();
       setLoaded(true);
@@ -64,6 +67,7 @@ export default function SettingsPage() {
       weekly_budget_usd: Number(budget),
       meal_swipe_usd: swipe ? Number(swipe) : null,
       dining_hall: hall || null,
+      currency,
       created_at: existing?.created_at,
     });
     await saveSettings(s);
@@ -103,6 +107,7 @@ export default function SettingsPage() {
         setBudget(String(s.weekly_budget_usd));
         setSwipe(s.meal_swipe_usd ? String(s.meal_swipe_usd) : "");
         setHall(s.dining_hall ?? "");
+        setCurrency(currencyOf(s.currency));
       }
       await refreshCounts();
       void logEvent("import", r);
@@ -137,21 +142,38 @@ export default function SettingsPage() {
             className={inputCls}
           />
         </Field>
-        <Field label="每周饮食预算 ($)">
+        <Field label="记账货币" hint="只决定符号和单位(¢/g 或 分/g),不做汇率换算;已有记录按原样显示">
+          <div className="grid grid-cols-2 gap-2" data-testid="currency-toggle">
+            {(Object.keys(CURRENCIES) as Currency[]).map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCurrency(c)}
+                aria-pressed={currency === c}
+                className={`rounded-xl border px-3 py-2 text-sm ${
+                  currency === c ? "border-green-600 bg-green-50 font-semibold text-green-800" : "border-zinc-300 bg-white text-zinc-600"
+                }`}
+              >
+                {CURRENCIES[c].symbol} {CURRENCIES[c].name}
+              </button>
+            ))}
+          </div>
+        </Field>
+        <Field label={`每周饮食预算 (${CURRENCIES[currency].symbol})`}>
           <input
             inputMode="decimal"
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
-            placeholder="例如 120"
+            placeholder={currency === "CNY" ? "例如 500" : "例如 120"}
             className={inputCls}
           />
         </Field>
-        <Field label="食堂一次刷卡默认单价 ($,可选)">
+        <Field label={`食堂一次刷卡默认单价 (${CURRENCIES[currency].symbol},可选)`}>
           <input
             inputMode="decimal"
             value={swipe}
             onChange={(e) => setSwipe(e.target.value)}
-            placeholder="例如 12"
+            placeholder={currency === "CNY" ? "例如 15" : "例如 12"}
             className={inputCls}
           />
         </Field>

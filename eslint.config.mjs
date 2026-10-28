@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Claude Desktop puts session worktrees (each with its own .next) under .claude/.
+    ".claude/**",
   ]),
 ]);
 

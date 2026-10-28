@@ -98,7 +98,7 @@ export function buildWeeklyReport(
     const spendPart =
       Math.abs(diff) < 0.005
         ? "花销和上周持平"
-        : `比上周${diff > 0 ? "多" : "少"}花 ${fmtMoney(Math.abs(diff))}`;
+        : `比上周${diff > 0 ? "多" : "少"}花 ${fmtMoney(Math.abs(diff), settings.currency ?? "USD")}`;
     delta = `${spendPart},蛋白达标天数 ${prevMet}/${prevRecorded} → ${daysMet}/${daysRecorded}。`;
   }
 

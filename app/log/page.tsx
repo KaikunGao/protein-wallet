@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConfirmCard from "@/components/ConfirmCard";
+import VoiceButton from "@/components/VoiceButton";
 import { addMeal, getSettings, logEvent } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
 import { compressImage } from "@/lib/image";
+import { CURRENCIES, currencyOf } from "@/lib/money";
 import type { InputType, Meal, Settings } from "@/lib/types";
 import halls from "@/data/dining/uchicago/halls.json";
 
@@ -17,10 +19,42 @@ type Phase =
 
 type PhotoType = Exclude<InputType, "text">;
 
-const PHOTO_BUTTONS: { type: PhotoType; label: string; hint: string }[] = [
-  { type: "receipt", label: "拍餐厅小票", hint: "一张解决记账 + 记餐" },
-  { type: "photo", label: "拍餐食", hint: "食堂等没小票的场景" },
-  { type: "grocery", label: "拍买菜小票", hint: "只记花销,食材存档" },
+const PHOTO_BUTTONS: { type: PhotoType; label: string; hint: string; icon: React.ReactNode }[] = [
+  {
+    type: "receipt",
+    label: "拍小票",
+    hint: "记账 + 记餐一步到位",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21z" />
+        <path d="M9 8h6M9 12h6M9 16h4" />
+      </svg>
+    ),
+  },
+  {
+    type: "photo",
+    label: "拍餐盘",
+    hint: "食堂、外卖、自己做",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 7.5v1.5" />
+      </svg>
+    ),
+  },
+  {
+    type: "grocery",
+    label: "买菜小票",
+    hint: "只记花销",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H6.5" />
+        <circle cx="9.5" cy="20" r="1.3" />
+        <circle cx="16.5" cy="20" r="1.3" />
+      </svg>
+    ),
+  },
 ];
 
 export default function LogPage() {
@@ -31,6 +65,8 @@ export default function LogPage() {
   // "" = not a dining hall. Defaults to the hall saved in settings; the chips override per record.
   const [hall, setHall] = useState("");
   const startTs = useRef(0); // set in useEffect: Date.now() must not run during prerender
+  const voiceBase = useRef(""); // text already in the box when a voice session starts
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     startTs.current = Date.now();
@@ -41,15 +77,19 @@ export default function LogPage() {
     });
   }, []);
 
+  const currency = currencyOf(settings?.currency);
+  const sym = CURRENCIES[currency].symbol;
+
   async function runEstimate(body: { type: InputType; content: string }, preview?: string) {
     setPhase({ kind: "loading", inputType: body.type, preview });
     // Dining-hall context applies to plates and sentences, never to receipts.
     const withHall = hall && (body.type === "photo" || body.type === "text") ? { ...body, dining_hall: hall } : body;
+    const payload = { ...withHall, currency };
     try {
       const res = await fetch("/api/estimate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(withHall),
+        body: JSON.stringify(payload),
       });
       const data = (await res.json()) as EstimateResponse;
       if (!data.ok) {
@@ -109,8 +149,20 @@ export default function LogPage() {
     router.push("/");
   }
 
+  function onVoiceStart() {
+    voiceBase.current = text.trim();
+    void logEvent("record_start", { voice: true });
+  }
+  function onVoiceText(t: string, final: boolean) {
+    const base = voiceBase.current;
+    setText(base ? `${base} ${t}` : t);
+    if (final) textareaRef.current?.focus();
+  }
+
+  const example = hall ? `例如:炒蛋两勺、烤鸡胸一块、米饭半碗` : `例如:Chipotle 鸡肉碗 ${sym}11.5`;
+
   return (
-    <div className="space-y-5 py-2">
+    <div className="space-y-4 py-2">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">记一餐</h1>
         <button onClick={cancel} className="text-sm text-zinc-500">
@@ -120,34 +172,48 @@ export default function LogPage() {
 
       {phase.kind === "input" && (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2" data-testid="hall-chips">
-            <span className="text-xs text-zinc-500">在食堂?</span>
-            <Chip active={hall === ""} onClick={() => setHall("")} label="不是" />
-            {halls.halls.map((h) => (
-              <Chip key={h.slug} active={hall === h.slug} onClick={() => setHall(h.slug)} label={h.short} />
-            ))}
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {PHOTO_BUTTONS.map((b) => (
-              <label
-                key={b.type}
-                className={`cursor-pointer rounded-2xl p-3 text-left shadow-sm ${
-                  b.type === "receipt" ? "bg-green-600 text-white" : "bg-white"
-                }`}
-              >
-                <PhotoInput type={b.type} onFile={onFile} />
-                <span className="block text-sm font-semibold">{b.label}</span>
-                <span className={`mt-1 block text-[11px] leading-tight ${b.type === "receipt" ? "text-green-100" : "text-zinc-500"}`}>
-                  {b.hint}
-                </span>
-              </label>
-            ))}
-          </div>
+          <section className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-xs font-medium text-zinc-500">在哪吃的?</p>
+            <div className="mt-2 flex flex-wrap gap-2" data-testid="hall-chips">
+              <Chip active={hall === ""} onClick={() => setHall("")} label="不是食堂" />
+              {halls.halls.map((h) => (
+                <Chip key={h.slug} active={hall === h.slug} onClick={() => setHall(h.slug)} label={h.short} />
+              ))}
+            </div>
+            {hall && (
+              <p className="mt-2 text-[11px] leading-snug text-amber-800">
+                会按这家食堂的官方菜品库算每道菜,份数看图估,记得核对。
+              </p>
+            )}
+          </section>
 
-          <div className="space-y-2 rounded-2xl bg-white p-4 shadow-sm">
-            <label className="block text-sm font-medium text-zinc-700">或者一句话</label>
+          <section className="grid grid-cols-3 gap-2">
+            {PHOTO_BUTTONS.map((b) => {
+              const primary = b.type === "receipt";
+              return (
+                <label
+                  key={b.type}
+                  className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-2xl px-2 py-4 text-center shadow-sm transition active:scale-[0.97] ${
+                    primary ? "bg-green-600 text-white" : "bg-white text-zinc-800"
+                  }`}
+                >
+                  <PhotoInput type={b.type} onFile={onFile} />
+                  <span className={primary ? "text-white" : "text-green-700"}>{b.icon}</span>
+                  <span className="text-sm font-semibold">{b.label}</span>
+                  <span className={`text-[11px] leading-tight ${primary ? "text-green-100" : "text-zinc-500"}`}>{b.hint}</span>
+                </label>
+              );
+            })}
+          </section>
+
+          <section className="rounded-2xl bg-white p-4 shadow-sm">
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm font-medium text-zinc-700">或者说一句、打一句</p>
+              <span className="text-[11px] text-zinc-400">{hall ? "说菜名和份数" : "带上价格更好"}</span>
+            </div>
             <textarea
-              rows={2}
+              ref={textareaRef}
+              rows={3}
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => {
@@ -156,22 +222,25 @@ export default function LogPage() {
                   submitText();
                 }
               }}
-              placeholder={hall ? "例如:炒蛋两份、烤鸡胸一块、米饭半碗" : "例如:Chipotle 鸡肉碗 $11.5"}
-              className="w-full rounded-xl border border-zinc-300 px-3 py-2 text-base outline-none focus:border-green-600"
+              placeholder={example}
+              className="mt-2 w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-base outline-none focus:border-green-600 focus:bg-white"
             />
-            <button
-              onClick={submitText}
-              disabled={!text.trim()}
-              className="w-full rounded-xl bg-zinc-900 py-3 font-semibold text-white disabled:opacity-40"
-            >
-              解析
-            </button>
-          </div>
+            <div className="mt-3 flex items-center gap-3">
+              <VoiceButton onStart={onVoiceStart} onText={onVoiceText} />
+              <button
+                onClick={submitText}
+                disabled={!text.trim()}
+                className="h-12 flex-1 rounded-xl bg-green-600 font-semibold text-white transition disabled:bg-zinc-200 disabled:text-zinc-400"
+              >
+                解析
+              </button>
+            </div>
+          </section>
         </div>
       )}
 
       {phase.kind === "loading" && (
-        <div className="flex flex-col items-center gap-3 py-10 text-zinc-500">
+        <div className="flex flex-col items-center gap-3 rounded-2xl bg-white py-10 text-zinc-500 shadow-sm">
           {phase.preview && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={phase.preview} alt="" className="max-h-48 rounded-xl object-contain" />
@@ -211,6 +280,7 @@ export default function LogPage() {
           result={phase.result}
           inputType={phase.inputType}
           defaultAmount={settings?.meal_swipe_usd ?? null}
+          currency={currency}
           onSave={onSave}
           onCancel={cancel}
         />
@@ -225,8 +295,8 @@ function Chip({ active, onClick, label }: { active: boolean; onClick: () => void
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-full border px-3 py-1 text-sm ${
-        active ? "border-amber-500 bg-amber-100 text-amber-900" : "border-zinc-300 bg-white text-zinc-600"
+      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+        active ? "border-amber-500 bg-amber-100 font-medium text-amber-900" : "border-zinc-200 bg-white text-zinc-600"
       }`}
     >
       {label}
