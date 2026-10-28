@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ConfidenceBadge, { confidenceBorder } from "./ConfidenceBadge";
-import type { EstimateResponse } from "@/lib/estimate/schema";
+import type { EstimateResponse, Portion } from "@/lib/estimate/schema";
 import { logEvent, newId } from "@/lib/db";
 import { CURRENCIES, currencyOf, type Currency } from "@/lib/money";
 import type { Confidence, InputType, Meal, Source } from "@/lib/types";
@@ -22,7 +22,13 @@ interface Draft {
   basis: string;
   source: Source;
   corrected: boolean;
+  // one-tap portion follow-up: the estimate's assumed portion and the factor the user picked
+  portion: Portion | null;
+  base: { kl: number; kh: number; pl: number; ph: number };
+  factor: number;
 }
+
+const FACTORS = [0.5, 1, 1.5, 2];
 
 function toDrafts(r: OkResponse): Draft[] {
   if (r.kind !== "meal") return [];
@@ -39,12 +45,21 @@ function toDrafts(r: OkResponse): Draft[] {
     basis: it.basis,
     source: it.source,
     corrected: false,
+    portion: it.portion ?? null,
+    base: { kl: it.kcal_low, kh: it.kcal_high, pl: it.protein_low_g, ph: it.protein_high_g },
+    factor: 1,
   }));
 }
 
 function num(s: string): number | null {
   const n = Number(s);
   return s.trim() === "" || !Number.isFinite(n) ? null : n;
+}
+
+function fmtQty(n: number): string {
+  const r = Math.round(n * 100) / 100;
+  if (r === 0.5) return "半";
+  return Number.isInteger(r) ? String(r) : String(r);
 }
 
 export default function ConfirmCard({
@@ -78,6 +93,24 @@ export default function ConfirmCard({
     const target = drafts.find((d) => d.key === key);
     if (target && !target.corrected) void logEvent("record_corrected", { field, input_type: inputType });
     setDrafts((ds) => ds.map((d) => (d.key === key ? { ...d, [field]: value, corrected: true } : d)));
+  }
+  function setFactor(key: string, factor: number) {
+    void logEvent("record_corrected", { field: "portion", factor, input_type: inputType });
+    setDrafts((ds) =>
+      ds.map((d) =>
+        d.key === key
+          ? {
+              ...d,
+              factor,
+              kcal_low: String(Math.round(d.base.kl * factor)),
+              kcal_high: String(Math.round(d.base.kh * factor)),
+              protein_low_g: String(Math.round(d.base.pl * factor)),
+              protein_high_g: String(Math.round(d.base.ph * factor)),
+              corrected: d.corrected || factor !== 1,
+            }
+          : d,
+      ),
+    );
   }
   function remove(key: string) {
     void logEvent("record_corrected", { field: "remove_item", input_type: inputType });
@@ -125,9 +158,10 @@ export default function ConfirmCard({
         protein_low_g: num(d.protein_low_g) ?? 0,
         protein_high_g: num(d.protein_high_g) ?? 0,
         confidence: d.confidence,
-        basis: d.basis,
+        basis: d.factor !== 1 ? `${d.basis}(份量按 ×${d.factor} 修正)` : d.basis,
         source: d.source,
         user_corrected: d.corrected,
+        portion_factor: d.factor,
       };
     });
     onSave(meals, { corrected: drafts.some((d) => d.corrected) });
@@ -137,20 +171,20 @@ export default function ConfirmCard({
     result.kind === "grocery" ? num(groceryAmount) != null || ingredients.trim() !== "" : drafts.length > 0;
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-zinc-500">
+    <div className="space-y-4 rise">
+      <p className="text-sm text-ink-600">
         {result.kind === "grocery"
           ? "买菜只记花销,不记营养。确认或修改后保存。"
           : "点任意字段可修改。区间是刻意的:估不准就宽一点,不假装精确。"}
       </p>
 
       {result.kind === "grocery" ? (
-        <div className="space-y-3 rounded-2xl border-2 border-solid border-zinc-300 bg-white p-4">
+        <div className="card space-y-3 p-4">
           <Row label="商家">
             <input
               value={groceryMerchant}
               onChange={(e) => { setGroceryMerchant(e.target.value); setGroceryCorrected(true); }}
-              className={inp}
+              className="input-base"
             />
           </Row>
           <Row label={`总金额 ${sym}`}>
@@ -158,7 +192,7 @@ export default function ConfirmCard({
               inputMode="decimal"
               value={groceryAmount}
               onChange={(e) => { setGroceryAmount(e.target.value); setGroceryCorrected(true); }}
-              className={inp}
+              className="input-base"
               data-testid="grocery-amount"
             />
           </Row>
@@ -167,34 +201,70 @@ export default function ConfirmCard({
               rows={5}
               value={ingredients}
               onChange={(e) => { setIngredients(e.target.value); setGroceryCorrected(true); }}
-              className={inp}
+              className="input-base"
             />
           </Row>
         </div>
       ) : (
         drafts.map((d) => (
-          <div key={d.key} className={`space-y-3 rounded-2xl bg-white p-4 ${confidenceBorder(d.confidence)}`} data-testid="confirm-item">
+          <div key={d.key} className={`card space-y-3 p-4 ${confidenceBorder(d.confidence)}`} data-testid="confirm-item">
             <div className="flex items-start justify-between gap-2">
               <input
                 value={d.meal_name}
                 onChange={(e) => edit(d.key, "meal_name", e.target.value)}
-                className="w-full rounded-lg px-1 text-lg font-semibold outline-none focus:bg-zinc-50"
+                className="w-full rounded-lg px-1 text-lg font-semibold outline-none focus:bg-ink-100"
                 aria-label="餐食名"
               />
               {drafts.length > 1 && (
-                <button onClick={() => remove(d.key)} className="shrink-0 text-sm text-zinc-400" aria-label="删除这一项">
+                <button onClick={() => remove(d.key)} className="shrink-0 text-sm text-ink-400" aria-label="删除这一项">
                   删除
                 </button>
               )}
             </div>
             <ConfidenceBadge confidence={d.confidence} source={d.source} />
+
+            {/* Portion follow-up: one tap rescales both ranges. */}
+            <div
+              className={`rounded-xl p-3 ${d.portion?.unsure ? "bg-dining-100" : "bg-ink-100"}`}
+              data-testid="portion-chips"
+            >
+              <p className={`text-xs ${d.portion?.unsure ? "font-medium text-dining-700" : "text-ink-600"}`}>
+                {d.portion
+                  ? d.portion.unsure
+                    ? `份量是看图猜的,按 ${fmtQty(d.portion.assumed)} ${d.portion.unit}估。实际吃了多少?`
+                    : `按 ${fmtQty(d.portion.assumed)} ${d.portion.unit}算。吃得不一样就点一下:`
+                  : "份量不一样就点一下:"}
+              </p>
+              <div className="mt-2 flex gap-2">
+                {FACTORS.map((f) => {
+                  const active = d.factor === f;
+                  const label = d.portion
+                    ? `${fmtQty(d.portion.assumed * f)} ${d.portion.unit}`
+                    : f === 0.5 ? "半份" : `${f} 份`;
+                  return (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => setFactor(d.key, f)}
+                      aria-pressed={active}
+                      className={`flex-1 rounded-lg py-1.5 text-sm transition ${
+                        active ? "bg-ink-900 font-semibold text-white" : "bg-white text-ink-600"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <Row label={`金额 ${sym}`}>
               <input
                 inputMode="decimal"
                 value={d.amount}
                 onChange={(e) => edit(d.key, "amount", e.target.value)}
                 placeholder={inputType === "photo" && defaultAmount ? `默认 ${defaultAmount}` : "没有价格就留空"}
-                className={inp}
+                className="input-base"
                 aria-label="金额"
               />
             </Row>
@@ -211,7 +281,7 @@ export default function ConfirmCard({
                 rows={2}
                 value={d.basis}
                 onChange={(e) => edit(d.key, "basis", e.target.value)}
-                className={`${inp} text-sm`}
+                className="input-base text-sm"
                 aria-label="依据"
               />
             </Row>
@@ -220,14 +290,10 @@ export default function ConfirmCard({
       )}
 
       <div className="flex gap-3">
-        <button onClick={onCancel} className="flex-1 rounded-xl border border-zinc-300 bg-white py-3 font-medium">
+        <button onClick={onCancel} className="btn-secondary flex-1 py-3">
           取消
         </button>
-        <button
-          onClick={save}
-          disabled={!canSave}
-          className="flex-[2] rounded-xl bg-green-600 py-3 font-semibold text-white disabled:opacity-40"
-        >
+        <button onClick={save} disabled={!canSave} className="btn-primary flex-[2] py-3">
           确认保存
         </button>
       </div>
@@ -235,12 +301,10 @@ export default function ConfirmCard({
   );
 }
 
-const inp = "w-full rounded-lg border border-zinc-200 px-2 py-1.5 text-base outline-none focus:border-green-600";
-
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs text-zinc-500">{label}</span>
+      <span className="label-xs mb-1 block">{label}</span>
       {children}
     </label>
   );
@@ -251,9 +315,9 @@ function RangeInput({
 }: { low: string; high: string; onLow: (v: string) => void; onHigh: (v: string) => void }) {
   return (
     <div className="flex items-center gap-1">
-      <input inputMode="numeric" value={low} onChange={(e) => onLow(e.target.value)} className={`${inp} text-center`} aria-label="下限" />
-      <span className="text-zinc-400">–</span>
-      <input inputMode="numeric" value={high} onChange={(e) => onHigh(e.target.value)} className={`${inp} text-center`} aria-label="上限" />
+      <input inputMode="numeric" value={low} onChange={(e) => onLow(e.target.value)} className="input-base text-center" aria-label="下限" />
+      <span className="text-ink-400">–</span>
+      <input inputMode="numeric" value={high} onChange={(e) => onHigh(e.target.value)} className="input-base text-center" aria-label="上限" />
     </div>
   );
 }

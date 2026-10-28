@@ -6,7 +6,8 @@ import type { EstimateInput } from "./schema";
 // PROMPT_VERSION is logged by the eval script so each iteration is traceable in eval/log.md.
 // v2 (2026-10-28): user = 在校大学生; dining-hall menu tier (dining_match); unverified chains
 // are no longer presented as official.
-export const PROMPT_VERSION = "v2";
+// v3 (2026-10-28): per-item `portion` (assumed amount + unsure flag) for the one-tap portion follow-up.
+export const PROMPT_VERSION = "v3";
 
 const RULES = `你是「蛋白钱包」的营养与消费解析器。用户是美国校园里生活费有限、想增肌的在校大学生,会给你一句话、一张餐食照片、一张餐厅小票,或一张买菜小票。任务:识别吃了什么、花了多少钱,并给出热量和蛋白质的**区间**估算。
 
@@ -29,7 +30,8 @@ const RULES = `你是「蛋白钱包」的营养与消费解析器。用户是�
 4. 多菜品:小票上每道菜单独一项(items 数组),饮料、小食也各一项;税和小费不作为 item,但 total_usd 填小票总额。一句话里提到多样食物也拆成多项。
 5. 识别失败:照片看不清、不是食物、小票无法读取时,error 填一句中文原因,items 留空,绝不编造。
 6. 买菜小票(grocery):只解析 merchant、total_usd、grocery_ingredients(食材清单),items 留空,不做营养估算。其他类型 grocery_ingredients 填 null。
-7. 文案:meal_name 用简短中文(可保留品牌或菜名原文),basis 一句中文说明依据,例如"Chipotle 官方营养表,按鸡肉+白米+黑豆估算"、"Baker 食堂菜单:炒蛋两份 + 火鸡培根三片"或"家常炒菜目测,份量约一盘"。merchant 填商家名原文(食堂填食堂名),不确定则 null。
+7. 份量:每个 item 的 portion 填你估算时假定的份量,unit 用用户一眼能懂的中文量词(勺、盘、碗、块、片、杯、份),assumed 填数量(可用小数)。只要份量是看图猜的(照片、食堂餐盘、文字里没说多少)unsure 填 true;小票上的标准份、文字里写明了数量、连锁的固定份才填 false。宁可 unsure。
+8. 文案:meal_name 用简短中文(可保留品牌或菜名原文),basis 一句中文说明依据,例如"Chipotle 官方营养表,按鸡肉+白米+黑豆估算"、"Baker 食堂菜单:炒蛋两份 + 火鸡培根三片"或"家常炒菜目测,份量约一盘"。merchant 填商家名原文(食堂填食堂名),不确定则 null。
 
 ## 连锁参考表(每份;标 [未核实] 的连锁数据来自记忆,代码会降级为中置信度)
 `;

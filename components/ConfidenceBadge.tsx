@@ -4,16 +4,16 @@ export const CONF_LABEL: Record<Confidence, string> = { high: "高", medium: "�
 
 /** PRD: high = solid border; medium/low = dashed border. */
 export function confidenceBorder(conf: Confidence | null): string {
-  return conf === "high" ? "border-2 border-solid border-green-600" : "border-2 border-dashed border-zinc-400";
+  return conf === "high" ? "border-2 border-solid border-brand-500" : "border-2 border-dashed border-ink-200";
 }
 
 // One label per data tier so the user can see where a number came from.
 const SOURCE_STYLE: Record<Source, { label: string; cls: string }> = {
-  official_table: { label: "官方数据", cls: "bg-green-100 text-green-800" },
-  dining_menu: { label: "食堂菜单", cls: "bg-amber-100 text-amber-800" },
+  official_table: { label: "官方数据", cls: "bg-brand-100 text-brand-700" },
+  dining_menu: { label: "食堂菜单", cls: "bg-dining-100 text-dining-700" },
   reference_table: { label: "参考数据·未核实", cls: "bg-sky-100 text-sky-800" },
-  visual_estimate: { label: "目测估算", cls: "bg-zinc-100 text-zinc-600" },
-  text_estimate: { label: "目测估算", cls: "bg-zinc-100 text-zinc-600" },
+  visual_estimate: { label: "目测估算", cls: "bg-ink-100 text-ink-600" },
+  text_estimate: { label: "目测估算", cls: "bg-ink-100 text-ink-600" },
 };
 
 export default function ConfidenceBadge({

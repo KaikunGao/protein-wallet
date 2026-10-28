@@ -71,6 +71,7 @@ const base: ModelOutput = {
         ],
       },
       dining_match: null,
+      portion: { unit: "份", assumed: 1, unsure: false },
       kcal_low: 400,
       kcal_high: 700,
       protein_low_g: 30,
@@ -281,6 +282,18 @@ test("mock dining photo pipeline end to end", () => {
   if (!r.ok || r.kind !== "meal") throw new Error("bad");
   assert.equal(r.items.length, 2);
   assert.ok(r.items.every((i) => i.source === "dining_menu" && i.confidence === "medium"));
+});
+
+test("portion passes through on every tier", () => {
+  const out: ModelOutput = JSON.parse(JSON.stringify(base));
+  out.items[0].portion = { unit: "勺", assumed: 2, unsure: true };
+  const r = postProcess(out, { type: "text", content: "Chipotle 鸡肉碗 $11.5" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  assert.deepEqual(r.items[0].portion, { unit: "勺", assumed: 2, unsure: true });
+  out.items[0].chain_match = null;
+  const r2 = postProcess(out, { type: "photo", content: "x".repeat(200) });
+  if (!r2.ok || r2.kind !== "meal") throw new Error("bad");
+  assert.equal(r2.items[0].portion?.unsure, true);
 });
 
 test("prompt table renders every chain", () => {

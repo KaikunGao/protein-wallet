@@ -1,4 +1,6 @@
-import type { EstimateInput, ModelOutput } from "./schema";
+import type { EstimateInput, ModelOutput, Portion } from "./schema";
+
+const PORTION: Portion = { unit: "份", assumed: 1, unsure: false };
 
 // Dev-only canned model outputs (ESTIMATE_MOCK=1) so the UI flow can be exercised
 // without an API key. Goes through the same postProcess as real responses.
@@ -34,6 +36,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: null,
           kcal_low: 600, kcal_high: 720, protein_low_g: 46, protein_high_g: 56,
           confidence: "high", basis: "Chipotle 官方营养表",
+          portion: PORTION,
         },
         {
           meal_name: "薯片配牛油果酱",
@@ -42,6 +45,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: null,
           kcal_low: 700, kcal_high: 840, protein_low_g: 8, protein_high_g: 10,
           confidence: "high", basis: "Chipotle 官方营养表",
+          portion: PORTION,
         },
       ],
       grocery_ingredients: null,
@@ -61,6 +65,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: { hall: input.dining_hall, items: [{ name: "Scrambled Eggs", qty: 2 }] },
           kcal_low: 300, kcal_high: 500, protein_low_g: 20, protein_high_g: 32,
           confidence: "medium", basis: "食堂菜品库:炒蛋两份",
+          portion: PORTION,
         },
         {
           meal_name: "培根",
@@ -69,6 +74,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: { hall: input.dining_hall, items: [{ name: "Bacon", qty: 1 }] },
           kcal_low: 100, kcal_high: 200, protein_low_g: 8, protein_high_g: 14,
           confidence: "medium", basis: "食堂菜品库:培根一份(3 片)",
+          portion: PORTION,
         },
       ],
       grocery_ingredients: null,
@@ -87,6 +93,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: null,
           kcal_low: 550, kcal_high: 850, protein_low_g: 18, protein_high_g: 30,
           confidence: "low", basis: "家常菜目测估算,份量约一盘",
+          portion: PORTION,
         },
       ],
       grocery_ingredients: null,
@@ -119,6 +126,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
           dining_match: null,
           kcal_low: 600, kcal_high: 720, protein_low_g: 46, protein_high_g: 56,
           confidence: "high", basis: "Chipotle 官方营养表,按常见配料估算",
+          portion: PORTION,
         },
       ],
       grocery_ingredients: null,
@@ -136,6 +144,7 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
         dining_match: null,
         kcal_low: 500, kcal_high: 800, protein_low_g: 25, protein_high_g: 40,
         confidence: "medium", basis: "按文字描述估算(mock)",
+          portion: PORTION,
       },
     ],
     grocery_ingredients: null,

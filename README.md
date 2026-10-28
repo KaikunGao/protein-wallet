@@ -38,10 +38,10 @@ npm run dev                  # http://localhost:3000
 
 ```
 app/            页面:/ 今日  /log 记录流  /weekly 周报  /settings 设置  /api/estimate 估算路由
-components/     Onboarding、ConfirmCard(可编辑确认卡)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
+components/     Onboarding、ConfirmCard(可编辑确认卡 + 一键份量修正)、MealEditor(改已保存记录)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
-lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报;lib/money.ts 货币(美元 / 人民币,只管符号和 ¢/g 或 分/g,不做汇率)
+lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报;lib/money.ts 货币(美元 / 人民币,只管符号和 ¢/g 或 分/g,不做汇率);lib/share-image.ts 周报分享图(canvas 1080×1350)
 data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
 data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)
@@ -58,7 +58,8 @@ docs/使用说明.md  给种子用户的一页说明
 { "ok": true, "kind": "meal", "merchant": "Chipotle", "total_usd": 11.5,
   "items": [{ "meal_name": "鸡肉碗", "amount_usd": 11.5, "kcal_low": 594, "kcal_high": 726,
               "protein_low_g": 46, "protein_high_g": 56, "confidence": "high",
-              "basis": "Chipotle 官方营养表:Chicken + White Rice + ...", "source": "official_table" }] }
+              "basis": "Chipotle 官方营养表:Chicken + White Rice + ...", "source": "official_table",
+              "portion": { "unit": "份", "assumed": 1, "unsure": false } }] }
 ```
 
 失败时 `{ ok: false, error, retryable }`。模型输出用 zod schema 校验,失败自动重试一次。
@@ -94,4 +95,5 @@ docs/使用说明.md  给种子用户的一页说明
 | 2.4 | 芝大食堂菜品库 + 记录时选食堂(第三级数据源) | 完成 2026-10-28;菜品库是手动快照,刷新方法见 data/dining/README.md |
 | 3.1 – 3.2 | 评测集结构 + 评测脚本 | 完成;30 张照片按 eval/samples/PLAN.md 采集,拍完才有拍照基线 |
 | 3.3 | 周报页 | 完成 |
+| 2.5 | 语音输入、货币选择、份量追问(模型给 portion,确认卡一键 ×0.5/1/1.5/2)、再来一份、记录可编辑、餐卡算每次刷卡单价、周报分享图、整体视觉重做 | 完成 2026-10-28 |
 | 4.x | 种子用户 | 运营阶段,见 docs/使用说明.md |

@@ -114,6 +114,7 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
             : `${chain.merchant} 参考营养表(未逐行核实):${comps.join(" + ")}`,
           source: official ? "official_table" : "reference_table",
           matched_components: comps,
+          portion: it.portion ?? null,
         };
       }
     }
@@ -139,6 +140,7 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
           basis: `${hall.short} 食堂菜品库(官方每份数据,份数目测):${comps.join(" + ")}`,
           source: "dining_menu",
           matched_components: comps,
+          portion: it.portion ?? null,
         };
       }
       diningMiss = true;
@@ -168,6 +170,7 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
       confidence,
       basis,
       source: fallbackSource,
+      portion: it.portion ?? null,
     };
   });
 

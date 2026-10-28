@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* Design tokens. One green, one amber (dining), warm neutrals. */
+@theme {
+  --color-brand-50: #eef8f1;
+  --color-brand-100: #d6efdf;
+  --color-brand-200: #a9dcbd;
+  --color-brand-500: #1f9d5a;
+  --color-brand-600: #15803d;
+  --color-brand-700: #126b35;
+  --color-brand-900: #0b3d20;
+  --color-ink-900: #16201b;
+  --color-ink-600: #4b5853;
+  --color-ink-400: #8a948f;
+  --color-ink-200: #dfe5e1;
+  --color-ink-100: #eef1ee;
+  --color-paper: #f5f7f4;
+  --color-dining-100: #fdf0d5;
+  --color-dining-700: #9a5b00;
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(16 32 24 / 0.04), 0 10px 30px -14px rgb(16 32 24 / 0.18);
+}
+
 :root {
   color-scheme: light;
 }
@@ -11,10 +32,74 @@ body {
     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
+  background: var(--color-paper);
+  color: var(--color-ink-900);
 }
 
 input,
 button,
-textarea {
+textarea,
+select {
   font: inherit;
+}
+
+/* Reusable surfaces */
+@utility card {
+  border-radius: var(--radius-card);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+@utility card-hero {
+  border-radius: var(--radius-card);
+  background: linear-gradient(145deg, #15803d 0%, #1f9d5a 55%, #2fb56f 100%);
+  color: #fff;
+  box-shadow: 0 14px 34px -16px rgb(21 128 61 / 0.6);
+}
+@utility btn-primary {
+  border-radius: 1rem;
+  background: var(--color-brand-600);
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-primary:disabled {
+  background: var(--color-ink-200);
+  color: var(--color-ink-400);
+}
+@utility btn-secondary {
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid var(--color-ink-200);
+  color: var(--color-ink-900);
+  font-weight: 500;
+}
+@utility input-base {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid var(--color-ink-200);
+  background: #fff;
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  outline: none;
+}
+.input-base:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px rgb(31 157 90 / 0.15);
+}
+@utility label-xs {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-400);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise {
+  animation: rise 0.25s ease both;
 }

@@ -3,6 +3,13 @@ import type { Confidence, Source } from "../types";
 
 export const ConfidenceSchema = z.enum(["high", "medium", "low"]);
 
+export const PortionSchema = z.object({
+  unit: z.string(), // 勺 / 盘 / 碗 / 块 / 片 / 份 ...
+  assumed: z.number(), // how many of `unit` the ranges are for
+  unsure: z.boolean(), // true = ask the user
+});
+export type Portion = z.infer<typeof PortionSchema>;
+
 // ---- What the model returns (structured output) ----
 // The model always fills its own range; `chain_match` lets the code replace
 // that range with arithmetic over the official table (two-level strategy).
@@ -29,6 +36,10 @@ export const ModelItemSchema = z.object({
   protein_high_g: z.number(),
   confidence: ConfidenceSchema,
   basis: z.string(),
+  // The portion the estimate assumes ("2 勺", "1 盘"), and whether the model is
+  // unsure about it. The confirm card turns this into one-tap portion choices:
+  // the cheapest fix for the biggest error source in photo estimates.
+  portion: PortionSchema.nullable(),
 });
 
 export const ModelOutputSchema = z.object({
@@ -68,6 +79,7 @@ export interface EstimateItem {
   basis: string;
   source: Source;
   matched_components?: string[];
+  portion?: Portion | null;
 }
 
 export type EstimateResponse =

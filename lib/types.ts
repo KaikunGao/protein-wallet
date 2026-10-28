@@ -14,7 +14,8 @@ export type Source =
   | "dining_menu"
   | "visual_estimate"
   | "text_estimate";
-export type InputType = "text" | "photo" | "receipt" | "grocery";
+// "repeat" = one-tap copy of a recent meal from the home page (no model call).
+export type InputType = "text" | "photo" | "receipt" | "grocery" | "repeat";
 // DECISION: grocery purchases live in the same `meals` table with kind="grocery"
 // and null nutrition fields, instead of a fourth table. Weekly spend sums every
 // row; protein sums skip grocery rows.
@@ -36,6 +37,7 @@ export interface Meal {
   basis: string;
   source: Source | null;
   user_corrected: boolean;
+  portion_factor?: number; // one-tap portion correction applied on the confirm card (1 = as estimated)
   ingredients?: string[]; // grocery only: archived shopping list
   photo_ref?: string; // reserved; v1 does not persist photos
 }
@@ -47,6 +49,7 @@ export interface Settings {
   meal_swipe_usd?: number; // optional default price for dining-hall swipes
   dining_hall?: string; // slug of the hall the user usually eats at (data/dining/uchicago/halls.json)
   currency?: Currency; // absent = USD (records made before the setting existed)
+  meal_plan?: { cost: number; swipes: number }; // semester meal plan; meal_swipe_usd = cost / swipes
   created_at: number;
 }
 
@@ -58,6 +61,8 @@ export type EventName =
   | "record_corrected"
   | "record_saved"
   | "record_cancelled"
+  | "record_repeated"
+  | "meal_edited"
   | "meal_deleted"
   | "export"
   | "import";

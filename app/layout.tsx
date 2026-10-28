@@ -25,13 +25,13 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#16a34a",
+  themeColor: "#15803d",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full bg-zinc-50 text-zinc-900">
+      <body className="min-h-full bg-paper text-ink-900">
         {/* DECISION: single column, max 400px wide, phone-first per PRD */}
         <div className="mx-auto flex min-h-dvh w-full max-w-[400px] flex-col">
           <main className="flex-1 px-4 pb-24 pt-[max(1rem,env(safe-area-inset-top))]">

@@ -70,6 +70,11 @@ export function listMealsByWeek(d: Date | number = Date.now()): Promise<Meal[]> 
   return listMealsBetween(startOfWeek(d), endOfWeek(d));
 }
 
+/** Meals from `since` (epoch ms) to now, oldest first. Used for the "再来一份" shortcuts. */
+export function listMealsSince(since: number): Promise<Meal[]> {
+  return listMealsBetween(new Date(since), new Date(Date.now() + 1));
+}
+
 export async function listAllMeals(): Promise<Meal[]> {
   const rows = await (await db()).getAll("meals");
   return rows.sort((a, b) => a.ts - b.ts);
