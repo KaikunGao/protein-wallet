@@ -12,6 +12,7 @@ import {
 } from "@/lib/db";
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { ExportBundle, Settings } from "@/lib/types";
+import halls from "@/data/dining/uchicago/halls.json";
 
 export default function SettingsPage() {
   const [loaded, setLoaded] = useState(false);
@@ -20,6 +21,7 @@ export default function SettingsPage() {
   const [target, setTarget] = useState("");
   const [budget, setBudget] = useState("");
   const [swipe, setSwipe] = useState("");
+  const [hall, setHall] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [counts, setCounts] = useState({ meals: 0, events: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,7 @@ export default function SettingsPage() {
         setTarget(String(s.protein_target_g));
         setBudget(String(s.weekly_budget_usd));
         setSwipe(s.meal_swipe_usd ? String(s.meal_swipe_usd) : "");
+        setHall(s.dining_hall ?? "");
       }
       await refreshCounts();
       setLoaded(true);
@@ -60,6 +63,7 @@ export default function SettingsPage() {
       protein_target_g: target ? Number(target) : null,
       weekly_budget_usd: Number(budget),
       meal_swipe_usd: swipe ? Number(swipe) : null,
+      dining_hall: hall || null,
       created_at: existing?.created_at,
     });
     await saveSettings(s);
@@ -98,6 +102,7 @@ export default function SettingsPage() {
         setTarget(String(s.protein_target_g));
         setBudget(String(s.weekly_budget_usd));
         setSwipe(s.meal_swipe_usd ? String(s.meal_swipe_usd) : "");
+        setHall(s.dining_hall ?? "");
       }
       await refreshCounts();
       void logEvent("import", r);
@@ -149,6 +154,16 @@ export default function SettingsPage() {
             placeholder="例如 12"
             className={inputCls}
           />
+        </Field>
+        <Field label="常去的食堂(可选)" hint="记一餐时默认选中;选了食堂,拍餐盘会按食堂官方菜品库算">
+          <select value={hall} onChange={(e) => setHall(e.target.value)} className={inputCls} data-testid="hall-select">
+            <option value="">不设</option>
+            {halls.halls.map((h) => (
+              <option key={h.slug} value={h.slug}>
+                {h.short} · {h.name}
+              </option>
+            ))}
+          </select>
         </Field>
         <button
           onClick={onSave}

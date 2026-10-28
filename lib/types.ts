@@ -2,7 +2,17 @@
 // eval script (plain Node) can import them.
 
 export type Confidence = "high" | "medium" | "low";
-export type Source = "official_table" | "visual_estimate" | "text_estimate";
+// DECISION (2026-10-28): three data tiers above pure guessing.
+//  official_table  chain rows checked line by line against the chain's own site
+//  reference_table chain rows entered from memory / only spot-checked (never "官方")
+//  dining_menu     campus dining-hall menu with official per-portion nutrition;
+//                  the portion count is still the model's visual guess
+export type Source =
+  | "official_table"
+  | "reference_table"
+  | "dining_menu"
+  | "visual_estimate"
+  | "text_estimate";
 export type InputType = "text" | "photo" | "receipt" | "grocery";
 // DECISION: grocery purchases live in the same `meals` table with kind="grocery"
 // and null nutrition fields, instead of a fourth table. Weekly spend sums every
@@ -34,6 +44,7 @@ export interface Settings {
   protein_target_g: number;
   weekly_budget_usd: number;
   meal_swipe_usd?: number; // optional default price for dining-hall swipes
+  dining_hall?: string; // slug of the hall the user usually eats at (data/dining/uchicago/halls.json)
   created_at: number;
 }
 

@@ -2,7 +2,9 @@
 // Run: npx tsx scripts/test-estimate.ts
 import assert from "node:assert/strict";
 import { findChain, resolveComponents, officialTotals, chainsForPrompt } from "../lib/estimate/chains";
+import { catalogForPrompt, displayName, findHall, resolveDiningItems, diningTotals, CATALOG, CATALOG_ENTRIES } from "../lib/estimate/dining";
 import { enforceRange, postProcess } from "../lib/estimate/estimate";
+import { systemBlocks } from "../lib/estimate/prompt";
 import { mockModelOutput } from "../lib/estimate/mock";
 import { ModelOutputSchema, type ModelOutput } from "../lib/estimate/schema";
 
@@ -68,6 +70,7 @@ const base: ModelOutput = {
           { name: "Black Beans", qty: 1 },
         ],
       },
+      dining_match: null,
       kcal_low: 400,
       kcal_high: 700,
       protein_low_g: 30,
@@ -155,6 +158,129 @@ test("mock text pipeline end to end", () => {
 test("ModelOutputSchema accepts a well-formed response", () => {
   assert.ok(ModelOutputSchema.safeParse(base).success);
   assert.ok(!ModelOutputSchema.safeParse({ ...base, items: [{ meal_name: "x" }] }).success);
+});
+
+test("unverified chain match -> reference_table, medium, ±15%, never 官方", () => {
+  const out: ModelOutput = JSON.parse(JSON.stringify(base));
+  out.merchant = "Panda Express";
+  out.items[0].chain_match = { merchant: "Panda Express", components: [{ name: "Orange Chicken", qty: 1 }] };
+  const r = postProcess(out, { type: "text", content: "Panda Express orange chicken $9" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  const it = r.items[0];
+  assert.equal(findChain("Panda Express")?.data_status, "unverified");
+  assert.equal(it.source, "reference_table");
+  assert.equal(it.confidence, "medium");
+  assert.match(it.basis, /参考营养表/);
+  assert.doesNotMatch(it.basis, /官方/);
+  const oc = findChain("Panda Express")!.items.find((i) => i.name === "Orange Chicken")!;
+  assert.deepEqual([it.protein_low_g, it.protein_high_g], enforceRange(oc.protein_g * 0.85, oc.protein_g * 1.15, "medium"));
+});
+
+test("spot-checked chain is also not 官方 (partial)", () => {
+  assert.equal(findChain("Chick-fil-A")?.data_status, "partial");
+  assert.equal(findChain("chipotle")?.data_status, "official");
+  const t = chainsForPrompt();
+  assert.ok(t.includes("### Panda Express [未核实]"));
+  assert.ok(t.includes("### Chipotle (aliases"));
+});
+
+test("findHall resolves slugs, short names and aliases", () => {
+  assert.equal(findHall("baker-dining-commons")?.short, "Baker");
+  assert.equal(findHall("Baker")?.slug, "baker-dining-commons");
+  assert.equal(findHall("Bartlett Dining Commons")?.short, "Bartlett");
+  assert.equal(findHall("woodlawn")?.short, "Woodlawn");
+  assert.equal(findHall("Hutchinson Commons"), null);
+  assert.equal(findHall(undefined), null);
+});
+
+test("catalog: duplicate names get a portion suffix; same name+portion collapses to a range", () => {
+  const oats = CATALOG.filter((i) => i.name === "Oatmeal");
+  assert.ok(oats.length >= 2);
+  assert.equal(displayName(oats[0]), `Oatmeal (${oats[0].portion})`);
+  const r = resolveDiningItems([
+    { name: displayName(oats[1]), qty: 1 },
+    { name: "oatmeal", qty: 2 }, // bare name -> first row
+    { name: "Scrambled Eggs (1/2 cup)", qty: 0.5 }, // one portion only -> display is bare; suffix tolerated
+    { name: "Turkey Bacon", qty: 1 }, // not in catalog
+    { name: "Bacon", qty: 99 }, // qty clamped
+  ]);
+  assert.equal(r.resolved[0].entry.variants[0].id, oats[1].id);
+  assert.equal(r.resolved[1].entry.variants[0].id, oats[0].id);
+  assert.deepEqual(r.unresolved, ["Turkey Bacon"]);
+  assert.equal(r.resolved[3].qty, 6);
+  // two Scrambled Eggs recipes share the 1/2 cup portion (210/14 checked on the site, 100/10 elsewhere)
+  assert.deepEqual(r.resolved[2].entry.kcal, [100, 210]);
+  assert.deepEqual(r.resolved[2].entry.protein_g, [10, 14]);
+  assert.equal(r.resolved[2].entry.variants.length, 2);
+  assert.deepEqual(r.resolved[3].entry.kcal, [150, 150]); // Bacon: single recipe -> point
+  const ents = CATALOG_ENTRIES.filter((e) => e.name === "Scrambled Eggs");
+  assert.equal(ents.length, 1);
+  assert.equal(ents[0].display, "Scrambled Eggs");
+});
+
+test("dining match -> dining_menu source, medium, ±20% over official per-portion rows", () => {
+  const out: ModelOutput = JSON.parse(JSON.stringify(base));
+  out.merchant = "Baker";
+  out.items[0] = {
+    ...out.items[0],
+    chain_match: null,
+    dining_match: { hall: "Baker", items: [{ name: "Scrambled Eggs", qty: 2 }, { name: "Bacon", qty: 1 }] },
+    confidence: "high",
+  };
+  const r = postProcess(out, { type: "photo", content: "x".repeat(200), dining_hall: "baker-dining-commons" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  const it = r.items[0];
+  assert.equal(it.source, "dining_menu");
+  assert.equal(it.confidence, "medium");
+  assert.equal(it.merchant, "Baker");
+  const t = diningTotals(resolveDiningItems(out.items[0].dining_match!.items));
+  assert.deepEqual(t, { kcal: [100 * 2 + 150, 210 * 2 + 150], protein_g: [10 * 2 + 11, 14 * 2 + 11] });
+  assert.deepEqual([it.protein_low_g, it.protein_high_g], enforceRange(t.protein_g[0] * 0.8, t.protein_g[1] * 1.2, "medium"));
+  assert.match(it.basis, /Baker 食堂菜品库/);
+  assert.deepEqual(it.matched_components, ["Scrambled Eggs×2", "Bacon"]);
+});
+
+test("dining match with an unknown item falls back to the model range (photo -> low)", () => {
+  const out: ModelOutput = JSON.parse(JSON.stringify(base));
+  out.items[0] = {
+    ...out.items[0],
+    chain_match: null,
+    dining_match: { hall: "Baker", items: [{ name: "Mystery Stew", qty: 1 }] },
+    basis: "目测",
+  };
+  const r = postProcess(out, { type: "photo", content: "x".repeat(200), dining_hall: "Baker" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  assert.equal(r.items[0].source, "visual_estimate");
+  assert.equal(r.items[0].confidence, "low");
+  assert.match(r.items[0].basis, /菜品库里没有/);
+});
+
+test("dining_match is ignored without a dining_hall on the request", () => {
+  const out: ModelOutput = JSON.parse(JSON.stringify(base));
+  out.items[0] = { ...out.items[0], chain_match: null, dining_match: { hall: "Baker", items: [{ name: "Scrambled Eggs", qty: 2 }] } };
+  const r = postProcess(out, { type: "photo", content: "x".repeat(200) });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  assert.equal(r.items[0].source, "visual_estimate");
+  assert.equal(r.items[0].confidence, "low");
+});
+
+test("system prompt adds the catalog block only for dining requests", () => {
+  assert.equal(systemBlocks({ type: "text", content: "x" }).length, 1);
+  assert.equal(systemBlocks({ type: "text", content: "x", dining_hall: "Baker" }).length, 2);
+  assert.equal(systemBlocks({ type: "receipt", content: "x".repeat(200), dining_hall: "Baker" }).length, 1);
+  const c = catalogForPrompt();
+  assert.ok(c.includes("- Scrambled Eggs | 1/2 cup | 100-210 kcal | 10-14 g"));
+  assert.ok(c.includes("- Oatmeal (1 ladle-4oz) | 1 ladle-4oz | 90 kcal | 3 g"));
+  assert.ok(c.includes("- Bacon | 3 slice | 150 kcal | 11 g"));
+  console.log(`     (catalog block ~${Math.round(c.length / 4)} tokens est., ${CATALOG_ENTRIES.length} entries from ${CATALOG.length} rows)`);
+});
+
+test("mock dining photo pipeline end to end", () => {
+  const input = { type: "photo" as const, content: "x".repeat(200), dining_hall: "baker-dining-commons" };
+  const r = postProcess(mockModelOutput(input), input);
+  if (!r.ok || r.kind !== "meal") throw new Error("bad");
+  assert.equal(r.items.length, 2);
+  assert.ok(r.items.every((i) => i.source === "dining_menu" && i.confidence === "medium"));
 });
 
 test("prompt table renders every chain", () => {

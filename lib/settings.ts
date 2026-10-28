@@ -10,6 +10,7 @@ export function buildSettings(input: {
   weekly_budget_usd: number;
   protein_target_g?: number | null;
   meal_swipe_usd?: number | null;
+  dining_hall?: string | null;
   created_at?: number;
 }): Settings {
   const s: Settings = {
@@ -22,5 +23,6 @@ export function buildSettings(input: {
   };
   if (input.weight_kg && input.weight_kg > 0) s.weight_kg = input.weight_kg;
   if (input.meal_swipe_usd && input.meal_swipe_usd > 0) s.meal_swipe_usd = input.meal_swipe_usd;
+  if (input.dining_hall) s.dining_hall = input.dining_hall;
   return s;
 }

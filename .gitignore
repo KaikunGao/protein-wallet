@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 /eval/results/*.json
 !/eval/results/.gitkeep
+
+# eval photos are personal and large: keep them out of git (truth.json already is)
+/eval/samples/photos/*
+!/eval/samples/photos/.gitkeep

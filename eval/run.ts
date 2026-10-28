@@ -6,15 +6,17 @@ import { estimate, postProcess, ESTIMATE_MODEL } from "../lib/estimate/estimate"
 import { mockModelOutput } from "../lib/estimate/mock";
 import { PROMPT_VERSION } from "../lib/estimate/prompt";
 import { findChain } from "../lib/estimate/chains";
+import { findHall } from "../lib/estimate/dining";
 import type { EstimateInput, EstimateResponse } from "../lib/estimate/schema";
 import type { Confidence } from "../lib/types";
 
 interface Sample {
   id: string;
   type: EstimateInput["type"];
-  set: "chain" | "aux";
+  set: "chain" | "dining" | "aux";
   content?: string;
   file?: string;
+  dining_hall?: string; // dining set: hall slug sent with the request
   merchant: string | null;
   kcal: number;
   protein_g: number;
@@ -69,11 +71,12 @@ const concurrency = Number(flag("--concurrency") ?? 2);
 const RANK: Record<Confidence, number> = { low: 0, medium: 1, high: 2 };
 
 function toInput(s: Sample): EstimateInput {
-  if (s.type === "text") return { type: "text", content: s.content ?? "" };
+  const hall = s.dining_hall ? { dining_hall: s.dining_hall } : {};
+  if (s.type === "text") return { type: "text", content: s.content ?? "", ...hall };
   const file = path.join(ROOT, "samples", s.file ?? "");
   const ext = path.extname(file).toLowerCase();
   const media_type = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
-  return { type: s.type, content: fs.readFileSync(file).toString("base64"), media_type };
+  return { type: s.type, content: fs.readFileSync(file).toString("base64"), media_type, ...hall };
 }
 
 function score(s: Sample, r: EstimateResponse, ms: number): Row {
@@ -93,8 +96,10 @@ function score(s: Sample, r: EstimateResponse, ms: number): Row {
   const width = (lo: number, hi: number) => (hi + lo > 0 ? (hi - lo) / ((hi + lo) / 2) : null);
   const truthChain = findChain(s.merchant);
   const gotChain = findChain(r.merchant);
+  const truthHall = findHall(s.merchant);
   const merchant_ok =
     s.merchant == null ? r.merchant == null : truthChain ? gotChain?.merchant === truthChain.merchant
+    : truthHall ? findHall(r.merchant)?.slug === truthHall.slug
     : (r.merchant ?? "").toLowerCase().includes(s.merchant.toLowerCase());
   const gotAmount = r.total_usd ?? (r.items.length ? r.items.reduce((a, i) => a + (i.amount_usd ?? 0), 0) || null : null);
   const amount_ok = s.amount_usd == null ? gotAmount == null : gotAmount != null && Math.abs(gotAmount - s.amount_usd) < 0.011;
@@ -117,9 +122,9 @@ function report(rows: Row[]): string {
   const okRows = rows.filter((r) => r.ok);
   const by = (f: (r: Row) => boolean) => okRows.filter(f);
   const lines: string[] = [];
-  lines.push(`| 指标 | 全部 | chain | aux |`);
-  lines.push(`| --- | --- | --- | --- |`);
-  const sets: [string, (r: Row) => boolean][] = [["全部", () => true], ["chain", (r) => r.set === "chain"], ["aux", (r) => r.set === "aux"]];
+  lines.push(`| 指标 | 全部 | chain | dining | aux |`);
+  lines.push(`| --- | --- | --- | --- | --- |`);
+  const sets: [string, (r: Row) => boolean][] = [["全部", () => true], ["chain", (r) => r.set === "chain"], ["dining", (r) => r.set === "dining"], ["aux", (r) => r.set === "aux"]];
   const cell = (f: (rs: Row[]) => string) => sets.map(([, p]) => f(by(p))).join(" | ");
   lines.push(`| 蛋白质区间命中率 | ${cell((rs) => pct(rs.filter((r) => r.protein_hit).length, rs.length))} |`);
   lines.push(`| 热量区间命中率 | ${cell((rs) => pct(rs.filter((r) => r.kcal_hit).length, rs.length))} |`);
@@ -129,9 +134,9 @@ function report(rows: Row[]): string {
   lines.push(`| 商家识别正确 | ${cell((rs) => pct(rs.filter((r) => r.merchant_ok).length, rs.length))} |`);
   lines.push(`| 金额正确 | ${cell((rs) => pct(rs.filter((r) => r.amount_ok).length, rs.length))} |`);
   const receipts = okRows.filter((r) => r.type === "receipt");
-  lines.push(`| 小票解析准确率 | ${pct(receipts.filter((r) => r.receipt_ok).length, receipts.length)} | | |`);
-  lines.push(`| 失败/错误样本 | ${rows.length - okRows.length}/${rows.length} | | |`);
-  lines.push(`| 平均耗时 | ${(rows.reduce((a, r) => a + r.ms, 0) / Math.max(1, rows.length) / 1000).toFixed(1)}s | | |`);
+  lines.push(`| 小票解析准确率 | ${pct(receipts.filter((r) => r.receipt_ok).length, receipts.length)} | | | |`);
+  lines.push(`| 失败/错误样本 | ${rows.length - okRows.length}/${rows.length} | | | |`);
+  lines.push(`| 平均耗时 | ${(rows.reduce((a, r) => a + r.ms, 0) / Math.max(1, rows.length) / 1000).toFixed(1)}s | | | |`);
   return lines.join("\n");
 }
 
@@ -156,7 +161,8 @@ async function mapLimit<T, R>(xs: T[], n: number, fn: (x: T) => Promise<R>): Pro
 
 async function main() {
   const samples: Sample[] = JSON.parse(fs.readFileSync(path.join(ROOT, "samples", "truth.json"), "utf8"));
-  const picked = samples.filter((s) => s.type !== "grocery" && (!only || s.type === only));
+  const onlySet = flag("--set");
+  const picked = samples.filter((s) => s.type !== "grocery" && (!only || s.type === only) && (!onlySet || s.set === onlySet));
   const mock = process.env.ESTIMATE_MOCK === "1";
 
   let rows: Row[];

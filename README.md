@@ -1,11 +1,12 @@
 # 蛋白钱包 ProteinWallet
 
-拍一张餐食或小票照片,同时记下花销和营养(热量 / 蛋白质区间),回答一个问题:
+给生活费有限、想增肌的在校大学生:拍一张餐食或小票照片,同时记下花销和营养(热量 / 蛋白质区间),回答一个问题:
 **在有限的生活费里,每一美元换到了多少克蛋白质。**
 
 - 核心指标:蛋白质单价 **¢/g**
 - 设计哲学:诚实的模糊,所有估算都是「区间 + 置信度 + 依据」,永不假装精确
-- 两级估算:先匹配连锁官方营养表(`data/chains.json`,算术由代码完成),无匹配再让模型目测
+- 三级估算:先匹配连锁官方营养表(`data/chains.json`),再匹配学校食堂官方菜品库(`data/dining/`),都匹配不上才让模型目测;算术一律由代码完成
+- v1 做美国校园(美元 + 美国连锁 + 芝大食堂);国内校园版在 roadmap
 - 不做:饮食推荐、热量警告、评判性文案、微量营养素、社交(见 PRD Non-goals)
 
 产品需求文档见仓库上一级目录的 PRD。
@@ -41,15 +42,16 @@ components/     Onboarding、ConfirmCard(可编辑确认卡)、ConfidenceBadge�
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
 lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报
-data/chains.json  17 家连锁营养数据(每家有 verified 字段标明验证状态;McDonald's / KFC / Shake Shack / Sweetgreen 为官方全量核对)
+data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
+data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)
 docs/使用说明.md  给种子用户的一页说明
 ```
 
 ## 估算 API
 
-`POST /api/estimate`,body `{ type: "text" | "photo" | "receipt" | "grocery", content, media_type? }`,
-照片类 `content` 为 base64(可带 `data:` 前缀)。返回:
+`POST /api/estimate`,body `{ type: "text" | "photo" | "receipt" | "grocery", content, media_type?, dining_hall? }`,
+照片类 `content` 为 base64(可带 `data:` 前缀);`dining_hall` 是食堂 slug(`data/dining/uchicago/halls.json`),只对 photo / text 生效。返回:
 
 ```json
 { "ok": true, "kind": "meal", "merchant": "Chipotle", "total_usd": 11.5,
@@ -59,8 +61,18 @@ docs/使用说明.md  给种子用户的一页说明
 ```
 
 失败时 `{ ok: false, error, retryable }`。模型输出用 zod schema 校验,失败自动重试一次。
-代码层的硬规则(`lib/estimate/estimate.ts`):官方匹配 ±10%;置信度对应最小相对宽度 high 15% / medium 30% / low 50%;
-照片无连锁匹配强制 low;文字里没有数字就绝不报金额。
+
+`source` 一共五档,对应界面上的标签:
+
+| source | 什么时候 | 置信度 / 区间 | 标签 |
+| --- | --- | --- | --- |
+| `official_table` | 匹配到 `data_status: official` 的连锁 | high,±10% | 官方数据 |
+| `reference_table` | 匹配到 partial / unverified 的连锁 | medium,±15% | 参考数据·未核实 |
+| `dining_menu` | 请求带 `dining_hall`,模型把每道菜对到菜品库 | medium,±20%(每份数据官方,份数目测) | 食堂菜单 |
+| `visual_estimate` / `text_estimate` | 都匹配不上 | 照片强制 low;文字最高 medium | 目测估算 |
+
+其他硬规则(`lib/estimate/estimate.ts`):置信度对应最小相对宽度 high 15% / medium 30% / low 50%;文字里没有数字就绝不报金额。
+食堂菜品库只在带 `dining_hall` 的请求里作为第二个缓存的 system 块发给模型(约 8k token,命中缓存后很便宜)。
 
 ## 部署到 Vercel
 
@@ -77,7 +89,8 @@ docs/使用说明.md  给种子用户的一页说明
 | Step | 内容 | 状态 |
 | --- | --- | --- |
 | 1.1 – 1.6 | 项目初始化、数据层、引导、估算 API、文字记录流、今日页 | 完成 |
-| 2.1 – 2.3 | chains.json、照片 / 小票 / 买菜小票分支 | 完成(模型真实调用待 key 验收) |
-| 3.1 – 3.2 | 评测集结构 + 评测脚本 | 完成;30 份照片样本需人工采集 |
+| 2.1 – 2.3 | chains.json、照片 / 小票 / 买菜小票分支 | 完成;2026-10-28 起 9 家未核实连锁降级为"参考数据" |
+| 2.4 | 芝大食堂菜品库 + 记录时选食堂(第三级数据源) | 完成 2026-10-28;菜品库是手动快照,刷新方法见 data/dining/README.md |
+| 3.1 – 3.2 | 评测集结构 + 评测脚本 | 完成;30 张照片按 eval/samples/PLAN.md 采集,拍完才有拍照基线 |
 | 3.3 | 周报页 | 完成 |
 | 4.x | 种子用户 | 运营阶段,见 docs/使用说明.md |

@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { Confidence, Source } from "../types";
 import { findChain, officialTotals, resolveComponents } from "./chains";
+import { diningTotals, findHall, resolveDiningItems } from "./dining";
 import { systemBlocks, userContent } from "./prompt";
 import {
   ModelOutputSchema,
@@ -23,6 +24,12 @@ const MIN_REL_WIDTH: Record<Confidence, number> = { high: 0.15, medium: 0.3, low
 // Official-table numbers are exact per listed serving; ±10% covers portioning variance
 // and keeps high-confidence width at 20% (< 30% eval target).
 const OFFICIAL_SPREAD = 0.1;
+// Chain rows entered from memory / only spot-checked: same arithmetic, but ±15% and
+// "medium" so a number nobody has checked can never wear the 官方数据 badge.
+const REFERENCE_SPREAD = 0.15;
+// Dining-hall menu: per-portion numbers are official, the portion count is the
+// model's visual guess, so ±20% and "medium".
+const DINING_SPREAD = 0.2;
 
 const CONF_RANK: Record<Confidence, number> = { low: 0, medium: 1, high: 2 };
 function minConf(a: Confidence, b: Confidence): Confidence {
@@ -76,18 +83,23 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
   }
 
   const fallbackSource: Source = input.type === "text" ? "text_estimate" : "visual_estimate";
+  const hall = input.type === "photo" || input.type === "text" ? findHall(input.dining_hall) : null;
   const items: EstimateItem[] = out.items.map((it) => {
     const amount_usd = textHasNumber && it.amount_usd != null && it.amount_usd >= 0 ? it.amount_usd : null;
     const chain = it.chain_match ? (findChain(it.chain_match.merchant) ?? merchantChain) : null;
-    const itemMerchant = chain?.merchant ?? merchant;
+    const itemMerchant = chain?.merchant ?? (hall && it.dining_match ? hall.short : merchant);
+    let diningMiss = false;
 
     if (chain && it.chain_match && it.chain_match.components.length > 0) {
       const r = resolveComponents(chain, it.chain_match.components);
       if (r.unresolved.length === 0) {
         const t = officialTotals(r);
         const comps = r.resolved.map(({ item, qty }) => (qty !== 1 ? `${item.name}×${qty}` : item.name));
-        const [kl, kh] = enforceRange(t.kcal * (1 - OFFICIAL_SPREAD), t.kcal * (1 + OFFICIAL_SPREAD), "high");
-        const [pl, ph] = enforceRange(t.protein_g * (1 - OFFICIAL_SPREAD), t.protein_g * (1 + OFFICIAL_SPREAD), "high");
+        const official = chain.data_status === "official";
+        const spread = official ? OFFICIAL_SPREAD : REFERENCE_SPREAD;
+        const conf: Confidence = official ? "high" : "medium";
+        const [kl, kh] = enforceRange(t.kcal * (1 - spread), t.kcal * (1 + spread), conf);
+        const [pl, ph] = enforceRange(t.protein_g * (1 - spread), t.protein_g * (1 + spread), conf);
         return {
           meal_name: it.meal_name.trim() || comps[0],
           merchant: itemMerchant,
@@ -96,12 +108,40 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
           kcal_high: kh,
           protein_low_g: pl,
           protein_high_g: ph,
-          confidence: "high",
-          basis: `${chain.merchant} 官方营养表:${comps.join(" + ")}`,
-          source: "official_table",
+          confidence: conf,
+          basis: official
+            ? `${chain.merchant} 官方营养表:${comps.join(" + ")}`
+            : `${chain.merchant} 参考营养表(未逐行核实):${comps.join(" + ")}`,
+          source: official ? "official_table" : "reference_table",
           matched_components: comps,
         };
       }
+    }
+
+    // Tier 2: dining-hall menu. Only when the request carried a hall and the model
+    // mapped this item onto menu rows. Per-portion numbers are official; qty is guessed.
+    if (hall && it.dining_match && it.dining_match.items.length > 0) {
+      const r = resolveDiningItems(it.dining_match.items);
+      if (r.unresolved.length === 0) {
+        const t = diningTotals(r);
+        const comps = r.resolved.map(({ entry, qty }) => (qty !== 1 ? `${entry.display}×${qty}` : entry.display));
+        const [kl, kh] = enforceRange(t.kcal[0] * (1 - DINING_SPREAD), t.kcal[1] * (1 + DINING_SPREAD), "medium");
+        const [pl, ph] = enforceRange(t.protein_g[0] * (1 - DINING_SPREAD), t.protein_g[1] * (1 + DINING_SPREAD), "medium");
+        return {
+          meal_name: it.meal_name.trim() || comps[0],
+          merchant: hall.short,
+          amount_usd,
+          kcal_low: kl,
+          kcal_high: kh,
+          protein_low_g: pl,
+          protein_high_g: ph,
+          confidence: "medium",
+          basis: `${hall.short} 食堂菜品库(官方每份数据,份数目测):${comps.join(" + ")}`,
+          source: "dining_menu",
+          matched_components: comps,
+        };
+      }
+      diningMiss = true;
     }
 
     // No (or incomplete) official match: the model's own range, with confidence capped.
@@ -114,7 +154,9 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
     const basis =
       it.chain_match && chain
         ? `${it.basis.trim()}(未能匹配官方条目,按估算)`
-        : it.basis.trim() || (input.type === "text" ? "按描述估算" : "目测估算");
+        : diningMiss
+          ? `${it.basis.trim() || "目测估算"}(菜品库里没有,按目测)`
+          : it.basis.trim() || (input.type === "text" ? "按描述估算" : "目测估算");
     return {
       meal_name: it.meal_name.trim() || "未命名餐食",
       merchant: itemMerchant,
@@ -140,7 +182,7 @@ export async function callModel(
   const res = await client.messages.parse({
     model: ESTIMATE_MODEL,
     max_tokens: 8000,
-    system: systemBlocks(),
+    system: systemBlocks(input),
     messages: [{ role: "user", content: userContent(input) }],
     output_config: { effort: EFFORT, format: zodOutputFormat(ModelOutputSchema) },
   });

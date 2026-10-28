@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "school": "University of Chicago",
+    "source": "Dine On Campus (dineoncampus.com/uchicago), site_id 60648db131d1ee201bfa84a8",
+    "note": "Only the residential dining commons (meal-swipe halls). Cafés and markets on the same site have no menu nutrition. Cathey had empty menus the whole week of 2026-10-26 (kept so it can be selected; it falls back to visual estimate)."
+  },
+  "halls": [
+    { "slug": "baker-dining-commons", "name": "Baker Dining Commons", "short": "Baker", "aliases": ["baker", "campus north", "north"], "location_id": "618a6caab63f1e2d4442bdf5" },
+    { "slug": "bartlett-dining-commons", "name": "Bartlett Dining Commons", "short": "Bartlett", "aliases": ["bartlett", "bart"], "location_id": "618a6f95b63f1e2d3b454065" },
+    { "slug": "woodlawn-dining-commons", "name": "Woodlawn Dining Commons", "short": "Woodlawn", "aliases": ["woodlawn"], "location_id": "618a6df9b63f1e2d692b1f5c" },
+    { "slug": "cathey-dining-commons", "name": "Cathey Dining Commons", "short": "Cathey", "aliases": ["cathey", "burton judson", "bj"], "location_id": "618a6efbb63f1e2d444389c1" }
+  ]
+}

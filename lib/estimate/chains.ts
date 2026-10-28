@@ -6,8 +6,12 @@ export interface ChainItem {
   protein_g: number;
   price_hint: number | null;
 }
+export type ChainDataStatus = "official" | "partial" | "unverified";
 export interface Chain {
   merchant: string;
+  // official = every row checked against the chain's site; partial = spot-checked;
+  // unverified = entered from memory. Only "official" may be shown as 官方数据.
+  data_status: ChainDataStatus;
   aliases: string[];
   source_url: string;
   items: ChainItem[];
@@ -80,7 +84,8 @@ export function officialTotals(r: Resolved): { kcal: number; protein_g: number }
 export function chainsForPrompt(): string {
   const lines: string[] = [];
   for (const c of CHAINS) {
-    lines.push(`### ${c.merchant} (aliases: ${c.aliases.join(", ")})`);
+    const tag = c.data_status === "official" ? "" : " [未核实]";
+    lines.push(`### ${c.merchant}${tag} (aliases: ${c.aliases.join(", ")})`);
     for (const i of c.items) {
       const price = i.price_hint != null ? ` | $${i.price_hint}` : "";
       lines.push(`- ${i.name} | ${i.kcal} kcal | ${i.protein_g} g${price}`);

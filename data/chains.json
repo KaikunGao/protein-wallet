@@ -25,11 +25,18 @@
       "removed": [
         "Portillo's: official PDF is Cloudflare-blocked for automated access and for the user; removed rather than keep unverifiable rows labelled as official data"
       ]
+    },
+    "data_status": {
+      "official": "每一行都逐条对照过官网营养页/官方 PDF/官方 API。代码按官方数据算术,标 official_table + 高置信度,±10%。",
+      "partial": "只抽查过个别行(或 kcal 官方、protein 估算)。代码仍按表算术,但标 reference_table + 中置信度,±15%,不得称'官方数据'。",
+      "unverified": "凭记忆录入,从未对照官网。处理同 partial;核实后再升为 official。",
+      "updated": "2026-10-28: 9 家 unverified + 3 家 partial 不再顶着'官方数据'标签上线(诚实的模糊)。"
     }
   },
   "chains": [
     {
       "merchant": "Chipotle",
+      "data_status": "official",
       "aliases": [
         "chipotle",
         "chipotle mexican grill"
@@ -215,6 +222,7 @@
     },
     {
       "merchant": "McDonald's",
+      "data_status": "official",
       "aliases": [
         "mcdonalds",
         "mcdonald's",
@@ -492,6 +500,7 @@
     },
     {
       "merchant": "Subway",
+      "data_status": "unverified",
       "aliases": [
         "subway",
         "赛百味"
@@ -593,6 +602,7 @@
     },
     {
       "merchant": "Panda Express",
+      "data_status": "unverified",
       "aliases": [
         "panda express",
         "panda",
@@ -743,6 +753,7 @@
     },
     {
       "merchant": "Chick-fil-A",
+      "data_status": "partial",
       "aliases": [
         "chick-fil-a",
         "chick fil a",
@@ -894,6 +905,7 @@
     },
     {
       "merchant": "Starbucks",
+      "data_status": "unverified",
       "aliases": [
         "starbucks",
         "星巴克"
@@ -1049,6 +1061,7 @@
     },
     {
       "merchant": "Shake Shack",
+      "data_status": "official",
       "aliases": [
         "shake shack",
         "shakeshack"
@@ -1186,6 +1199,7 @@
     },
     {
       "merchant": "Raising Cane's",
+      "data_status": "unverified",
       "aliases": [
         "raising cane's",
         "raising canes",
@@ -1253,6 +1267,7 @@
     },
     {
       "merchant": "Sweetgreen",
+      "data_status": "official",
       "aliases": [
         "sweetgreen",
         "sweet green"
@@ -1336,6 +1351,7 @@
     },
     {
       "merchant": "Five Guys",
+      "data_status": "unverified",
       "aliases": [
         "five guys",
         "fiveguys",
@@ -1414,6 +1430,7 @@
     },
     {
       "merchant": "Potbelly",
+      "data_status": "unverified",
       "aliases": [
         "potbelly",
         "potbelly sandwich shop"
@@ -1485,6 +1502,7 @@
     },
     {
       "merchant": "Jimmy John's",
+      "data_status": "unverified",
       "aliases": [
         "jimmy john's",
         "jimmy johns",
@@ -1575,6 +1593,7 @@
     },
     {
       "merchant": "Taco Bell",
+      "data_status": "partial",
       "aliases": [
         "taco bell",
         "tacobell",
@@ -1689,6 +1708,7 @@
     },
     {
       "merchant": "Wendy's",
+      "data_status": "unverified",
       "aliases": [
         "wendy's",
         "wendys"
@@ -1808,6 +1828,7 @@
     },
     {
       "merchant": "Popeyes",
+      "data_status": "unverified",
       "aliases": [
         "popeyes",
         "popeyes louisiana kitchen",
@@ -1910,6 +1931,7 @@
     },
     {
       "merchant": "Nando's",
+      "data_status": "partial",
       "aliases": [
         "nando's",
         "nandos",
@@ -2111,6 +2133,7 @@
     },
     {
       "merchant": "KFC",
+      "data_status": "official",
       "aliases": [
         "kfc",
         "kentucky fried chicken",

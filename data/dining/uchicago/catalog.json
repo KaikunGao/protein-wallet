@@ -1,0 +1,4498 @@
+{
+ "_meta": {
+  "school": "University of Chicago",
+  "source": "Dine On Campus, dineoncampus.com/uchicago (apiv4.dineoncampus.com item objects, read in a browser session on 2026-10-28 across the menus of 2026-10-26..2026-11-01 for Baker / Bartlett / Woodlawn / Cathey)",
+  "pulled_on": "2026-10-28",
+  "unit": "kcal and protein_g per one official serving (`portion`) of the named item",
+  "verified": "2026-10-28: Scrambled Eggs, Meatless Vegetarian Sausage Patty, Maple Smoked Beef and Pork Sausage, Tater Tots checked against the site's own nutrition panels (portion / kcal / protein all match)",
+  "caveats": [
+   "Item catalog only. The per-day, per-station lists the API returns to a plain browser fetch are scrambled (items from other days/halls mixed in), so they were discarded instead of shipped; which hall / day an item appears on is NOT recorded.",
+   "72 rows with no protein value (a bagel/coffee retail brand inside Bartlett, hex ids) were dropped: without protein they cannot feed the ¢/g metric.",
+   "Cathey returned empty menus all week; it is selectable but falls back to visual estimate like any hall when nothing matches.",
+   "Not reachable from a server: Cloudflare blocks non-browser clients and there is no CORS. Refresh by hand, see data/dining/README.md."
+  ],
+  "count": 640
+ },
+ "items": [
+  {
+   "id": "62324.0",
+   "name": "2% Low Fat Cottage Cheese",
+   "portion": "1/4 cup",
+   "kcal": 45,
+   "protein_g": 6
+  },
+  {
+   "id": "65282.6",
+   "name": "Plain Greek Yogurt",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 11
+  },
+  {
+   "id": "3664.7",
+   "name": "Shredded Cheddar Cheese",
+   "portion": "2 tbsp",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "186662.0",
+   "name": "Oats 'n Honey Protein Granola",
+   "portion": "1/4 cup",
+   "kcal": 100,
+   "protein_g": 5
+  },
+  {
+   "id": "73988.0",
+   "name": "Eggs",
+   "portion": "3 floz",
+   "kcal": 130,
+   "protein_g": 11
+  },
+  {
+   "id": "63110.0",
+   "name": "Egg Whites",
+   "portion": "3 floz",
+   "kcal": 45,
+   "protein_g": 9
+  },
+  {
+   "id": "1125.10",
+   "name": "Pork Sausage Patty",
+   "portion": "2 each",
+   "kcal": 360,
+   "protein_g": 10
+  },
+  {
+   "id": "57570.14",
+   "name": "Diced Turkey Sausage Link",
+   "portion": "2 tbsp",
+   "kcal": 40,
+   "protein_g": 4
+  },
+  {
+   "id": "103779.0",
+   "name": "Blueberry Muffin",
+   "portion": "2 oz portion",
+   "kcal": 180,
+   "protein_g": 2
+  },
+  {
+   "id": "216806.0",
+   "name": "Chocolate Chocolate Chip Muffin",
+   "portion": "1 each",
+   "kcal": 230,
+   "protein_g": 3
+  },
+  {
+   "id": "1117.0",
+   "name": "Cubed Honeydew",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 0
+  },
+  {
+   "id": "63610.0",
+   "name": "Honey",
+   "portion": "1 tbsp",
+   "kcal": 60,
+   "protein_g": 0
+  },
+  {
+   "id": "103603.0",
+   "name": "Oatmeal",
+   "portion": "1 ladle-4oz",
+   "kcal": 90,
+   "protein_g": 3
+  },
+  {
+   "id": "2032.23",
+   "name": "Scrambled Eggs",
+   "portion": "1/2 cup",
+   "kcal": 210,
+   "protein_g": 14
+  },
+  {
+   "id": "62288.1",
+   "name": "Diced Smoked Ham",
+   "portion": "2 tbsp",
+   "kcal": 30,
+   "protein_g": 4
+  },
+  {
+   "id": "139875.1",
+   "name": "Country Style Gravy",
+   "portion": "1/4 cup",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "4592.0",
+   "name": "Low Fat Vanilla Yogurt",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "1175.0",
+   "name": "Cubed Cantaloupe",
+   "portion": "1/4 cup",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "101612.1",
+   "name": "Breakfast Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "608.54",
+   "name": "Bacon",
+   "portion": "3 slice",
+   "kcal": 150,
+   "protein_g": 11
+  },
+  {
+   "id": "3872.17",
+   "name": "Southern Biscuit",
+   "portion": "1 each",
+   "kcal": 220,
+   "protein_g": 4
+  },
+  {
+   "id": "154527.0",
+   "name": "Oatmeal",
+   "portion": "4 oz portion",
+   "kcal": 90,
+   "protein_g": 4
+  },
+  {
+   "id": "69553.0",
+   "name": "Meatless Vegetarian Sausage Patty",
+   "portion": "1 each",
+   "kcal": 70,
+   "protein_g": 9
+  },
+  {
+   "id": "58254.1",
+   "name": "Low Fat Strawberry Yogurt",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 4
+  },
+  {
+   "id": "47960.3",
+   "name": "Chopped Spinach",
+   "portion": "1 ounce",
+   "kcal": 5,
+   "protein_g": 1
+  },
+  {
+   "id": "170447.0",
+   "name": "Churro Waffle Sticks",
+   "portion": "1 each",
+   "kcal": 180,
+   "protein_g": 2
+  },
+  {
+   "id": "192898.6",
+   "name": "Potato and Brussels Sprout Hash",
+   "portion": "4 ounce",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "66194.0",
+   "name": "Strawberries",
+   "portion": "1/4 cup",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "132794.0",
+   "name": "Assorted Danish",
+   "portion": "1 each",
+   "kcal": 160,
+   "protein_g": 2
+  },
+  {
+   "id": "182149.0",
+   "name": "Spicy Honey Chicken",
+   "portion": "4 oz portion",
+   "kcal": 200,
+   "protein_g": 17
+  },
+  {
+   "id": "104930.0",
+   "name": "Ranch Dressing",
+   "portion": "2 floz",
+   "kcal": 220,
+   "protein_g": 1
+  },
+  {
+   "id": "47957.20",
+   "name": "Mayonnaise",
+   "portion": "1 floz",
+   "kcal": 190,
+   "protein_g": 0
+  },
+  {
+   "id": "46482.1",
+   "name": "Cookies n Creme Cake",
+   "portion": "1 piece",
+   "kcal": 330,
+   "protein_g": 4
+  },
+  {
+   "id": "1748.7",
+   "name": "Sliced American Cheese",
+   "portion": "1/2 ounce",
+   "kcal": 50,
+   "protein_g": 3
+  },
+  {
+   "id": "46017.23",
+   "name": "Sliced Red Onion",
+   "portion": "1 slice",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "63338.2",
+   "name": "Extra Virgin Olive Oil",
+   "portion": "2 floz",
+   "kcal": 480,
+   "protein_g": 0
+  },
+  {
+   "id": "43037.1",
+   "name": "Cheddar Cheese Slice",
+   "portion": "1 slice",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "48619.1",
+   "name": "Herb Roasted Mushrooms",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 4
+  },
+  {
+   "id": "48147.0",
+   "name": "Multigrain Bread",
+   "portion": "2 slice",
+   "kcal": 280,
+   "protein_g": 8
+  },
+  {
+   "id": "111748.9",
+   "name": "Honey Mustard Dressing",
+   "portion": "1 floz",
+   "kcal": 150,
+   "protein_g": 0
+  },
+  {
+   "id": "62357.2",
+   "name": "Greek Feta Dressing",
+   "portion": "1 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "180192.0",
+   "name": "Zucchini and Yellow Peppers",
+   "portion": "3 ounce",
+   "kcal": 40,
+   "protein_g": 1
+  },
+  {
+   "id": "376.0",
+   "name": "Fried Beef Steak with Gravy",
+   "portion": "1 each",
+   "kcal": 360,
+   "protein_g": 13
+  },
+  {
+   "id": "130572.0",
+   "name": "Korean BBQ Tofu Tacos",
+   "portion": "2 each",
+   "kcal": 450,
+   "protein_g": 12
+  },
+  {
+   "id": "1909.0",
+   "name": "Crackers, Saltine, 2 CT, Zesta",
+   "portion": "1 each",
+   "kcal": 25,
+   "protein_g": 1
+  },
+  {
+   "id": "75797.1",
+   "name": "Sliced Swiss Cheese",
+   "portion": "1 ounce",
+   "kcal": 110,
+   "protein_g": 8
+  },
+  {
+   "id": "62343.0",
+   "name": "Cherry Tomatoes",
+   "portion": "1 ounce",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "12385.0",
+   "name": "Potato Salad",
+   "portion": "1/4 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "31698.1",
+   "name": "Croutons",
+   "portion": "1 ounce",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "17687.0",
+   "name": "Lemon Dill Coleslaw",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 1
+  },
+  {
+   "id": "58696.7",
+   "name": "Greek Garbanzo Beans",
+   "portion": "1/4 cup",
+   "kcal": 80,
+   "protein_g": 4
+  },
+  {
+   "id": "62326.0",
+   "name": "Chopped Hard Boiled Eggs",
+   "portion": "1/4 cup",
+   "kcal": 50,
+   "protein_g": 4
+  },
+  {
+   "id": "62273.2",
+   "name": "Sourdough Bread",
+   "portion": "2 slice",
+   "kcal": 260,
+   "protein_g": 10
+  },
+  {
+   "id": "63317.0",
+   "name": "Crushed Red Pepper",
+   "portion": "1 tsp",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "103748.0",
+   "name": "Snap Peas",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 3
+  },
+  {
+   "id": "62369.0",
+   "name": "Red Wine Vinegar",
+   "portion": "1 floz",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "47960.1",
+   "name": "Baby Spinach",
+   "portion": "1 cup",
+   "kcal": 5,
+   "protein_g": 1
+  },
+  {
+   "id": "47957.10",
+   "name": "Yellow Mustard",
+   "portion": "1 floz",
+   "kcal": 20,
+   "protein_g": 1
+  },
+  {
+   "id": "47957.11",
+   "name": "Balsamic Vinegar",
+   "portion": "1 floz",
+   "kcal": 25,
+   "protein_g": 0
+  },
+  {
+   "id": "73825.2",
+   "name": "Cooked Quinoa",
+   "portion": "1/4 cup",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "61544.2",
+   "name": "Jalapeno and Cheddar Mashed Potatoes",
+   "portion": "3/4 cup",
+   "kcal": 220,
+   "protein_g": 6
+  },
+  {
+   "id": "16856.74",
+   "name": "Grilled Herbed Chicken",
+   "portion": "2 ounce",
+   "kcal": 70,
+   "protein_g": 11
+  },
+  {
+   "id": "82259.0",
+   "name": "10\" Flour Tortilla",
+   "portion": "1 each",
+   "kcal": 200,
+   "protein_g": 6
+  },
+  {
+   "id": "118006.0",
+   "name": "Pickled Red Onion",
+   "portion": "1 pint",
+   "kcal": 290,
+   "protein_g": 6
+  },
+  {
+   "id": "65280.1",
+   "name": "French Fried Onions",
+   "portion": "1 tbsp",
+   "kcal": 20,
+   "protein_g": 0
+  },
+  {
+   "id": "62355.0",
+   "name": "Fat Free Italian Dressing",
+   "portion": "1 floz",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "62331.0",
+   "name": "Thinly Sliced Smoked Turkey Breast",
+   "portion": "2 ounce",
+   "kcal": 50,
+   "protein_g": 11
+  },
+  {
+   "id": "105280.0",
+   "name": "Chow Mein Noodles",
+   "portion": "1 tbsp",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "103955.0",
+   "name": "Roasted Carrots",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 1
+  },
+  {
+   "id": "14910.0",
+   "name": "Thinly Sliced Smoked Ham",
+   "portion": "3 ounce",
+   "kcal": 110,
+   "protein_g": 15
+  },
+  {
+   "id": "14921.0",
+   "name": "Hoagie Roll",
+   "portion": "1 each",
+   "kcal": 190,
+   "protein_g": 7
+  },
+  {
+   "id": "103574.1",
+   "name": "Cheese Pizza",
+   "portion": "1 slice",
+   "kcal": 190,
+   "protein_g": 8
+  },
+  {
+   "id": "165870.0",
+   "name": "Beef Meatloaf with Tomato Glaze",
+   "portion": "4 ounce",
+   "kcal": 300,
+   "protein_g": 23
+  },
+  {
+   "id": "63377.15",
+   "name": "Black Bean Burger",
+   "portion": "1 each",
+   "kcal": 280,
+   "protein_g": 16
+  },
+  {
+   "id": "1178.9",
+   "name": "Tater Tots",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 1
+  },
+  {
+   "id": "1390.6",
+   "name": "Whole Wheat Bread",
+   "portion": "2 slice",
+   "kcal": 150,
+   "protein_g": 6
+  },
+  {
+   "id": "43037.3",
+   "name": "Sliced Cheddar Cheese",
+   "portion": "1 ounce",
+   "kcal": 110,
+   "protein_g": 6
+  },
+  {
+   "id": "62348.0",
+   "name": "Raisins",
+   "portion": "1 tbsp",
+   "kcal": 25,
+   "protein_g": 0
+  },
+  {
+   "id": "57851.0",
+   "name": "Romaine Blend",
+   "portion": "1 cup",
+   "kcal": 10,
+   "protein_g": 1
+  },
+  {
+   "id": "3245.17",
+   "name": "Garlic Ranch Roasted Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "6062.18",
+   "name": "Beef Hot Dog with Bun",
+   "portion": "1 each",
+   "kcal": 340,
+   "protein_g": 12
+  },
+  {
+   "id": "62347.0",
+   "name": "Dried Cranberries",
+   "portion": "1 tbsp",
+   "kcal": 30,
+   "protein_g": 0
+  },
+  {
+   "id": "1102.0",
+   "name": "Sugar Cookies",
+   "portion": "1 each",
+   "kcal": 120,
+   "protein_g": 1
+  },
+  {
+   "id": "158400.0",
+   "name": "Herbed Green Beans",
+   "portion": "4 oz portion",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "64984.0",
+   "name": "Western Rub Eye Round",
+   "portion": "3 ounce",
+   "kcal": 180,
+   "protein_g": 24
+  },
+  {
+   "id": "103896.0",
+   "name": "Pepperoni Pizza",
+   "portion": "1 slice",
+   "kcal": 210,
+   "protein_g": 9
+  },
+  {
+   "id": "1251.0",
+   "name": "White Bread",
+   "portion": "1 slice",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "48775.4",
+   "name": "Fried Brown Rice, Broccoli, Edamame",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 5
+  },
+  {
+   "id": "104026.0",
+   "name": "Meat Lovers Pizza",
+   "portion": "1 slice",
+   "kcal": 220,
+   "protein_g": 10
+  },
+  {
+   "id": "146004.0",
+   "name": "Red Velvet",
+   "portion": "1 slice",
+   "kcal": 320,
+   "protein_g": 3
+  },
+  {
+   "id": "128180.0",
+   "name": "Red and Green Bell Peppers",
+   "portion": "1/4 cup",
+   "kcal": 15,
+   "protein_g": 1
+  },
+  {
+   "id": "33992.116",
+   "name": "Roasted Asparagus",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "57858.7",
+   "name": "Shredded Carrots",
+   "portion": "1 ounce",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "14516.2",
+   "name": "Double Chocolate Chip Cookies",
+   "portion": "1 each",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "111748.0",
+   "name": "Creamy Caesar Dressing",
+   "portion": "1 floz",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "554.0",
+   "name": "Loaded Baked Mashed Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 240,
+   "protein_g": 10
+  },
+  {
+   "id": "5305.90",
+   "name": "Hamburger on Bun",
+   "portion": "1 sandwich",
+   "kcal": 380,
+   "protein_g": 22
+  },
+  {
+   "id": "62346.0",
+   "name": "Grated Parmesan Cheese",
+   "portion": "1 tsp",
+   "kcal": 10,
+   "protein_g": 1
+  },
+  {
+   "id": "1748.16",
+   "name": "Sliced Swiss Cheese",
+   "portion": "1 slice",
+   "kcal": 60,
+   "protein_g": 4
+  },
+  {
+   "id": "84851.1",
+   "name": "Memphis BBQ Sauce",
+   "portion": "1 ounce",
+   "kcal": 40,
+   "protein_g": 0
+  },
+  {
+   "id": "988.14",
+   "name": "Rice Pilaf",
+   "portion": "1/2 cup",
+   "kcal": 180,
+   "protein_g": 3
+  },
+  {
+   "id": "103601.0",
+   "name": "House Fried Potato Chips",
+   "portion": "2 ounce",
+   "kcal": 190,
+   "protein_g": 1
+  },
+  {
+   "id": "44317.1",
+   "name": "Blue Cheese Dressing",
+   "portion": "1 floz",
+   "kcal": 160,
+   "protein_g": 0
+  },
+  {
+   "id": "103602.0",
+   "name": "Red Potato Salad",
+   "portion": "1/2 cup",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "103834.0",
+   "name": "Garlic Herb Olive Oil Mashed Potatoes",
+   "portion": "3/4 cup",
+   "kcal": 220,
+   "protein_g": 3
+  },
+  {
+   "id": "10724.4",
+   "name": "Potsticker Sauce",
+   "portion": "1 ladle-2oz",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "48376.8",
+   "name": "Vegetable Tofu Pad Thai",
+   "portion": "1-1/2 cup",
+   "kcal": 360,
+   "protein_g": 15
+  },
+  {
+   "id": "4980.1",
+   "name": "Cherry Delight Cake with Buttercream",
+   "portion": "1 slice",
+   "kcal": 390,
+   "protein_g": 2
+  },
+  {
+   "id": "118394.0",
+   "name": "Kimchi",
+   "portion": "1/2 cup",
+   "kcal": 20,
+   "protein_g": 1
+  },
+  {
+   "id": "103804.0",
+   "name": "Korean Stir-Fried Spinach",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 3
+  },
+  {
+   "id": "158941.0",
+   "name": "Oreo Poke Cake",
+   "portion": "1 slice",
+   "kcal": 380,
+   "protein_g": 6
+  },
+  {
+   "id": "4592.4",
+   "name": "Vanilla Ice Cream",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "8965.0",
+   "name": "Scallion Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 160,
+   "protein_g": 2
+  },
+  {
+   "id": "8414.0",
+   "name": "French Fries",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "114033.0",
+   "name": "Garam Masala Roasted Garbanzo Beans",
+   "portion": "1/4 cup",
+   "kcal": 90,
+   "protein_g": 3
+  },
+  {
+   "id": "102558.0",
+   "name": "Ginger Edamame",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 8
+  },
+  {
+   "id": "180869.0",
+   "name": "Chicken and Ham Cordon Bleu Casserole",
+   "portion": "4 ounce",
+   "kcal": 280,
+   "protein_g": 20
+  },
+  {
+   "id": "76973.0",
+   "name": "Chocolate Ice Cream",
+   "portion": "1/2 cup",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "63361.0",
+   "name": "Steamed Asparagus",
+   "portion": "1/4 cup",
+   "kcal": 5,
+   "protein_g": 1
+  },
+  {
+   "id": "14301.2",
+   "name": "Peas, Caramelized Onion and Fresh Mint",
+   "portion": "4 ounce",
+   "kcal": 80,
+   "protein_g": 5
+  },
+  {
+   "id": "111325.0",
+   "name": "Dr. Pepper BBQ Sauce",
+   "portion": "1 ounce",
+   "kcal": 60,
+   "protein_g": 0
+  },
+  {
+   "id": "165870.1",
+   "name": "Turkey Meatloaf with Tomato Glaze",
+   "portion": "4 ounce",
+   "kcal": 270,
+   "protein_g": 23
+  },
+  {
+   "id": "68467.1",
+   "name": "Roasted Cauliflower Florets",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 2
+  },
+  {
+   "id": "20472.0",
+   "name": "Cream Cheese, Strawberry Spread, 1 oz",
+   "portion": "1 each",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "80876.0",
+   "name": "Sprite",
+   "portion": "8 floz",
+   "kcal": 90,
+   "protein_g": 0
+  },
+  {
+   "id": "1955.0",
+   "name": "Cream Cheese, 1 oz",
+   "portion": "1 each",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "63429.0",
+   "name": "Syrup",
+   "portion": "1 floz",
+   "kcal": 90,
+   "protein_g": 0
+  },
+  {
+   "id": "1318.0",
+   "name": "Banana",
+   "portion": "1 each",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "142014.0",
+   "name": "Cinnamon and Sugar",
+   "portion": "1 tsp",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "63400.1",
+   "name": "Oats 'n Honey Granola",
+   "portion": "1 tbsp",
+   "kcal": 30,
+   "protein_g": 1
+  },
+  {
+   "id": "82375.1",
+   "name": "Mello Yello",
+   "portion": "8 floz",
+   "kcal": 110,
+   "protein_g": 0
+  },
+  {
+   "id": "33212.0",
+   "name": "Butter, Salted, Whipped",
+   "portion": "1 each",
+   "kcal": 70,
+   "protein_g": 0
+  },
+  {
+   "id": "80448.0",
+   "name": "Coca-Cola",
+   "portion": "8 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "80888.0",
+   "name": "Barq's Root Beer",
+   "portion": "8 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "52466.0",
+   "name": "Chocolate Milk, Fat Free",
+   "portion": "8 floz",
+   "kcal": 120,
+   "protein_g": 8
+  },
+  {
+   "id": "63593.0",
+   "name": "Apple Juice",
+   "portion": "8 floz",
+   "kcal": 110,
+   "protein_g": 0
+  },
+  {
+   "id": "36205.0",
+   "name": "Pancake and Waffle Syrup",
+   "portion": "2 floz",
+   "kcal": 180,
+   "protein_g": 0
+  },
+  {
+   "id": "119104.1",
+   "name": "Half and Half",
+   "portion": "2 floz",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "63313.8",
+   "name": "Rice Krispies",
+   "portion": "1 cup",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "1390.5",
+   "name": "Udi's Hamburger Bun",
+   "portion": "1 each",
+   "kcal": 240,
+   "protein_g": 6
+  },
+  {
+   "id": "181923.0",
+   "name": "Ranch Dressing",
+   "portion": "2 floz",
+   "kcal": 220,
+   "protein_g": 1
+  },
+  {
+   "id": "63313.18",
+   "name": "Trix",
+   "portion": "1 cup",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "82256.3",
+   "name": "Cinnamon Toast Crunch",
+   "portion": "1 cup",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "81221.0",
+   "name": "Fruit Punch",
+   "portion": "8 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "63313.2",
+   "name": "Cheerios",
+   "portion": "1 cup",
+   "kcal": 100,
+   "protein_g": 3
+  },
+  {
+   "id": "134401.0",
+   "name": "Jelly, Mixed Fruit, .5 oz, Smuckers",
+   "portion": "1 each",
+   "kcal": 35,
+   "protein_g": 0
+  },
+  {
+   "id": "87452.6",
+   "name": "Sweet Iced Tea",
+   "portion": "8 floz",
+   "kcal": 80,
+   "protein_g": 0
+  },
+  {
+   "id": "82071.2",
+   "name": "Froot Loops",
+   "portion": "1 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "63313.4",
+   "name": "Corn Chex",
+   "portion": "1 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "57683.5",
+   "name": "Skim Milk",
+   "portion": "8 floz",
+   "kcal": 80,
+   "protein_g": 8
+  },
+  {
+   "id": "134312.0",
+   "name": "Grape Jelly",
+   "portion": "1 piece",
+   "kcal": 35,
+   "protein_g": 0
+  },
+  {
+   "id": "57683.7",
+   "name": "Soy Milk",
+   "portion": "8 floz",
+   "kcal": 110,
+   "protein_g": 8
+  },
+  {
+   "id": "82071.0",
+   "name": "Apple Jacks",
+   "portion": "1 cup",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "81253.2",
+   "name": "Pibb Xtra",
+   "portion": "1 floz",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "1390.3",
+   "name": "Udi's White Bread",
+   "portion": "1 slice",
+   "kcal": 150,
+   "protein_g": 2
+  },
+  {
+   "id": "63589.0",
+   "name": "Orange Juice",
+   "portion": "8 floz",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "1638.0",
+   "name": "Apple",
+   "portion": "1 each",
+   "kcal": 70,
+   "protein_g": 0
+  },
+  {
+   "id": "7494.0",
+   "name": "Sugar",
+   "portion": "1 each",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "64062.0",
+   "name": "Orange",
+   "portion": "1 each",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "1390.2",
+   "name": "Udi's Whole Grain Bread",
+   "portion": "1 slice",
+   "kcal": 150,
+   "protein_g": 2
+  },
+  {
+   "id": "62119.10",
+   "name": "Avoiding Gluten Waffle Batter",
+   "portion": "1 each",
+   "kcal": 290,
+   "protein_g": 4
+  },
+  {
+   "id": "47957.12",
+   "name": "Ketchup",
+   "portion": "2 floz",
+   "kcal": 80,
+   "protein_g": 0
+  },
+  {
+   "id": "62119.1",
+   "name": "Waffle Batter",
+   "portion": "1 each",
+   "kcal": 300,
+   "protein_g": 6
+  },
+  {
+   "id": "177289.3",
+   "name": "Chocolate Oat Milk",
+   "portion": "8 floz",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "122559.3",
+   "name": "Chipotle Pepper",
+   "portion": "1 tsp",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "63633.0",
+   "name": "English Muffin",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 5
+  },
+  {
+   "id": "14984.0",
+   "name": "Barbecue Sauce",
+   "portion": "2 floz",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "57606.0",
+   "name": "Plain Bagel",
+   "portion": "1 each",
+   "kcal": 180,
+   "protein_g": 6
+  },
+  {
+   "id": "174206.0",
+   "name": "Peanut Butter, 1.5 oz, Jif",
+   "portion": "1 each",
+   "kcal": 250,
+   "protein_g": 9
+  },
+  {
+   "id": "82071.5",
+   "name": "Raisin Bran",
+   "portion": "1 cup",
+   "kcal": 190,
+   "protein_g": 5
+  },
+  {
+   "id": "112530.0",
+   "name": "Muffin, Blueberry, Udi's, 3 oz, IW",
+   "portion": "1 each",
+   "kcal": 270,
+   "protein_g": 3
+  },
+  {
+   "id": "85814.4",
+   "name": "Lemonade",
+   "portion": "1 floz",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "63651.37",
+   "name": "Blueberry Bagel",
+   "portion": "1 each",
+   "kcal": 230,
+   "protein_g": 8
+  },
+  {
+   "id": "81253.0",
+   "name": "Cherry Coca-Cola",
+   "portion": "1 floz",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "47130.22",
+   "name": "Very Green Smoothie",
+   "portion": "16 floz",
+   "kcal": 200,
+   "protein_g": 4
+  },
+  {
+   "id": "185831.0",
+   "name": "Carrot Cake Oatmeal with Raisins",
+   "portion": "4 oz portion",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "142380.0",
+   "name": "Powdered Donut Hole",
+   "portion": "3 each",
+   "kcal": 160,
+   "protein_g": 2
+  },
+  {
+   "id": "157967.0",
+   "name": "Green Chili, Egg, Bacon Quesadilla",
+   "portion": "1/2 each",
+   "kcal": 330,
+   "protein_g": 17
+  },
+  {
+   "id": "16351.46",
+   "name": "Mixed Berries",
+   "portion": "1 ounce",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "611.3",
+   "name": "Grits",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 1
+  },
+  {
+   "id": "35996.4",
+   "name": "Cilantro Serrano Pinto Beans",
+   "portion": "1/2 cup",
+   "kcal": 90,
+   "protein_g": 6
+  },
+  {
+   "id": "63113.1",
+   "name": "Chia Seeds",
+   "portion": "1 tsp",
+   "kcal": 25,
+   "protein_g": 1
+  },
+  {
+   "id": "180819.0",
+   "name": "Black Bean and Tofu Chilaquiles",
+   "portion": "6 ounce",
+   "kcal": 210,
+   "protein_g": 11
+  },
+  {
+   "id": "106352.2",
+   "name": "Chili Rub Chicken",
+   "portion": "4 ounce",
+   "kcal": 250,
+   "protein_g": 29
+  },
+  {
+   "id": "62345.0",
+   "name": "Crumbled Feta Cheese",
+   "portion": "1 tbsp",
+   "kcal": 25,
+   "protein_g": 1
+  },
+  {
+   "id": "160650.1",
+   "name": "Date Caramel Overnight Oats",
+   "portion": "4 ounce",
+   "kcal": 200,
+   "protein_g": 4
+  },
+  {
+   "id": "85254.0",
+   "name": "Fat Free Vanilla Greek Yogurt",
+   "portion": "1/2 cup",
+   "kcal": 90,
+   "protein_g": 9
+  },
+  {
+   "id": "1124.0",
+   "name": "Grapefruit",
+   "portion": "1 half",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "63111.0",
+   "name": "Eggs Your Way",
+   "portion": "1 each",
+   "kcal": 60,
+   "protein_g": 6
+  },
+  {
+   "id": "1178.0",
+   "name": "Tater Tots",
+   "portion": "1/2 cup",
+   "kcal": 210,
+   "protein_g": 1
+  },
+  {
+   "id": "31969.0",
+   "name": "Cubed Pineapple",
+   "portion": "1/4 cup",
+   "kcal": 20,
+   "protein_g": 0
+  },
+  {
+   "id": "107501.0",
+   "name": "Scones",
+   "portion": "1 each",
+   "kcal": 340,
+   "protein_g": 5
+  },
+  {
+   "id": "17977.3",
+   "name": "Salsa Fresca",
+   "portion": "2 ounce",
+   "kcal": 10,
+   "protein_g": 1
+  },
+  {
+   "id": "138787.1",
+   "name": "Waffle Casserole with Strawberries",
+   "portion": "4 ounce",
+   "kcal": 450,
+   "protein_g": 7
+  },
+  {
+   "id": "134299.0",
+   "name": "Chicken Tender",
+   "portion": "4 oz meat",
+   "kcal": 250,
+   "protein_g": 17
+  },
+  {
+   "id": "115132.0",
+   "name": "Vegetable Minestrone Soup",
+   "portion": "6 ounce",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "127324.0",
+   "name": "Turkey and Creole Mustard",
+   "portion": "1 sandwich",
+   "kcal": 550,
+   "protein_g": 27
+  },
+  {
+   "id": "16686.0",
+   "name": "Italian Dressing",
+   "portion": "1 floz",
+   "kcal": 110,
+   "protein_g": 0
+  },
+  {
+   "id": "16168.6",
+   "name": "Pita Chips",
+   "portion": "4 each",
+   "kcal": 120,
+   "protein_g": 4
+  },
+  {
+   "id": "10981.5",
+   "name": "Sweet and Sour Tofu",
+   "portion": "1-1/2 cup",
+   "kcal": 190,
+   "protein_g": 10
+  },
+  {
+   "id": "180772.2",
+   "name": "Penne with Mushroom, Lentil Ragout",
+   "portion": "1 cup",
+   "kcal": 180,
+   "protein_g": 9
+  },
+  {
+   "id": "104007.0",
+   "name": "Zucchini with Cherry Tomatoes",
+   "portion": "1/2 cup",
+   "kcal": 25,
+   "protein_g": 1
+  },
+  {
+   "id": "1486.18",
+   "name": "Garlic Chickpeas, Tomatoes and Onions",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 3
+  },
+  {
+   "id": "57714.0",
+   "name": "Dijon Mustard",
+   "portion": "1 floz",
+   "kcal": 30,
+   "protein_g": 1
+  },
+  {
+   "id": "18475.2",
+   "name": "Egg Salad",
+   "portion": "3 ounce",
+   "kcal": 200,
+   "protein_g": 8
+  },
+  {
+   "id": "22703.0",
+   "name": "Cajun Mayo",
+   "portion": "1 tbsp",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "63250.6",
+   "name": "Potato Wedges",
+   "portion": "3 ounce",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "124382.0",
+   "name": "Turkey and Swiss on Sourdough",
+   "portion": "1 sandwich",
+   "kcal": 360,
+   "protein_g": 26
+  },
+  {
+   "id": "5001.40",
+   "name": "Grilled Chicken",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 23
+  },
+  {
+   "id": "125480.2",
+   "name": "Garden Salad",
+   "portion": "4 ounce",
+   "kcal": 20,
+   "protein_g": 1
+  },
+  {
+   "id": "218052.0",
+   "name": "Build Your Own Potato Bar",
+   "portion": "1 each",
+   "kcal": 510,
+   "protein_g": 14
+  },
+  {
+   "id": "102520.0",
+   "name": "Spicy Green Beans",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 3
+  },
+  {
+   "id": "43034.1",
+   "name": "Sliced American Swiss Cheese",
+   "portion": "1 ounce",
+   "kcal": 100,
+   "protein_g": 5
+  },
+  {
+   "id": "82258.1",
+   "name": "Meatless Black Bean Burger",
+   "portion": "1 each",
+   "kcal": 160,
+   "protein_g": 13
+  },
+  {
+   "id": "103814.6",
+   "name": "White Rice",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "16207.15",
+   "name": "Blanched Broccoli",
+   "portion": "1/2 cup",
+   "kcal": 25,
+   "protein_g": 2
+  },
+  {
+   "id": "553.21",
+   "name": "Baked Potato",
+   "portion": "1 each",
+   "kcal": 300,
+   "protein_g": 6
+  },
+  {
+   "id": "177181.0",
+   "name": "Strawberry White Balsamic Vinaigrette",
+   "portion": "2 oz portion",
+   "kcal": 240,
+   "protein_g": 0
+  },
+  {
+   "id": "19571.8",
+   "name": "Rosemary Roasted Mushroom",
+   "portion": "1/2 cup",
+   "kcal": 25,
+   "protein_g": 2
+  },
+  {
+   "id": "17023.0",
+   "name": "Mushroom Medley",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "18969.7",
+   "name": "Garlic Hummus",
+   "portion": "1 tbsp",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "5661.1",
+   "name": "Sauteed Onions",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "5279.3",
+   "name": "Steamed Green Beans",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 2
+  },
+  {
+   "id": "31171.0",
+   "name": "Sauteed Spinach",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 2
+  },
+  {
+   "id": "5311.2",
+   "name": "Hawaiian Sweet Roll Slider",
+   "portion": "2 each",
+   "kcal": 180,
+   "protein_g": 5
+  },
+  {
+   "id": "124.0",
+   "name": "Cinnamon Sugar",
+   "portion": "1 tbsp",
+   "kcal": 50,
+   "protein_g": 0
+  },
+  {
+   "id": "82581.0",
+   "name": "Pickled Carrots",
+   "portion": "1/4 cup",
+   "kcal": 30,
+   "protein_g": 1
+  },
+  {
+   "id": "111534.1",
+   "name": "Alfredo Sauce",
+   "portion": "4 floz",
+   "kcal": 280,
+   "protein_g": 6
+  },
+  {
+   "id": "18398.0",
+   "name": "Black Bean and Corn Salad",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 5
+  },
+  {
+   "id": "102450.0",
+   "name": "Beef Chili",
+   "portion": "6 ounce",
+   "kcal": 310,
+   "protein_g": 22
+  },
+  {
+   "id": "5147.0",
+   "name": "Croissant",
+   "portion": "1 each",
+   "kcal": 190,
+   "protein_g": 4
+  },
+  {
+   "id": "16776.0",
+   "name": "Balsamic Vinaigrette Dressing",
+   "portion": "1 floz",
+   "kcal": 60,
+   "protein_g": 0
+  },
+  {
+   "id": "103814.0",
+   "name": "White Rice",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "103808.0",
+   "name": "Cooked Red Quinoa",
+   "portion": "1/4 cup",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "113581.0",
+   "name": "Grilled Cheese Sandwich",
+   "portion": "1 sandwich",
+   "kcal": 290,
+   "protein_g": 9
+  },
+  {
+   "id": "63481.0",
+   "name": "Mini Marshmallows",
+   "portion": "1 tbsp",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "160351.0",
+   "name": "Caprese Panini",
+   "portion": "1 sandwich",
+   "kcal": 670,
+   "protein_g": 26
+  },
+  {
+   "id": "98443.0",
+   "name": "Whipped Butter",
+   "portion": "1 tbsp",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "179803.0",
+   "name": "Apple Pie",
+   "portion": "10 slice",
+   "kcal": 3210,
+   "protein_g": 30
+  },
+  {
+   "id": "40330.3",
+   "name": "Mexican Spiced Dusted Roasted Pork Loin",
+   "portion": "4 ounce",
+   "kcal": 150,
+   "protein_g": 21
+  },
+  {
+   "id": "112294.0",
+   "name": "Spicy Crispy Chicken Sandwich",
+   "portion": "1 sandwich",
+   "kcal": 500,
+   "protein_g": 21
+  },
+  {
+   "id": "148854.0",
+   "name": "Chipotle Slaw",
+   "portion": "1/2 cup",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "63624.0",
+   "name": "Whole Flax Seeds",
+   "portion": "1 tbsp",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "103601.10",
+   "name": "Old Bay House Fried Potato Chips",
+   "portion": "2 ounce",
+   "kcal": 160,
+   "protein_g": 1
+  },
+  {
+   "id": "103421.0",
+   "name": "Roasted Beets",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "35071.11",
+   "name": "Pesto Pasta Salad",
+   "portion": "1/2 cup",
+   "kcal": 150,
+   "protein_g": 5
+  },
+  {
+   "id": "558.3",
+   "name": "Bowtie Pasta",
+   "portion": "1 cup",
+   "kcal": 180,
+   "protein_g": 7
+  },
+  {
+   "id": "19230.3",
+   "name": "Edamame Hummus",
+   "portion": "2 ounce",
+   "kcal": 110,
+   "protein_g": 5
+  },
+  {
+   "id": "102087.0",
+   "name": "Roasted Sweet Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 160,
+   "protein_g": 3
+  },
+  {
+   "id": "63606.0",
+   "name": "Chopped Green Onions",
+   "portion": "1/4 cup",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "1102.6",
+   "name": "Oatmeal Raisin Cookies",
+   "portion": "1 each",
+   "kcal": 120,
+   "protein_g": 1
+  },
+  {
+   "id": "147235.0",
+   "name": "Farro Risotto with Eggplant and Broccolini",
+   "portion": "6 ounce",
+   "kcal": 140,
+   "protein_g": 8
+  },
+  {
+   "id": "102964.0",
+   "name": "Steamed Green Beans",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "48144.1",
+   "name": "Thinly Sliced Deli Turkey Breast",
+   "portion": "2 ounce",
+   "kcal": 60,
+   "protein_g": 7
+  },
+  {
+   "id": "221458.0",
+   "name": "Pepper Gravy",
+   "portion": "2 oz portion",
+   "kcal": 80,
+   "protein_g": 1
+  },
+  {
+   "id": "56881.1",
+   "name": "Pad Thai Rice Noodles",
+   "portion": "1 cup",
+   "kcal": 190,
+   "protein_g": 3
+  },
+  {
+   "id": "115122.1",
+   "name": "Housemade Italian Dressing",
+   "portion": "1 floz",
+   "kcal": 170,
+   "protein_g": 0
+  },
+  {
+   "id": "5001.77",
+   "name": "Grilled Chicken",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 23
+  },
+  {
+   "id": "119228.1",
+   "name": "Giardiniera Roast Vegetables",
+   "portion": "4 ounce",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "179919.0",
+   "name": "Apple Jacks Cereal Bar",
+   "portion": "1 2\" x 3\"",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "25406.0",
+   "name": "Hummus",
+   "portion": "2 tbsp",
+   "kcal": 25,
+   "protein_g": 1
+  },
+  {
+   "id": "116767.1",
+   "name": "Asian Marinated Tofu",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 5
+  },
+  {
+   "id": "180956.1",
+   "name": "Italian Bean and Pasta Casserole",
+   "portion": "1 cup",
+   "kcal": 230,
+   "protein_g": 11
+  },
+  {
+   "id": "136012.1",
+   "name": "Chicken Caprese No Nut Pesto Panini",
+   "portion": "1 each",
+   "kcal": 810,
+   "protein_g": 40
+  },
+  {
+   "id": "105436.0",
+   "name": "Vegetable Pho",
+   "portion": "1 ladle-8oz",
+   "kcal": 70,
+   "protein_g": 3
+  },
+  {
+   "id": "89095.0",
+   "name": "Italian Meatballs",
+   "portion": "1 ounce",
+   "kcal": 70,
+   "protein_g": 5
+  },
+  {
+   "id": "112728.0",
+   "name": "Tea Infused Eggs",
+   "portion": "1 each",
+   "kcal": 80,
+   "protein_g": 8
+  },
+  {
+   "id": "71070.3",
+   "name": "Pumpkin Seeds",
+   "portion": "1 tbsp",
+   "kcal": 80,
+   "protein_g": 4
+  },
+  {
+   "id": "177183.0",
+   "name": "Italian Herb Vinaigrette",
+   "portion": "2 oz portion",
+   "kcal": 270,
+   "protein_g": 0
+  },
+  {
+   "id": "887.1",
+   "name": "Curry Chicken Salad",
+   "portion": "1/2 cup",
+   "kcal": 210,
+   "protein_g": 13
+  },
+  {
+   "id": "63396.1",
+   "name": "Sunflower Spread",
+   "portion": "1 tbsp",
+   "kcal": 100,
+   "protein_g": 3
+  },
+  {
+   "id": "180225.1",
+   "name": "Strawberry Cream Cheese",
+   "portion": "1 oz portion",
+   "kcal": 90,
+   "protein_g": 1
+  },
+  {
+   "id": "63498.0",
+   "name": "Semi Sweet Chocolate Chips",
+   "portion": "1 tbsp",
+   "kcal": 70,
+   "protein_g": 1
+  },
+  {
+   "id": "142265.0",
+   "name": "Raspberry Sauce",
+   "portion": "1 floz",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "63651.2",
+   "name": "Everything Bagel",
+   "portion": "1 each",
+   "kcal": 310,
+   "protein_g": 11
+  },
+  {
+   "id": "57683.6",
+   "name": "2% Milk",
+   "portion": "8 floz",
+   "kcal": 120,
+   "protein_g": 8
+  },
+  {
+   "id": "63313.7",
+   "name": "Frosted Flakes",
+   "portion": "1 cup",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "82256.4",
+   "name": "Lucky Charms",
+   "portion": "1 cup",
+   "kcal": 140,
+   "protein_g": 3
+  },
+  {
+   "id": "28295.0",
+   "name": "Whipped Topping",
+   "portion": "2 tbsp",
+   "kcal": 25,
+   "protein_g": 0
+  },
+  {
+   "id": "63313.12",
+   "name": "Cocoa Puffs",
+   "portion": "1 cup",
+   "kcal": 140,
+   "protein_g": 2
+  },
+  {
+   "id": "57683.14",
+   "name": "Oat Milk",
+   "portion": "8 floz",
+   "kcal": 130,
+   "protein_g": 4
+  },
+  {
+   "id": "63393.0",
+   "name": "Grape Jelly",
+   "portion": "1 tbsp",
+   "kcal": 50,
+   "protein_g": 0
+  },
+  {
+   "id": "80875.0",
+   "name": "Dr. Pepper",
+   "portion": "8 floz",
+   "kcal": 90,
+   "protein_g": 0
+  },
+  {
+   "id": "63479.0",
+   "name": "Rainbow Sprinkles",
+   "portion": "1 tbsp",
+   "kcal": 45,
+   "protein_g": 0
+  },
+  {
+   "id": "63313.13",
+   "name": "Golden Grahams",
+   "portion": "1 cup",
+   "kcal": 150,
+   "protein_g": 2
+  },
+  {
+   "id": "63651.1",
+   "name": "Cinnamon Raisin Bagel",
+   "portion": "1 each",
+   "kcal": 290,
+   "protein_g": 10
+  },
+  {
+   "id": "14959.0",
+   "name": "Whole Grain Bread",
+   "portion": "1 slice",
+   "kcal": 90,
+   "protein_g": 3
+  },
+  {
+   "id": "82254.4",
+   "name": "Taco Seasoning",
+   "portion": "1 tsp",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "20257.1",
+   "name": "Oranges",
+   "portion": "1/4 cup",
+   "kcal": 20,
+   "protein_g": 0
+  },
+  {
+   "id": "170479.9",
+   "name": "Milk Mixed Berry Overnight Chia Oats",
+   "portion": "1/2 cup",
+   "kcal": 180,
+   "protein_g": 3
+  },
+  {
+   "id": "163832.0",
+   "name": "Maple Smoked Beef and Pork Sausage",
+   "portion": "4 ounce",
+   "kcal": 400,
+   "protein_g": 12
+  },
+  {
+   "id": "43115.2",
+   "name": "Fresh Grapes",
+   "portion": "7 oz portion",
+   "kcal": 140,
+   "protein_g": 1
+  },
+  {
+   "id": "177168.0",
+   "name": "Pork Sausage Gravy",
+   "portion": "1/2 cup",
+   "kcal": 150,
+   "protein_g": 8
+  },
+  {
+   "id": "126259.0",
+   "name": "Elemental Smoothie",
+   "portion": "6 oz portion",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "3933.9",
+   "name": "Biscuits and Country Gravy",
+   "portion": "1 each",
+   "kcal": 330,
+   "protein_g": 7
+  },
+  {
+   "id": "28952.0",
+   "name": "Apple Cinnamon Oatmeal",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 3
+  },
+  {
+   "id": "552.13",
+   "name": "Crispy Hashbrowns",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "35065.0",
+   "name": "Roasted Vegetable Salad",
+   "portion": "1 cup",
+   "kcal": 140,
+   "protein_g": 3
+  },
+  {
+   "id": "4578.3",
+   "name": "Bacon, Egg, Cheese, Waffle Sandwich",
+   "portion": "1 sandwich",
+   "kcal": 410,
+   "protein_g": 21
+  },
+  {
+   "id": "4922.0",
+   "name": "Butternut Squash Soup",
+   "portion": "1 ladle-6oz",
+   "kcal": 120,
+   "protein_g": 1
+  },
+  {
+   "id": "66297.0",
+   "name": "Real Maple Syrup",
+   "portion": "1 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "74821.1",
+   "name": "Blueberry Scone",
+   "portion": "1 each",
+   "kcal": 380,
+   "protein_g": 5
+  },
+  {
+   "id": "35236.2",
+   "name": "Grilled Vegetable Panini",
+   "portion": "1 each",
+   "kcal": 340,
+   "protein_g": 19
+  },
+  {
+   "id": "12354.1",
+   "name": "Peach Pie",
+   "portion": "1 slice",
+   "kcal": 300,
+   "protein_g": 3
+  },
+  {
+   "id": "1391.0",
+   "name": "Snap Peas with Red Pepper",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 1
+  },
+  {
+   "id": "27288.16",
+   "name": "BBQ Chicken Quarter",
+   "portion": "1 piece",
+   "kcal": 280,
+   "protein_g": 27
+  },
+  {
+   "id": "103209.0",
+   "name": "Bean and Tomato Chili",
+   "portion": "3/4 cup",
+   "kcal": 260,
+   "protein_g": 12
+  },
+  {
+   "id": "30398.3",
+   "name": "Fresh Steamed Carrots",
+   "portion": "1/2 cup",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "21033.0",
+   "name": "Dark Brown Sugar",
+   "portion": "1 tbsp",
+   "kcal": 50,
+   "protein_g": 0
+  },
+  {
+   "id": "185840.0",
+   "name": "Chopped Cheese Beef Sandwich",
+   "portion": "1/2 sandwich",
+   "kcal": 430,
+   "protein_g": 22
+  },
+  {
+   "id": "5294.10",
+   "name": "Grilled Vegetables",
+   "portion": "1/2 cup",
+   "kcal": 45,
+   "protein_g": 2
+  },
+  {
+   "id": "3502.0",
+   "name": "Corn Chowder",
+   "portion": "8 floz",
+   "kcal": 240,
+   "protein_g": 6
+  },
+  {
+   "id": "767.7",
+   "name": "Fresh Fried Ranch Chips",
+   "portion": "2-1/2 ounce",
+   "kcal": 180,
+   "protein_g": 1
+  },
+  {
+   "id": "553.15",
+   "name": "Baked Potatoes",
+   "portion": "1/2 each",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "14387.0",
+   "name": "Whole Wheat Penne Pasta",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "5816.4",
+   "name": "Turkey Burger on Bun",
+   "portion": "1 each",
+   "kcal": 350,
+   "protein_g": 25
+  },
+  {
+   "id": "125577.0",
+   "name": "Spicy Pickles",
+   "portion": "1 oz portion",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "103139.0",
+   "name": "Vegetarian Collard Greens",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 3
+  },
+  {
+   "id": "103980.0",
+   "name": "Fresh Carrot Sticks",
+   "portion": "5 piece",
+   "kcal": 15,
+   "protein_g": 0
+  },
+  {
+   "id": "17022.0",
+   "name": "Chipotle Mayo",
+   "portion": "1 tbsp",
+   "kcal": 90,
+   "protein_g": 0
+  },
+  {
+   "id": "191.0",
+   "name": "Apple Cobbler",
+   "portion": "1/2 cup",
+   "kcal": 490,
+   "protein_g": 3
+  },
+  {
+   "id": "11951.2",
+   "name": "Homestyle Beef Stew",
+   "portion": "8 floz",
+   "kcal": 290,
+   "protein_g": 29
+  },
+  {
+   "id": "4944.9",
+   "name": "Celery Sticks",
+   "portion": "1 plate",
+   "kcal": 10,
+   "protein_g": 1
+  },
+  {
+   "id": "25091.10",
+   "name": "Roast Pork Loin",
+   "portion": "4 oz portion",
+   "kcal": 250,
+   "protein_g": 28
+  },
+  {
+   "id": "103377.1",
+   "name": "Cajun Lentil Stew",
+   "portion": "7 oz portion",
+   "kcal": 170,
+   "protein_g": 9
+  },
+  {
+   "id": "32239.0",
+   "name": "Carnival Cookies",
+   "portion": "1 each",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "382.0",
+   "name": "Chicken and Dumplings",
+   "portion": "8 ounce",
+   "kcal": 160,
+   "protein_g": 8
+  },
+  {
+   "id": "170770.2",
+   "name": "Chipotle Aquafaba Aioli",
+   "portion": "2 oz portion",
+   "kcal": 370,
+   "protein_g": 0
+  },
+  {
+   "id": "138808.0",
+   "name": "Spicy Cucumber Chickpea Salad",
+   "portion": "4 ounce",
+   "kcal": 100,
+   "protein_g": 4
+  },
+  {
+   "id": "33071.1",
+   "name": "Chocolate Chip Cookie",
+   "portion": "1 each",
+   "kcal": 370,
+   "protein_g": 3
+  },
+  {
+   "id": "38275.4",
+   "name": "Soy Ginger Glazed Chicken Breast",
+   "portion": "4 oz meat",
+   "kcal": 180,
+   "protein_g": 32
+  },
+  {
+   "id": "103326.0",
+   "name": "Mashed Potatoes",
+   "portion": "3/4 cup",
+   "kcal": 220,
+   "protein_g": 4
+  },
+  {
+   "id": "125585.0",
+   "name": "Pastrami & Slaw",
+   "portion": "1 sandwich",
+   "kcal": 450,
+   "protein_g": 31
+  },
+  {
+   "id": "123726.0",
+   "name": "Sweet Potato Korma with Coconut Milk",
+   "portion": "1/2 cup",
+   "kcal": 170,
+   "protein_g": 3
+  },
+  {
+   "id": "63382.0",
+   "name": "Oatmeal Cookie, Keebler",
+   "portion": "1 each",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "81277.0",
+   "name": "Cranberry Juice",
+   "portion": "8 floz",
+   "kcal": 110,
+   "protein_g": 0
+  },
+  {
+   "id": "165679.11",
+   "name": "Korean BBQ Seasoning",
+   "portion": "1 tsp",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "78822.0",
+   "name": "Nashville Hot Chicken Biscuit",
+   "portion": "1 each",
+   "kcal": 520,
+   "protein_g": 29
+  },
+  {
+   "id": "134177.0",
+   "name": "Chocolate Croissant",
+   "portion": "1 each",
+   "kcal": 300,
+   "protein_g": 6
+  },
+  {
+   "id": "762.6",
+   "name": "Macaroni & Cheese",
+   "portion": "3 ounce",
+   "kcal": 140,
+   "protein_g": 5
+  },
+  {
+   "id": "67979.3",
+   "name": "Chipotle BBQ Chicken Pizza",
+   "portion": "1 slice",
+   "kcal": 250,
+   "protein_g": 13
+  },
+  {
+   "id": "39576.0",
+   "name": "Classic Barbecue Sauce",
+   "portion": "1 floz",
+   "kcal": 50,
+   "protein_g": 0
+  },
+  {
+   "id": "682.1",
+   "name": "Coleslaw",
+   "portion": "1/2 cup",
+   "kcal": 130,
+   "protein_g": 1
+  },
+  {
+   "id": "1853.0",
+   "name": "Red Roasted Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "4829.1",
+   "name": "Barbecue Chicken",
+   "portion": "4 oz meat",
+   "kcal": 210,
+   "protein_g": 23
+  },
+  {
+   "id": "103607.2",
+   "name": "Carrots with Ginger",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 1
+  },
+  {
+   "id": "220986.0",
+   "name": "Turkey and Black Bean Picadillo",
+   "portion": "4 oz portion",
+   "kcal": 120,
+   "protein_g": 9
+  },
+  {
+   "id": "138765.2",
+   "name": "Coconut Curry Chickpeas",
+   "portion": "1 cup",
+   "kcal": 550,
+   "protein_g": 12
+  },
+  {
+   "id": "192.2",
+   "name": "Cherry Cobbler",
+   "portion": "1/2 cup",
+   "kcal": 370,
+   "protein_g": 3
+  },
+  {
+   "id": "112543.0",
+   "name": "Fresh Dill Pickle Slices",
+   "portion": "3 slice",
+   "kcal": 5,
+   "protein_g": 0
+  },
+  {
+   "id": "112117.0",
+   "name": "Pico de Gallo",
+   "portion": "2 floz",
+   "kcal": 20,
+   "protein_g": 0
+  },
+  {
+   "id": "105772.3",
+   "name": "Chimichurri Sauce",
+   "portion": "2 floz",
+   "kcal": 170,
+   "protein_g": 1
+  },
+  {
+   "id": "102526.0",
+   "name": "Cilantro Lime Brown Rice",
+   "portion": "1/2 cup",
+   "kcal": 170,
+   "protein_g": 4
+  },
+  {
+   "id": "181345.0",
+   "name": "Chicken Tender",
+   "portion": "2 each",
+   "kcal": 280,
+   "protein_g": 17
+  },
+  {
+   "id": "186668.0",
+   "name": "Smores Cupcakes",
+   "portion": "1 each",
+   "kcal": 200,
+   "protein_g": 3
+  },
+  {
+   "id": "27459.0",
+   "name": "Cinnamon Roll",
+   "portion": "1 each",
+   "kcal": 210,
+   "protein_g": 3
+  },
+  {
+   "id": "107595.0",
+   "name": "Cuban Mojo Chicken",
+   "portion": "4 oz portion",
+   "kcal": 120,
+   "protein_g": 16
+  },
+  {
+   "id": "1102.5",
+   "name": "Double Chocolate Chip Cookies",
+   "portion": "1 each",
+   "kcal": 120,
+   "protein_g": 1
+  },
+  {
+   "id": "8976.1",
+   "name": "Bulgur Pilaf with Lentils",
+   "portion": "4 oz portion",
+   "kcal": 110,
+   "protein_g": 6
+  },
+  {
+   "id": "103835.1",
+   "name": "Spanish Quinoa",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 4
+  },
+  {
+   "id": "102312.0",
+   "name": "Smashed Black Beans",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 6
+  },
+  {
+   "id": "102743.2",
+   "name": "Roasted Chimichurri Cauliflower",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 3
+  },
+  {
+   "id": "142198.0",
+   "name": "Chocolate and Sprinkles Donut",
+   "portion": "1 each",
+   "kcal": 400,
+   "protein_g": 4
+  },
+  {
+   "id": "106352.3",
+   "name": "Barbecued Chicken",
+   "portion": "4 ounce",
+   "kcal": 210,
+   "protein_g": 27
+  },
+  {
+   "id": "103772.0",
+   "name": "Green Beans",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 2
+  },
+  {
+   "id": "10.0",
+   "name": "Spinach Side Salad",
+   "portion": "1 cup",
+   "kcal": 80,
+   "protein_g": 6
+  },
+  {
+   "id": "103924.1",
+   "name": "Chicken Cacciatore",
+   "portion": "4 ounce",
+   "kcal": 210,
+   "protein_g": 33
+  },
+  {
+   "id": "37633.3",
+   "name": "Lentil and Potato Salad",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 5
+  },
+  {
+   "id": "141357.0",
+   "name": "BBQ Squash Ribs",
+   "portion": "4 ounce",
+   "kcal": 210,
+   "protein_g": 1
+  },
+  {
+   "id": "125491.2",
+   "name": "Mezze Spiced Fall Roasted Vegetables",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "7716.2",
+   "name": "Whole Wheat Penne with Herbs",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 3
+  },
+  {
+   "id": "3407.0",
+   "name": "Yellow Squash with Red Onions",
+   "portion": "1/2 cup",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "63838.0",
+   "name": "Penne Pasta",
+   "portion": "1 cup",
+   "kcal": 200,
+   "protein_g": 4
+  },
+  {
+   "id": "12381.0",
+   "name": "Marinara Sauce",
+   "portion": "1 ladle-4oz",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "15576.0",
+   "name": "Light Brown Sugar",
+   "portion": "1 tbsp",
+   "kcal": 50,
+   "protein_g": 0
+  },
+  {
+   "id": "68282.3",
+   "name": "Moroccan Beef and Tomato",
+   "portion": "1/2 cup",
+   "kcal": 90,
+   "protein_g": 7
+  },
+  {
+   "id": "12274.0",
+   "name": "Sweet Potato Hash with Peppers",
+   "portion": "5 ounce",
+   "kcal": 140,
+   "protein_g": 2
+  },
+  {
+   "id": "71009.40",
+   "name": "Roasted Apples",
+   "portion": "2 oz portion",
+   "kcal": 120,
+   "protein_g": 0
+  },
+  {
+   "id": "101989.0",
+   "name": "Pineapple French Toast",
+   "portion": "1 slice",
+   "kcal": 300,
+   "protein_g": 7
+  },
+  {
+   "id": "129565.1",
+   "name": "Vegan Cheese, Tofu Fajita Scramble",
+   "portion": "1 cup",
+   "kcal": 320,
+   "protein_g": 19
+  },
+  {
+   "id": "57570.18",
+   "name": "Chicken Sausage Patty",
+   "portion": "1 each",
+   "kcal": 90,
+   "protein_g": 9
+  },
+  {
+   "id": "74679.10",
+   "name": "Assorted Mini Danishes",
+   "portion": "1 each",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "88.0",
+   "name": "Cubed Watermelon",
+   "portion": "1/4 cup",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "154528.2",
+   "name": "Jalapeno Lime Corn Grits",
+   "portion": "4 oz portion",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "1128.0",
+   "name": "Hash Brown Patty",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 1
+  },
+  {
+   "id": "126698.0",
+   "name": "Hickory-Smoked Barbecued Chicken",
+   "portion": "1 piece",
+   "kcal": 900,
+   "protein_g": 71
+  },
+  {
+   "id": "119954.0",
+   "name": "Eggplant & Provolone Panini",
+   "portion": "1 sandwich",
+   "kcal": 940,
+   "protein_g": 24
+  },
+  {
+   "id": "1834.0",
+   "name": "Tomato Bisque Soup",
+   "portion": "1 ladle-6oz",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "8060.18",
+   "name": "Roasted Yellow Squash",
+   "portion": "1/2 cup",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "103930.0",
+   "name": "Marinara Sauce",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 1
+  },
+  {
+   "id": "33992.64",
+   "name": "Roasted Brussels Sprouts",
+   "portion": "1/2 cup",
+   "kcal": 45,
+   "protein_g": 2
+  },
+  {
+   "id": "87937.1",
+   "name": "Smoked BBQ Tofu",
+   "portion": "4 oz portion",
+   "kcal": 150,
+   "protein_g": 11
+  },
+  {
+   "id": "1105.3",
+   "name": "Low Fat Sour Cream",
+   "portion": "1 tbsp",
+   "kcal": 20,
+   "protein_g": 0
+  },
+  {
+   "id": "165533.0",
+   "name": "Nashville Hot Sauce",
+   "portion": "2 floz",
+   "kcal": 470,
+   "protein_g": 0
+  },
+  {
+   "id": "9127.17",
+   "name": "Crispy Chicken Pesto Sandwich",
+   "portion": "1 sandwich",
+   "kcal": 760,
+   "protein_g": 33
+  },
+  {
+   "id": "4807.0",
+   "name": "Baked Potato Soup",
+   "portion": "1 ladle-6oz",
+   "kcal": 130,
+   "protein_g": 3
+  },
+  {
+   "id": "12946.19",
+   "name": "Chickpea Pasta Mac no Cheese",
+   "portion": "1 cup",
+   "kcal": 300,
+   "protein_g": 12
+  },
+  {
+   "id": "8104.6",
+   "name": "Banana Pudding Parfait",
+   "portion": "1/2 cup",
+   "kcal": 150,
+   "protein_g": 0
+  },
+  {
+   "id": "74040.7",
+   "name": "Double Chocolate Chip Cookie",
+   "portion": "1 each",
+   "kcal": 170,
+   "protein_g": 2
+  },
+  {
+   "id": "103735.2",
+   "name": "Italian Wedding Soup",
+   "portion": "6 floz",
+   "kcal": 150,
+   "protein_g": 9
+  },
+  {
+   "id": "159395.0",
+   "name": "Apple Cobbler",
+   "portion": "1 serving(s)",
+   "kcal": 290,
+   "protein_g": 3
+  },
+  {
+   "id": "102839.0",
+   "name": "Vegan Hoppin John",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 3
+  },
+  {
+   "id": "180867.0",
+   "name": "Turkey Tetrazzini",
+   "portion": "6 ounce",
+   "kcal": 300,
+   "protein_g": 21
+  },
+  {
+   "id": "107483.0",
+   "name": "Sugar Cookie",
+   "portion": "1 each",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "62337.0",
+   "name": "Edamame",
+   "portion": "1/4 cup",
+   "kcal": 35,
+   "protein_g": 4
+  },
+  {
+   "id": "16861.2",
+   "name": "Brown Rice",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "81895.0",
+   "name": "Julienne Yellow Onions",
+   "portion": "1/4 cup",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "77898.1",
+   "name": "Cuban Black Bean Soup",
+   "portion": "1 ladle-8oz",
+   "kcal": 220,
+   "protein_g": 12
+  },
+  {
+   "id": "102718.0",
+   "name": "Okra and Tomatoes",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "25891.0",
+   "name": "Tater Tots",
+   "portion": "1/2 cup",
+   "kcal": 130,
+   "protein_g": 1
+  },
+  {
+   "id": "1390.4",
+   "name": "Udi's Plain Bagel",
+   "portion": "1 each",
+   "kcal": 310,
+   "protein_g": 8
+  },
+  {
+   "id": "62272.3",
+   "name": "Sourdough Bread",
+   "portion": "1 slice",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "80878.0",
+   "name": "Orange Fanta",
+   "portion": "8 floz",
+   "kcal": 100,
+   "protein_g": 0
+  },
+  {
+   "id": "85136.59",
+   "name": "Mini Chocolate Croissant",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 3
+  },
+  {
+   "id": "165451.1",
+   "name": "Caramel Roll Casserole",
+   "portion": "1 each",
+   "kcal": 330,
+   "protein_g": 7
+  },
+  {
+   "id": "16850.3",
+   "name": "Grilled Corn Polenta",
+   "portion": "1 cup",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "216809.0",
+   "name": "Blueberry Muffin",
+   "portion": "1 each",
+   "kcal": 210,
+   "protein_g": 3
+  },
+  {
+   "id": "25796.0",
+   "name": "Crunchy French Toast",
+   "portion": "1 slice",
+   "kcal": 230,
+   "protein_g": 12
+  },
+  {
+   "id": "159058.0",
+   "name": "Italian Pork Sausage",
+   "portion": "4 ounce",
+   "kcal": 240,
+   "protein_g": 20
+  },
+  {
+   "id": "139272.0",
+   "name": "Ranch Breakfast Potatoes",
+   "portion": "4 ounce",
+   "kcal": 160,
+   "protein_g": 2
+  },
+  {
+   "id": "165741.50",
+   "name": "Butter Chicken",
+   "portion": "1/2 cup",
+   "kcal": 290,
+   "protein_g": 14
+  },
+  {
+   "id": "97343.1",
+   "name": "Naan Flatbread",
+   "portion": "1/2 each",
+   "kcal": 180,
+   "protein_g": 6
+  },
+  {
+   "id": "25091.12",
+   "name": "Roast Pork Loin",
+   "portion": "3 oz portion",
+   "kcal": 120,
+   "protein_g": 15
+  },
+  {
+   "id": "102966.0",
+   "name": "Broccolini",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "1102.4",
+   "name": "Chocolate Chip Cookies",
+   "portion": "1 each",
+   "kcal": 130,
+   "protein_g": 1
+  },
+  {
+   "id": "186275.0",
+   "name": "Spring Vegetable and Tofu Carbonara",
+   "portion": "12 oz portion",
+   "kcal": 420,
+   "protein_g": 16
+  },
+  {
+   "id": "108002.4",
+   "name": "BBQ Pork Baked Sweet Potato",
+   "portion": "1 each",
+   "kcal": 320,
+   "protein_g": 25
+  },
+  {
+   "id": "103897.0",
+   "name": "Tomato & Spinach Cheese Pizza",
+   "portion": "1 1/8th",
+   "kcal": 300,
+   "protein_g": 13
+  },
+  {
+   "id": "31169.3",
+   "name": "Roasted Tomatoes",
+   "portion": "2 each",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "66918.12",
+   "name": "Barbeque Pulled Chicken",
+   "portion": "4 ounce",
+   "kcal": 230,
+   "protein_g": 22
+  },
+  {
+   "id": "111387.0",
+   "name": "Cranberry Bourbon BBQ Sauce",
+   "portion": "1 ounce",
+   "kcal": 60,
+   "protein_g": 0
+  },
+  {
+   "id": "103813.0",
+   "name": "Basmati Rice",
+   "portion": "1 cup",
+   "kcal": 270,
+   "protein_g": 5
+  },
+  {
+   "id": "7855.0",
+   "name": "Green Salad",
+   "portion": "1/2 cup",
+   "kcal": 5,
+   "protein_g": 1
+  },
+  {
+   "id": "5311.0",
+   "name": "Hawaiian Sweet Roll",
+   "portion": "1 each",
+   "kcal": 90,
+   "protein_g": 3
+  },
+  {
+   "id": "35063.0",
+   "name": "Vegan Boston Baked Beans",
+   "portion": "4 ounce",
+   "kcal": 200,
+   "protein_g": 7
+  },
+  {
+   "id": "107541.0",
+   "name": "Death By Chocolate Cake",
+   "portion": "1 slice",
+   "kcal": 750,
+   "protein_g": 7
+  },
+  {
+   "id": "8621.7",
+   "name": "Sauteed Spinach",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 5
+  },
+  {
+   "id": "107486.0",
+   "name": "M&M Brownie",
+   "portion": "1 each",
+   "kcal": 230,
+   "protein_g": 3
+  },
+  {
+   "id": "102663.0",
+   "name": "Alfredo Sauce",
+   "portion": "1/2 cup",
+   "kcal": 220,
+   "protein_g": 6
+  },
+  {
+   "id": "123763.1",
+   "name": "Lemon Roasted Broccoli",
+   "portion": "1/2 cup",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "1801.0",
+   "name": "Broccoli Cuts",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 3
+  },
+  {
+   "id": "558.16",
+   "name": "Tri-Color Cheese Tortellini",
+   "portion": "1 cup",
+   "kcal": 210,
+   "protein_g": 7
+  },
+  {
+   "id": "31169.0",
+   "name": "Roasted Tomatoes",
+   "portion": "2 each",
+   "kcal": 40,
+   "protein_g": 2
+  },
+  {
+   "id": "170843.2",
+   "name": "Grilled Pickle Chicken",
+   "portion": "4 oz meat",
+   "kcal": 140,
+   "protein_g": 17
+  },
+  {
+   "id": "12946.16",
+   "name": "Chickpea Pasta with Pesto Sauce",
+   "portion": "1 cup",
+   "kcal": 360,
+   "protein_g": 12
+  },
+  {
+   "id": "8118.0",
+   "name": "Roasted Onions",
+   "portion": "1/2 cup",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "33992.71",
+   "name": "Roasted Broccoli",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 2
+  },
+  {
+   "id": "80570.3",
+   "name": "Zucchini and Bulgur Stuffed Eggplant",
+   "portion": "1 each",
+   "kcal": 120,
+   "protein_g": 4
+  },
+  {
+   "id": "103800.0",
+   "name": "Roasted Red Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 3
+  },
+  {
+   "id": "103578.3",
+   "name": "Apple Pear Raspberry Cobbler",
+   "portion": "1/2 cup",
+   "kcal": 340,
+   "protein_g": 4
+  },
+  {
+   "id": "50617.0",
+   "name": "Simple Sauteed Spinach",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 3
+  },
+  {
+   "id": "154528.0",
+   "name": "Corn Grits",
+   "portion": "4 oz parfait",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "154097.5",
+   "name": "Chai Spiced Oat Pancakes",
+   "portion": "2 each",
+   "kcal": 250,
+   "protein_g": 8
+  },
+  {
+   "id": "58028.0",
+   "name": "Cinnamon Roll",
+   "portion": "1 each",
+   "kcal": 170,
+   "protein_g": 5
+  },
+  {
+   "id": "130719.1",
+   "name": "Vegan Tofu Spinach Quiche",
+   "portion": "4 ounce",
+   "kcal": 280,
+   "protein_g": 10
+  },
+  {
+   "id": "47130.8",
+   "name": "Very Green Smoothie",
+   "portion": "6 floz",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "135499.1",
+   "name": "Turkey Breakfast Sausage",
+   "portion": "3-1/2 ounce",
+   "kcal": 250,
+   "protein_g": 25
+  },
+  {
+   "id": "103907.0",
+   "name": "Banana Muffin",
+   "portion": "1 each",
+   "kcal": 180,
+   "protein_g": 2
+  },
+  {
+   "id": "3506.0",
+   "name": "Tomato Basil Bisque",
+   "portion": "4 floz",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "75665.0",
+   "name": "Lemon Orzo Chicken Soup",
+   "portion": "4 floz",
+   "kcal": 80,
+   "protein_g": 4
+  },
+  {
+   "id": "177177.0",
+   "name": "Aquafaba Lemon Pepper Caesar Salad",
+   "portion": "3/4 cup",
+   "kcal": 200,
+   "protein_g": 1
+  },
+  {
+   "id": "553.10",
+   "name": "Baked Sweet Potato",
+   "portion": "1 each",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "1830.0",
+   "name": "Steamed Cabbage",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 2
+  },
+  {
+   "id": "103475.0",
+   "name": "Corn Succotash with Lima  Beans",
+   "portion": "4 oz portion",
+   "kcal": 240,
+   "protein_g": 6
+  },
+  {
+   "id": "255684.0",
+   "name": "Sugar Cookie",
+   "portion": "1 each",
+   "kcal": 180,
+   "protein_g": 2
+  },
+  {
+   "id": "4434.0",
+   "name": "Strawberry Shortcake Parfait",
+   "portion": "12 oz parfait",
+   "kcal": 790,
+   "protein_g": 8
+  },
+  {
+   "id": "117865.2",
+   "name": "Lentils, Spinach, Feta, Sweet Potato",
+   "portion": "1/2 each",
+   "kcal": 190,
+   "protein_g": 8
+  },
+  {
+   "id": "8122.20",
+   "name": "Roasted Zucchini",
+   "portion": "1/2 cup",
+   "kcal": 35,
+   "protein_g": 1
+  },
+  {
+   "id": "177178.0",
+   "name": "Chicken Crust Tomato Pesto Pizza",
+   "portion": "1 slice",
+   "kcal": 80,
+   "protein_g": 6
+  },
+  {
+   "id": "129192.5",
+   "name": "Vegan Meatballs in Marinara",
+   "portion": "3/4 cup",
+   "kcal": 110,
+   "protein_g": 11
+  },
+  {
+   "id": "23815.0",
+   "name": "Chicken Ratatouille",
+   "portion": "1-1/2 cup",
+   "kcal": 230,
+   "protein_g": 24
+  },
+  {
+   "id": "103399.0",
+   "name": "Roasted Eggplant",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "120752.1",
+   "name": "Escalivada",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "170856.0",
+   "name": "Pork al Pastor",
+   "portion": "1/2 cup",
+   "kcal": 290,
+   "protein_g": 35
+  },
+  {
+   "id": "63391.0",
+   "name": "Cream Cheese",
+   "portion": "1 tbsp",
+   "kcal": 50,
+   "protein_g": 1
+  },
+  {
+   "id": "58028.11",
+   "name": "Cinnamon Roll",
+   "portion": "1 each",
+   "kcal": 130,
+   "protein_g": 3
+  },
+  {
+   "id": "128369.2",
+   "name": "Salted Caramel French Toast Casserole",
+   "portion": "1/2 cup",
+   "kcal": 420,
+   "protein_g": 8
+  },
+  {
+   "id": "170755.2",
+   "name": "Orange Pineapple Oatmilk Smoothie",
+   "portion": "6 floz",
+   "kcal": 130,
+   "protein_g": 3
+  },
+  {
+   "id": "25893.1",
+   "name": "Pork Sausage",
+   "portion": "2 each",
+   "kcal": 390,
+   "protein_g": 9
+  },
+  {
+   "id": "192898.3",
+   "name": "Potato and Squash Hash",
+   "portion": "4 ounce",
+   "kcal": 140,
+   "protein_g": 2
+  },
+  {
+   "id": "177158.0",
+   "name": "Turkey Apple Breakfast Sausage",
+   "portion": "1 each",
+   "kcal": 140,
+   "protein_g": 11
+  },
+  {
+   "id": "63378.0",
+   "name": "Strawberries",
+   "portion": "1/4 cup",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "74821.6",
+   "name": "Blueberry Scone",
+   "portion": "1 each",
+   "kcal": 190,
+   "protein_g": 3
+  },
+  {
+   "id": "103832.0",
+   "name": "Roasted Sweet Potato Hash with Peppers",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "103835.0",
+   "name": "Spanish Rice",
+   "portion": "1/2 cup",
+   "kcal": 90,
+   "protein_g": 2
+  },
+  {
+   "id": "1105.0",
+   "name": "Sour Cream",
+   "portion": "2 tbsp",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "102498.0",
+   "name": "Chipotle Pinto Beans",
+   "portion": "1/2 cup",
+   "kcal": 240,
+   "protein_g": 13
+  },
+  {
+   "id": "171559.0",
+   "name": "Marinated Tofu Feta",
+   "portion": "1/4 cup",
+   "kcal": 100,
+   "protein_g": 6
+  },
+  {
+   "id": "117899.1",
+   "name": "Chicken Gravy",
+   "portion": "4 oz portion",
+   "kcal": 100,
+   "protein_g": 8
+  },
+  {
+   "id": "771.0",
+   "name": "French Fries",
+   "portion": "1 cup",
+   "kcal": 230,
+   "protein_g": 3
+  },
+  {
+   "id": "16856.47",
+   "name": "Grilled Herbed Chicken",
+   "portion": "3 ounce",
+   "kcal": 140,
+   "protein_g": 22
+  },
+  {
+   "id": "103333.0",
+   "name": "Steamed Broccoli",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 2
+  },
+  {
+   "id": "117922.5",
+   "name": "Frosted Flakes Cereal Bars",
+   "portion": "1 2\" x 3\"",
+   "kcal": 170,
+   "protein_g": 1
+  },
+  {
+   "id": "138741.0",
+   "name": "Mustard Greens with Bacon",
+   "portion": "4 ounce",
+   "kcal": 130,
+   "protein_g": 10
+  },
+  {
+   "id": "120627.2",
+   "name": "Spicy Harrissa Hummus",
+   "portion": "4 floz",
+   "kcal": 260,
+   "protein_g": 7
+  },
+  {
+   "id": "24643.3",
+   "name": "Vegan Coconut Yogurt Tzatziki Sauce",
+   "portion": "2 tbsp",
+   "kcal": 30,
+   "protein_g": 0
+  },
+  {
+   "id": "41281.11",
+   "name": "Crispy Tortilla Chips",
+   "portion": "3 oz portion",
+   "kcal": 170,
+   "protein_g": 4
+  },
+  {
+   "id": "119240.0",
+   "name": "Spinach Salad",
+   "portion": "1 each",
+   "kcal": 140,
+   "protein_g": 2
+  },
+  {
+   "id": "1102.3",
+   "name": "Carnival Cookies",
+   "portion": "1 each",
+   "kcal": 120,
+   "protein_g": 1
+  },
+  {
+   "id": "74147.6",
+   "name": "Sumac Tomato Cucumber and Mint Salad",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "123364.1",
+   "name": "Apple Cobbler Cupcake",
+   "portion": "1 each",
+   "kcal": 450,
+   "protein_g": 3
+  },
+  {
+   "id": "1529.7",
+   "name": "Turkey Taco Meat",
+   "portion": "3 ounce",
+   "kcal": 120,
+   "protein_g": 11
+  },
+  {
+   "id": "16168.7",
+   "name": "Whole Wheat Pita Chips",
+   "portion": "12 each",
+   "kcal": 240,
+   "protein_g": 12
+  },
+  {
+   "id": "102943.0",
+   "name": "Queso Blanco Sauce",
+   "portion": "2 ounce",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "47204.0",
+   "name": "6\" Flour Tortilla",
+   "portion": "1 each",
+   "kcal": 90,
+   "protein_g": 2
+  },
+  {
+   "id": "103624.1",
+   "name": "Chicken Bacon Ranch Pizza",
+   "portion": "1 slice",
+   "kcal": 270,
+   "protein_g": 13
+  },
+  {
+   "id": "42837.0",
+   "name": "Kentucky Fried Hot Brown",
+   "portion": "1 sandwich",
+   "kcal": 840,
+   "protein_g": 37
+  },
+  {
+   "id": "96517.1",
+   "name": "Kalamata Olives",
+   "portion": "1 ounce",
+   "kcal": 40,
+   "protein_g": 0
+  },
+  {
+   "id": "106633.1",
+   "name": "Corn Esquites",
+   "portion": "1/2 cup",
+   "kcal": 270,
+   "protein_g": 4
+  },
+  {
+   "id": "89540.4",
+   "name": "Turkey Meatballs with Chimichurri",
+   "portion": "4 each",
+   "kcal": 500,
+   "protein_g": 43
+  },
+  {
+   "id": "165928.0",
+   "name": "Stir-fried Garlic Baby Bok Choy",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "93308.1",
+   "name": "Toum Garlic Sauce",
+   "portion": "2 floz",
+   "kcal": 490,
+   "protein_g": 0
+  },
+  {
+   "id": "49508.9",
+   "name": "Sweet Chili and Thai Basil Tofu",
+   "portion": "6 floz",
+   "kcal": 160,
+   "protein_g": 8
+  },
+  {
+   "id": "16882.6",
+   "name": "Brown Rice",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 3
+  },
+  {
+   "id": "86538.1",
+   "name": "Edamame with Sea Salt",
+   "portion": "1/2 cup",
+   "kcal": 40,
+   "protein_g": 4
+  },
+  {
+   "id": "107142.154",
+   "name": "Orange Breaded Shrimp and Vegetables",
+   "portion": "6 ounce",
+   "kcal": 230,
+   "protein_g": 7
+  },
+  {
+   "id": "103404.0",
+   "name": "Sesame Ginger Udon Noodles",
+   "portion": "4 oz portion",
+   "kcal": 45,
+   "protein_g": 1
+  },
+  {
+   "id": "22663.0",
+   "name": "Roasted Carrots with Cumin & Mint",
+   "portion": "1/2 cup",
+   "kcal": 70,
+   "protein_g": 1
+  },
+  {
+   "id": "86538.2",
+   "name": "Chili Crisp Edamame with Sea Salt",
+   "portion": "1 cup",
+   "kcal": 120,
+   "protein_g": 9
+  },
+  {
+   "id": "1178.17",
+   "name": "Lawry's Spiced Tater Tots",
+   "portion": "1/2 cup",
+   "kcal": 140,
+   "protein_g": 1
+  },
+  {
+   "id": "170804.0",
+   "name": "Red Chili Pork Adovada",
+   "portion": "3 ounce",
+   "kcal": 130,
+   "protein_g": 11
+  },
+  {
+   "id": "102399.8",
+   "name": "Blueberry Chia Seed Pancakes",
+   "portion": "2 each",
+   "kcal": 170,
+   "protein_g": 4
+  },
+  {
+   "id": "552.15",
+   "name": "Crispy Hashbrowns",
+   "portion": "1 cup",
+   "kcal": 200,
+   "protein_g": 3
+  },
+  {
+   "id": "138928.0",
+   "name": "Southwestern Breakfast Burrito",
+   "portion": "1 each",
+   "kcal": 830,
+   "protein_g": 42
+  },
+  {
+   "id": "129895.0",
+   "name": "Pineapple Ginger Turmeric Smoothie",
+   "portion": "6 ounce",
+   "kcal": 110,
+   "protein_g": 1
+  },
+  {
+   "id": "165670.1",
+   "name": "Pumpkin Spice Sunflower Butter and Date Energy Bites",
+   "portion": "1 each",
+   "kcal": 90,
+   "protein_g": 2
+  },
+  {
+   "id": "154527.4",
+   "name": "Apple Cinnamon Oatmeal",
+   "portion": "4 oz portion",
+   "kcal": 100,
+   "protein_g": 3
+  },
+  {
+   "id": "169624.1",
+   "name": "Golden Honey Apple Oats",
+   "portion": "4 ounce",
+   "kcal": 150,
+   "protein_g": 5
+  },
+  {
+   "id": "102289.0",
+   "name": "Roasted Corn and Peppers",
+   "portion": "1/4 cup",
+   "kcal": 50,
+   "protein_g": 1
+  },
+  {
+   "id": "80850.0",
+   "name": "Mediterranean Breakfast Bowl",
+   "portion": "4 ounce",
+   "kcal": 140,
+   "protein_g": 5
+  },
+  {
+   "id": "130491.1",
+   "name": "Tofu and Quinoa Paella",
+   "portion": "6 ounce",
+   "kcal": 150,
+   "protein_g": 7
+  },
+  {
+   "id": "175213.0",
+   "name": "Vegetable Pozole",
+   "portion": "4 floz",
+   "kcal": 90,
+   "protein_g": 2
+  },
+  {
+   "id": "50923.10",
+   "name": "Avoiding Gluten Barilla Penne",
+   "portion": "1 cup",
+   "kcal": 130,
+   "protein_g": 3
+  },
+  {
+   "id": "4461.0",
+   "name": "Vegetable Beef Barley Soup",
+   "portion": "4 floz",
+   "kcal": 50,
+   "protein_g": 4
+  },
+  {
+   "id": "169600.0",
+   "name": "Dill Pickle and Bacon Grilled Cheese",
+   "portion": "1 sandwich",
+   "kcal": 660,
+   "protein_g": 30
+  },
+  {
+   "id": "102303.0",
+   "name": "Sauteed Green Beans Onions Tomatoes",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "212088.0",
+   "name": "Salt and Malt Vinegar Tofu",
+   "portion": "4 ounce",
+   "kcal": 230,
+   "protein_g": 9
+  },
+  {
+   "id": "75364.7",
+   "name": "Roasted Carrots and Cauliflower",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "221572.0",
+   "name": "Green Bean Mushroom Casserole",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "480.3",
+   "name": "Pork Jagerschnitzel",
+   "portion": "1 serving(s)",
+   "kcal": 610,
+   "protein_g": 42
+  },
+  {
+   "id": "73988.1",
+   "name": "Eggs",
+   "portion": "1 each",
+   "kcal": 60,
+   "protein_g": 6
+  },
+  {
+   "id": "163144.0",
+   "name": "Buffalo White Bean Dip",
+   "portion": "1/2 cup",
+   "kcal": 170,
+   "protein_g": 7
+  },
+  {
+   "id": "14901.0",
+   "name": "Diced Bacon",
+   "portion": "2 tbsp",
+   "kcal": 90,
+   "protein_g": 6
+  },
+  {
+   "id": "102648.0",
+   "name": "Sauteed Kale",
+   "portion": "1/2 cup",
+   "kcal": 90,
+   "protein_g": 5
+  },
+  {
+   "id": "18444.3",
+   "name": "Oatmeal with Apples and Cinnamon",
+   "portion": "1 cup",
+   "kcal": 180,
+   "protein_g": 5
+  },
+  {
+   "id": "43037.2",
+   "name": "Sliced Pepper Jack Cheese",
+   "portion": "1 slice",
+   "kcal": 110,
+   "protein_g": 7
+  },
+  {
+   "id": "27320.3",
+   "name": "Biscuit and Sausage Gravy",
+   "portion": "1 each",
+   "kcal": 290,
+   "protein_g": 7
+  },
+  {
+   "id": "14899.0",
+   "name": "Diced Ham",
+   "portion": "1/4 cup",
+   "kcal": 45,
+   "protein_g": 5
+  },
+  {
+   "id": "31884.6",
+   "name": "Vegan White Bean Bake Casserole",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 8
+  },
+  {
+   "id": "28711.0",
+   "name": "Roasted Herb Chicken",
+   "portion": "4 ounce",
+   "kcal": 240,
+   "protein_g": 26
+  },
+  {
+   "id": "103420.0",
+   "name": "Herb Roasted Potato Wedges",
+   "portion": "4 oz portion",
+   "kcal": 150,
+   "protein_g": 3
+  },
+  {
+   "id": "1748.15",
+   "name": "Sliced Mild Cheddar Cheese",
+   "portion": "1 slice",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "103200.0",
+   "name": "Sauteed Squash",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "5590.4",
+   "name": "Pumpkin Pie",
+   "portion": "1 slice",
+   "kcal": 240,
+   "protein_g": 3
+  },
+  {
+   "id": "103605.0",
+   "name": "Chocolate Cake with Chocolate Frosting",
+   "portion": "1 slice",
+   "kcal": 330,
+   "protein_g": 4
+  },
+  {
+   "id": "165687.1",
+   "name": "Plant Based Impossible Salisbury Steak",
+   "portion": "1 each",
+   "kcal": 170,
+   "protein_g": 12
+  },
+  {
+   "id": "165843.0",
+   "name": "Philly Steak Stuffed Peppers",
+   "portion": "1 each",
+   "kcal": 280,
+   "protein_g": 15
+  },
+  {
+   "id": "28721.0",
+   "name": "Olive Oil Mashed Potatoes",
+   "portion": "4 ounce",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "103927.0",
+   "name": "Broccoli Rabe, Garlic and Chilies",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 4
+  },
+  {
+   "id": "131922.6",
+   "name": "Tomato Spinach Ricotta Garlic Pizza",
+   "portion": "1 slice",
+   "kcal": 240,
+   "protein_g": 11
+  },
+  {
+   "id": "50962.6",
+   "name": "Brown and Wild Rice Pilaf",
+   "portion": "1/2 cup",
+   "kcal": 160,
+   "protein_g": 4
+  },
+  {
+   "id": "170786.0",
+   "name": "Oat Milk Caramel Sauce",
+   "portion": "2 floz",
+   "kcal": 200,
+   "protein_g": 0
+  },
+  {
+   "id": "106415.0",
+   "name": "Potatoes O'Brien",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "128365.6",
+   "name": "Berry French Toast Casserole",
+   "portion": "1/2 cup",
+   "kcal": 260,
+   "protein_g": 8
+  },
+  {
+   "id": "4876.7",
+   "name": "M&M Blonde Brownies",
+   "portion": "1 2-1/2\"x3\"",
+   "kcal": 340,
+   "protein_g": 4
+  },
+  {
+   "id": "4462.0",
+   "name": "Clam Chowder",
+   "portion": "4 floz",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "139280.0",
+   "name": "Blackened Sweet Potato",
+   "portion": "4 ounce",
+   "kcal": 130,
+   "protein_g": 2
+  },
+  {
+   "id": "27976.0",
+   "name": "Cajun Chicken Penne",
+   "portion": "8 oz portion",
+   "kcal": 660,
+   "protein_g": 31
+  },
+  {
+   "id": "4467.0",
+   "name": "Garden Vegetable Soup",
+   "portion": "4 floz",
+   "kcal": 30,
+   "protein_g": 1
+  },
+  {
+   "id": "9002.10",
+   "name": "Sauteed Green Beans and Sweet Onions",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "33992.148",
+   "name": "Roasted Asparagus",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "75131.2",
+   "name": "Mushrooms, Tomatoes and Spinach",
+   "portion": "1/2 cup",
+   "kcal": 50,
+   "protein_g": 2
+  },
+  {
+   "id": "105807.0",
+   "name": "Balsamic Glazed Vegetables",
+   "portion": "4 ounce",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "180445.0",
+   "name": "Fire Roasted Corn",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 2
+  },
+  {
+   "id": "18530.1",
+   "name": "Rosemary Garlic Pork Tenderloin",
+   "portion": "4 ounce",
+   "kcal": 170,
+   "protein_g": 29
+  },
+  {
+   "id": "123382.1",
+   "name": "Baked Mushroom Boudin",
+   "portion": "3 piece",
+   "kcal": 130,
+   "protein_g": 4
+  },
+  {
+   "id": "184982.1",
+   "name": "Sun-Dried Tomato Pasta with Arugula",
+   "portion": "12 oz portion",
+   "kcal": 550,
+   "protein_g": 17
+  },
+  {
+   "id": "102727.1",
+   "name": "Bruschetta Topping",
+   "portion": "1/4 cup",
+   "kcal": 50,
+   "protein_g": 1
+  },
+  {
+   "id": "142225.0",
+   "name": "Chocolate Iced Cake with Sprinkles",
+   "portion": "1 2\" x 2\"",
+   "kcal": 270,
+   "protein_g": 3
+  },
+  {
+   "id": "170770.1",
+   "name": "Ranch Aquafaba Aioli",
+   "portion": "2 oz portion",
+   "kcal": 370,
+   "protein_g": 1
+  },
+  {
+   "id": "745.8",
+   "name": "Corn on the Cob",
+   "portion": "1 each",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "103644.1",
+   "name": "Herb Roasted Mushroom Pizza",
+   "portion": "1 slice",
+   "kcal": 210,
+   "protein_g": 9
+  },
+  {
+   "id": "83580.0",
+   "name": "Steamed Peas",
+   "portion": "3/4 cup",
+   "kcal": 90,
+   "protein_g": 6
+  },
+  {
+   "id": "29729.3",
+   "name": "Grits",
+   "portion": "6 floz",
+   "kcal": 240,
+   "protein_g": 5
+  },
+  {
+   "id": "14210.3",
+   "name": "Scrambled Eggs",
+   "portion": "1/2 cup",
+   "kcal": 100,
+   "protein_g": 10
+  },
+  {
+   "id": "165845.0",
+   "name": "Buffalo Grilled Chicken Breast",
+   "portion": "4 oz meat",
+   "kcal": 160,
+   "protein_g": 17
+  },
+  {
+   "id": "4027.0",
+   "name": "Pork Sausage Gravy",
+   "portion": "1 ladle-1oz",
+   "kcal": 80,
+   "protein_g": 3
+  },
+  {
+   "id": "66707.0",
+   "name": "Tortellini alla Beef Bolognese",
+   "portion": "6 ounce",
+   "kcal": 330,
+   "protein_g": 16
+  },
+  {
+   "id": "82257.0",
+   "name": "Homestyle Breaded Chicken Tender",
+   "portion": "1 each",
+   "kcal": 150,
+   "protein_g": 10
+  },
+  {
+   "id": "82537.0",
+   "name": "Lucky Charms Treats",
+   "portion": "1 each",
+   "kcal": 90,
+   "protein_g": 1
+  },
+  {
+   "id": "142250.0",
+   "name": "Caramel Vanilla Apple Pie",
+   "portion": "1 slice",
+   "kcal": 350,
+   "protein_g": 3
+  },
+  {
+   "id": "86831.3",
+   "name": "Buttermilk Biscuit",
+   "portion": "1 each",
+   "kcal": 100,
+   "protein_g": 2
+  },
+  {
+   "id": "16837.2",
+   "name": "Barley Mushroom Pilaf",
+   "portion": "3/4 cup",
+   "kcal": 110,
+   "protein_g": 4
+  },
+  {
+   "id": "58730.14",
+   "name": "Chickpea and Date Tagine",
+   "portion": "1/2 cup",
+   "kcal": 260,
+   "protein_g": 10
+  },
+  {
+   "id": "553.0",
+   "name": "Baked Potatoes",
+   "portion": "1 each",
+   "kcal": 210,
+   "protein_g": 4
+  },
+  {
+   "id": "103283.6",
+   "name": "Herb Roasted Turkey Breast",
+   "portion": "4 oz portion",
+   "kcal": 130,
+   "protein_g": 23
+  },
+  {
+   "id": "62344.0",
+   "name": "Shredded Cheddar Cheese",
+   "portion": "1 tbsp",
+   "kcal": 30,
+   "protein_g": 2
+  },
+  {
+   "id": "28068.0",
+   "name": "Okra with Tomatoes and Coriander",
+   "portion": "3 floz",
+   "kcal": 60,
+   "protein_g": 3
+  },
+  {
+   "id": "102728.0",
+   "name": "Shrimp Etouffee",
+   "portion": "1 cup",
+   "kcal": 210,
+   "protein_g": 13
+  },
+  {
+   "id": "221230.0",
+   "name": "Brown Sugar Mashed Sweet Potatoes",
+   "portion": "1/2 cup",
+   "kcal": 120,
+   "protein_g": 2
+  },
+  {
+   "id": "117899.0",
+   "name": "Turkey Gravy",
+   "portion": "2 oz portion",
+   "kcal": 70,
+   "protein_g": 7
+  },
+  {
+   "id": "9032.2",
+   "name": "Spaghetti Squash",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "14983.1",
+   "name": "Mild Cheese Sauce",
+   "portion": "1 floz",
+   "kcal": 35,
+   "protein_g": 0
+  },
+  {
+   "id": "17140.0",
+   "name": "Caramelized Onions",
+   "portion": "1/4 cup",
+   "kcal": 35,
+   "protein_g": 0
+  },
+  {
+   "id": "175212.0",
+   "name": "White Bean Chili",
+   "portion": "8 floz",
+   "kcal": 190,
+   "protein_g": 9
+  },
+  {
+   "id": "104943.0",
+   "name": "Cilantro Pesto Tofu",
+   "portion": "4 ounce",
+   "kcal": 140,
+   "protein_g": 12
+  },
+  {
+   "id": "126244.2",
+   "name": "Spectrum Smoothie",
+   "portion": "6 oz portion",
+   "kcal": 100,
+   "protein_g": 1
+  },
+  {
+   "id": "170770.6",
+   "name": "Avocado Ranch Aquafaba Dressing",
+   "portion": "2 oz portion",
+   "kcal": 390,
+   "protein_g": 1
+  },
+  {
+   "id": "170839.0",
+   "name": "Rice Cereal Fried Chicken",
+   "portion": "4 oz meat",
+   "kcal": 410,
+   "protein_g": 18
+  },
+  {
+   "id": "1361.1",
+   "name": "Black Beans & Brown Rice",
+   "portion": "8 oz portion",
+   "kcal": 270,
+   "protein_g": 11
+  },
+  {
+   "id": "102561.0",
+   "name": "Mango Salsa",
+   "portion": "2 ounce",
+   "kcal": 45,
+   "protein_g": 0
+  },
+  {
+   "id": "170860.1",
+   "name": "Grilled Jerk Chicken",
+   "portion": "4 ounce",
+   "kcal": 100,
+   "protein_g": 16
+  },
+  {
+   "id": "14307.0",
+   "name": "Roasted Butternut Squash",
+   "portion": "1/2 cup",
+   "kcal": 60,
+   "protein_g": 1
+  },
+  {
+   "id": "17444.30",
+   "name": "Spicy Collard Greens",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 2
+  },
+  {
+   "id": "767.5",
+   "name": "Fresh Fried Cajun Chips",
+   "portion": "2-1/2 ounce",
+   "kcal": 190,
+   "protein_g": 1
+  },
+  {
+   "id": "103955.3",
+   "name": "Roasted Carrots",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 1
+  },
+  {
+   "id": "66685.0",
+   "name": "Sriracha Mayo",
+   "portion": "1 tbsp",
+   "kcal": 90,
+   "protein_g": 0
+  },
+  {
+   "id": "125504.0",
+   "name": "Corn Beef and Pickles",
+   "portion": "1 sandwich",
+   "kcal": 430,
+   "protein_g": 19
+  },
+  {
+   "id": "131827.1",
+   "name": "Jerk Tofu",
+   "portion": "4 ounce",
+   "kcal": 100,
+   "protein_g": 9
+  },
+  {
+   "id": "125502.0",
+   "name": "Falafel Wrap",
+   "portion": "1 sandwich",
+   "kcal": 590,
+   "protein_g": 18
+  },
+  {
+   "id": "107498.3",
+   "name": "Vanilla Cupcake with Buttercream Icing",
+   "portion": "1 each",
+   "kcal": 240,
+   "protein_g": 2
+  },
+  {
+   "id": "135322.0",
+   "name": "Spicy Turmeric Hummus",
+   "portion": "2 tbsp",
+   "kcal": 70,
+   "protein_g": 2
+  },
+  {
+   "id": "62339.4",
+   "name": "Julienne Sun Dried Tomatoes",
+   "portion": "1 tbsp",
+   "kcal": 10,
+   "protein_g": 0
+  },
+  {
+   "id": "22792.1",
+   "name": "Tuna Salad",
+   "portion": "5 ounce",
+   "kcal": 330,
+   "protein_g": 22
+  },
+  {
+   "id": "16090.5",
+   "name": "Pesto Grilled Tofu",
+   "portion": "4 ounce",
+   "kcal": 280,
+   "protein_g": 13
+  },
+  {
+   "id": "26094.1",
+   "name": "Rotini Pasta",
+   "portion": "1 cup",
+   "kcal": 220,
+   "protein_g": 7
+  },
+  {
+   "id": "170770.5",
+   "name": "Aquafaba Lemon Pepper Caesar Dressing",
+   "portion": "2 oz portion",
+   "kcal": 380,
+   "protein_g": 1
+  },
+  {
+   "id": "22656.6",
+   "name": "Cucumber, Tomato, Parsley Salad",
+   "portion": "1/2 cup",
+   "kcal": 30,
+   "protein_g": 1
+  },
+  {
+   "id": "114692.3",
+   "name": "Pepperoni Pizza Grilled Cheese",
+   "portion": "1 sandwich",
+   "kcal": 710,
+   "protein_g": 26
+  },
+  {
+   "id": "4456.0",
+   "name": "Broccoli Cheddar Soup",
+   "portion": "4 floz",
+   "kcal": 110,
+   "protein_g": 2
+  },
+  {
+   "id": "170154.0",
+   "name": "Garam Masala Lentil Vegetable Soup",
+   "portion": "4 floz",
+   "kcal": 50,
+   "protein_g": 3
+  },
+  {
+   "id": "127321.0",
+   "name": "Turkey and Mumbo Sauce",
+   "portion": "1 sandwich",
+   "kcal": 300,
+   "protein_g": 20
+  },
+  {
+   "id": "5326.1",
+   "name": "Honeydew and Grape Salad",
+   "portion": "1/2 cup",
+   "kcal": 80,
+   "protein_g": 1
+  },
+  {
+   "id": "35071.1",
+   "name": "Mediterranean Pasta Salad",
+   "portion": "3/4 cup",
+   "kcal": 210,
+   "protein_g": 5
+  },
+  {
+   "id": "103702.0",
+   "name": "Jerk Shrimp Linguine",
+   "portion": "8 ounce",
+   "kcal": 410,
+   "protein_g": 16
+  },
+  {
+   "id": "117005.0",
+   "name": "Creamy Polenta",
+   "portion": "1/2 cup",
+   "kcal": 210,
+   "protein_g": 4
+  },
+  {
+   "id": "182167.0",
+   "name": "Sunflower Butter and Date Crunch Granola",
+   "portion": "1/2 cup",
+   "kcal": 360,
+   "protein_g": 12
+  },
+  {
+   "id": "117350.3",
+   "name": "Lalabi,Tunisian Chickpea Stew",
+   "portion": "8 floz",
+   "kcal": 250,
+   "protein_g": 7
+  },
+  {
+   "id": "95621.2",
+   "name": "Cajun Blackened Shrimp",
+   "portion": "4 ounce",
+   "kcal": 210,
+   "protein_g": 15
+  },
+  {
+   "id": "31886.1",
+   "name": "Cooked Farro",
+   "portion": "1/4 cup",
+   "kcal": 80,
+   "protein_g": 4
+  }
+ ]
+}

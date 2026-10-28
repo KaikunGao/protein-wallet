@@ -7,6 +7,7 @@ import { addMeal, getSettings, logEvent } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
 import { compressImage } from "@/lib/image";
 import type { InputType, Meal, Settings } from "@/lib/types";
+import halls from "@/data/dining/uchicago/halls.json";
 
 type Phase =
   | { kind: "input" }
@@ -27,21 +28,28 @@ export default function LogPage() {
   const [phase, setPhase] = useState<Phase>({ kind: "input" });
   const [text, setText] = useState("");
   const [settings, setSettings] = useState<Settings | null>(null);
+  // "" = not a dining hall. Defaults to the hall saved in settings; the chips override per record.
+  const [hall, setHall] = useState("");
   const startTs = useRef(0); // set in useEffect: Date.now() must not run during prerender
 
   useEffect(() => {
     startTs.current = Date.now();
     void logEvent("record_start");
-    getSettings().then(setSettings);
+    getSettings().then((s) => {
+      setSettings(s);
+      if (s?.dining_hall) setHall(s.dining_hall);
+    });
   }, []);
 
   async function runEstimate(body: { type: InputType; content: string }, preview?: string) {
     setPhase({ kind: "loading", inputType: body.type, preview });
+    // Dining-hall context applies to plates and sentences, never to receipts.
+    const withHall = hall && (body.type === "photo" || body.type === "text") ? { ...body, dining_hall: hall } : body;
     try {
       const res = await fetch("/api/estimate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(withHall),
       });
       const data = (await res.json()) as EstimateResponse;
       if (!data.ok) {
@@ -51,6 +59,7 @@ export default function LogPage() {
       }
       void logEvent("record_parsed", {
         input_type: body.type,
+        dining_hall: "dining_hall" in withHall ? withHall.dining_hall : null,
         items: data.kind === "meal" ? data.items.length : 0,
         sources: data.kind === "meal" ? data.items.map((i) => i.source) : ["grocery"],
         ms: Date.now() - startTs.current,
@@ -111,6 +120,13 @@ export default function LogPage() {
 
       {phase.kind === "input" && (
         <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2" data-testid="hall-chips">
+            <span className="text-xs text-zinc-500">在食堂?</span>
+            <Chip active={hall === ""} onClick={() => setHall("")} label="不是" />
+            {halls.halls.map((h) => (
+              <Chip key={h.slug} active={hall === h.slug} onClick={() => setHall(h.slug)} label={h.short} />
+            ))}
+          </div>
           <div className="grid grid-cols-3 gap-2">
             {PHOTO_BUTTONS.map((b) => (
               <label
@@ -140,7 +156,7 @@ export default function LogPage() {
                   submitText();
                 }
               }}
-              placeholder="例如:Chipotle 鸡肉碗 $11.5"
+              placeholder={hall ? "例如:炒蛋两份、烤鸡胸一块、米饭半碗" : "例如:Chipotle 鸡肉碗 $11.5"}
               className="w-full rounded-xl border border-zinc-300 px-3 py-2 text-base outline-none focus:border-green-600"
             />
             <button
@@ -200,6 +216,21 @@ export default function LogPage() {
         />
       )}
     </div>
+  );
+}
+
+function Chip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full border px-3 py-1 text-sm ${
+        active ? "border-amber-500 bg-amber-100 text-amber-900" : "border-zinc-300 bg-white text-zinc-600"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 

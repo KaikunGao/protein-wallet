@@ -202,5 +202,57 @@
     "amount_usd": 21.65,
     "items_count": 3,
     "truth_source": "Synthetic receipt rendered from HTML (not a real purchase). chains.json: chicken bowl 660/51 + chips & guac 770/9 + 22oz fountain soda assumed regular cola ~250/0"
+  },
+  {
+    "id": "dining-baker-eggs-bacon",
+    "type": "text",
+    "set": "dining",
+    "content": "Baker 食堂早餐:scrambled eggs 两份(两勺),bacon 三片,tater tots 半杯",
+    "dining_hall": "baker-dining-commons",
+    "merchant": "Baker",
+    "kcal": 710,
+    "protein_g": 40,
+    "amount_usd": null,
+    "items_count": 3,
+    "truth_source": "catalog.json: Scrambled Eggs 1/2 cup 210/14 ×2 + Bacon 3 slice 150/11 + Tater Tots 1/2 cup 140/1"
+  },
+  {
+    "id": "dining-bartlett-chicken-rice",
+    "type": "text",
+    "set": "dining",
+    "content": "Bartlett 午饭打了 grilled herbed chicken 3 oz 两块,white rice 一勺,steamed broccoli 半杯",
+    "dining_hall": "bartlett-dining-commons",
+    "merchant": "Bartlett",
+    "kcal": 430,
+    "protein_g": 48,
+    "amount_usd": null,
+    "items_count": 3,
+    "truth_source": "catalog.json: Grilled Herbed Chicken 3 ounce 140/22 ×2 + White Rice (1/2 cup, 120/2) + Steamed Broccoli 30/2"
+  },
+  {
+    "id": "dining-woodlawn-meatloaf",
+    "type": "text",
+    "set": "dining",
+    "content": "Woodlawn dinner: turkey meatloaf with tomato glaze one portion, mashed potatoes 3/4 cup, roasted brussels sprouts half cup",
+    "dining_hall": "woodlawn-dining-commons",
+    "merchant": "Woodlawn",
+    "kcal": 535,
+    "protein_g": 29,
+    "amount_usd": null,
+    "items_count": 3,
+    "truth_source": "catalog.json: Turkey Meatloaf 4 oz 270/23 + Mashed Potatoes 3/4 cup 220/4 + Roasted Brussels Sprouts 45/2"
+  },
+  {
+    "id": "dining-baker-greek-yogurt",
+    "type": "text",
+    "set": "dining",
+    "content": "在 Baker 吃了 plain greek yogurt 一份加 oats 'n honey protein granola 1/4 cup,再加一根 banana",
+    "dining_hall": "baker-dining-commons",
+    "merchant": "Baker",
+    "kcal": 280,
+    "protein_g": 17,
+    "amount_usd": null,
+    "items_count": 3,
+    "truth_source": "catalog.json: Plain Greek Yogurt 1/2 cup 70/11 + Oats 'n Honey Protein Granola 100/5 + Banana 110/1"
   }
 ]

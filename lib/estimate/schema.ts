@@ -15,6 +15,14 @@ export const ModelItemSchema = z.object({
       components: z.array(z.object({ name: z.string(), qty: z.number() })),
     })
     .nullable(),
+  // Filled only when the request carries a dining_hall: which menu items are on
+  // the plate and how many menu portions of each (fractions allowed).
+  dining_match: z
+    .object({
+      hall: z.string(),
+      items: z.array(z.object({ name: z.string(), qty: z.number() })),
+    })
+    .nullable(),
   kcal_low: z.number(),
   kcal_high: z.number(),
   protein_low_g: z.number(),
@@ -40,6 +48,8 @@ export const EstimateInputSchema = z.object({
   // text: the sentence; others: base64 image (no data: prefix), <= ~6 MB
   content: z.string().min(1).max(8_000_000),
   media_type: z.enum(["image/jpeg", "image/png", "image/webp"]).optional(),
+  // Dining-hall context (photo/text only): hall slug from data/dining/uchicago/halls.json.
+  dining_hall: z.string().max(64).optional(),
 });
 export type EstimateInput = z.infer<typeof EstimateInputSchema>;
 
