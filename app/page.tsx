@@ -7,27 +7,37 @@ import MealEditor from "@/components/MealEditor";
 import Onboarding from "@/components/Onboarding";
 import { addMeal, deleteMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, logEvent, newId, updateMeal } from "@/lib/db";
 import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, mid, proteinDeficit, proteinRange, spend } from "@/lib/derive";
+import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
 import type { Meal, Settings } from "@/lib/types";
 
-const RECENT_DAYS = 14;
-const RECENT_MAX = 3;
+// 常吃清单 (PRD 2026-11-04 记录成本方案 #2): the 5 meals the user logs most often in the
+// last 30 days, one tap each. Meals already logged today are left out so a tap is never
+// an accidental duplicate; the list also doubles as the history the 即时回报 draws from.
+const RECENT_DAYS = 30;
+const RECENT_MAX = 5;
 
-/** Distinct recent meals (newest first) for one-tap repeat; grocery rows excluded. */
-function recentDistinct(meals: Meal[], today: Meal[]): Meal[] {
+interface Frequent { meal: Meal; times: number }
+
+/** Most-repeated meals (ties broken by recency); grocery rows and today's meals excluded. */
+function frequentMeals(meals: Meal[], today: Meal[]): Frequent[] {
   const todayKeys = new Set(today.map((m) => keyOf(m)));
-  const seen = new Set<string>();
-  const out: Meal[] = [];
-  for (const m of [...meals].reverse()) {
+  const groups = new Map<string, Frequent>();
+  for (const m of meals) {
     if (m.kind !== "meal") continue;
     const k = keyOf(m);
-    if (seen.has(k) || todayKeys.has(k)) continue;
-    seen.add(k);
-    out.push(m);
-    if (out.length >= RECENT_MAX) break;
+    if (todayKeys.has(k)) continue;
+    const g = groups.get(k);
+    if (!g) groups.set(k, { meal: m, times: 1 });
+    else {
+      g.times += 1;
+      if (m.ts > g.meal.ts) g.meal = m;
+    }
   }
-  return out;
+  return [...groups.values()]
+    .sort((a, b) => b.times - a.times || b.meal.ts - a.meal.ts)
+    .slice(0, RECENT_MAX);
 }
 /** New record with the same nutrition/amount as `m`, stamped now. Kept outside the component for the purity lint. */
 function cloneForRepeat(m: Meal): Meal {
@@ -41,7 +51,7 @@ export default function Home() {
   const [settings, setSettings] = useState<Settings | null | undefined>(undefined);
   const [today, setToday] = useState<Meal[]>([]);
   const [week, setWeek] = useState<Meal[]>([]);
-  const [recent, setRecent] = useState<Meal[]>([]);
+  const [recent, setRecent] = useState<Frequent[]>([]);
   const [editing, setEditing] = useState<Meal | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -51,7 +61,7 @@ export default function Home() {
     setSettings(s);
     setToday(t);
     setWeek(w);
-    setRecent(recentDistinct(r, t));
+    setRecent(frequentMeals(r, t));
   }, []);
 
   useEffect(() => {
@@ -60,9 +70,9 @@ export default function Home() {
     void load().then(() => logEvent("page_open", { page: "today" }));
   }, [load]);
 
-  function flash(msg: string) {
+  function flash(msg: string, ms = 1600) {
     setToast(msg);
-    setTimeout(() => setToast(null), 1600);
+    setTimeout(() => setToast(null), ms);
   }
 
   async function repeat(m: Meal) {
@@ -70,7 +80,15 @@ export default function Home() {
     await addMeal(copy);
     void logEvent("record_repeated", { source: m.source, merchant: m.merchant });
     void logEvent("record_saved", { input_type: "repeat", n: 1, corrected: false, duration_ms: 0 });
-    flash(`已记一份「${m.meal_name}」`);
+    // 即时回报 in toast form: the gap and this meal's rank, right where the tap happened.
+    let line = "";
+    if (settings) {
+      const [t, w, r] = await Promise.all([listMealsByDay(), listMealsByWeek(), listMealsSince(copy.ts - RECENT_DAYS * 86400e3)]);
+      const f = buildFeedback([copy], w, t, r, settings);
+      line = ` · ${feedbackLine(f)}`;
+      void logEvent("feedback_shown", { where: "repeat", rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit) });
+    }
+    flash(`已记「${m.meal_name}」${line}`, 2800);
     await load();
   }
 
@@ -163,31 +181,39 @@ export default function Home() {
         </p>
       </section>
 
-      <Link href="/log" className="btn-primary block py-4 text-center text-lg shadow-[0_10px_24px_-10px_rgb(21_128_61/0.7)]">
-        + 记一餐
-      </Link>
-
       {recent.length > 0 && (
         <section className="space-y-2" data-testid="repeat">
-          <h2 className="label-xs">再来一份 · 最近吃过</h2>
+          <h2 className="label-xs">常吃 · 点一下就记上</h2>
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {recent.map((m) => (
+            {recent.map(({ meal: m, times }) => (
               <button
                 key={m.id}
                 onClick={() => repeat(m)}
                 className="card flex min-w-[46%] shrink-0 flex-col items-start gap-1 p-3 text-left active:scale-[0.98]"
+                data-testid="frequent-chip"
               >
                 <span className="line-clamp-1 text-sm font-semibold">{m.meal_name}</span>
                 <span className="text-[11px] text-ink-400">
                   {m.merchant ? `${m.merchant} · ` : ""}蛋白 {m.protein_low_g}–{m.protein_high_g} g
                   {m.amount_usd != null ? ` · ${fmtMoney(m.amount_usd, cur)}` : ""}
                 </span>
-                <span className="mt-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700">+ 再来一份</span>
+                <span className="mt-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700">
+                  + 再来一份{times > 1 ? ` · 吃过 ${times} 次` : ""}
+                </span>
               </button>
             ))}
           </div>
         </section>
       )}
+
+      <div className="space-y-2">
+        <Link href="/log" className="btn-primary block py-4 text-center text-lg shadow-[0_10px_24px_-10px_rgb(21_128_61/0.7)]">
+          + 记一餐
+        </Link>
+        <Link href="/log?mode=day" className="btn-secondary block py-3 text-center text-sm" data-testid="day-link">
+          日结 · 睡前一句话记一天
+        </Link>
+      </div>
 
       <section className="space-y-2">
         <h2 className="label-xs">今天记录({today.length})</h2>

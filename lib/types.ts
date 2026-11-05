@@ -46,10 +46,7 @@ export interface Settings {
   weight_kg?: number;
   protein_target_g: number;
   weekly_budget_usd: number;
-  meal_swipe_usd?: number; // optional default price for dining-hall swipes
-  dining_hall?: string; // slug of the hall the user usually eats at (data/dining/uchicago/halls.json)
-  currency?: Currency; // absent = USD (records made before the setting existed)
-  meal_plan?: { cost: number; swipes: number }; // semester meal plan; meal_swipe_usd = cost / swipes
+  currency?: Currency; // always CNY since 2026-11-04; kept so old exports still parse
   created_at: number;
 }
 
@@ -62,6 +59,7 @@ export type EventName =
   | "record_saved"
   | "record_cancelled"
   | "record_repeated"
+  | "feedback_shown" // 即时回报 card / toast rendered after a save
   | "meal_edited"
   | "meal_deleted"
   | "export"

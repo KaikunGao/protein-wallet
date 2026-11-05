@@ -4,7 +4,7 @@ import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "蛋白钱包",
-  description: "拍小票同时记账 + 记营养:每一美元换到多少克蛋白质",
+  description: "拍外卖订单或小票同时记账 + 记营养:每一块钱换到多少克蛋白质",
   applicationName: "蛋白钱包",
   appleWebApp: {
     capable: true,

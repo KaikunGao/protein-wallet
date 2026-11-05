@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { logEvent, saveSettings } from "@/lib/db";
-import { CURRENCIES, type Currency } from "@/lib/money";
+import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/money";
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { Settings } from "@/lib/types";
 
@@ -11,7 +11,6 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
   const [step, setStep] = useState<0 | 1>(0);
   const [weight, setWeight] = useState("");
   const [budget, setBudget] = useState("");
-  const [currency, setCurrency] = useState<Currency>("USD");
 
   const target = proteinTargetFromWeight(weight ? Number(weight) : null);
 
@@ -19,7 +18,7 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
     const s = buildSettings({
       weight_kg: weight ? Number(weight) : null,
       weekly_budget_usd: Number(budget),
-      currency,
+      currency: DEFAULT_CURRENCY,
     });
     await saveSettings(s);
     void logEvent("page_open", { page: "onboarding_done", weight_given: !!weight });
@@ -67,29 +66,14 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
         </div>
       ) : (
         <div className="card space-y-4 p-5">
-          <div className="grid grid-cols-2 gap-2">
-            {(Object.keys(CURRENCIES) as Currency[]).map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setCurrency(c)}
-                aria-pressed={currency === c}
-                className={`rounded-xl border px-3 py-2 text-sm ${
-                  currency === c ? "border-brand-500 bg-brand-50 font-semibold text-brand-700" : "border-ink-200 bg-white text-ink-600"
-                }`}
-              >
-                {CURRENCIES[c].symbol} {CURRENCIES[c].name}
-              </button>
-            ))}
-          </div>
           <div className="flex items-center gap-2">
-            <span className="text-ink-400">{CURRENCIES[currency].symbol}</span>
+            <span className="text-ink-400">{CURRENCIES[DEFAULT_CURRENCY].symbol}</span>
             <input
               autoFocus
               inputMode="decimal"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              placeholder={currency === "CNY" ? "500" : "120"}
+              placeholder="500"
               className="input-base text-2xl"
             />
             <span className="text-ink-400">/周</span>

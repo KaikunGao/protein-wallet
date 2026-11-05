@@ -148,12 +148,22 @@ test("model error with no items -> ok:false", () => {
 });
 
 test("mock text pipeline end to end", () => {
-  const input = { type: "text" as const, content: "Chipotle 鸡肉碗 $11.5" };
+  const input = { type: "text" as const, content: "食堂红烧鸡腿 + 米饭 12 元" };
   const r = postProcess(mockModelOutput(input), input);
   if (!r.ok || r.kind !== "meal") throw new Error("bad");
-  assert.equal(r.items[0].source, "official_table");
-  assert.equal(r.items[0].amount_usd, 11.5);
-  assert.deepEqual([r.items[0].protein_low_g, r.items[0].protein_high_g], [45, 55]); // 50 ±10% (salsa protein is 0 per the official calculator)
+  assert.equal(r.items[0].amount_usd, 12); // "12 元" parsed as the amount
+  assert.notEqual(r.items[0].source, "official_table"); // no 国内 official table yet
+  assert.equal(r.items[0].meal_name, "食堂红烧鸡腿 + 米饭");
+});
+
+test("麦当劳 is official (麦当劳中国 2025-04 data); 肯德基 stays partial (US menu)", () => {
+  const m = findChain("麦当劳")!;
+  assert.equal(m.data_status, "official");
+  const spicy = m.items.find((i) => i.name === "麦辣鸡腿汉堡")!;
+  assert.deepEqual([spicy.kcal, spicy.protein_g], [485, 24]); // 2030 kJ / 24 g on mcdonalds.com.cn
+  const bigmac = m.items.find((i) => i.name === "巨无霸")!;
+  assert.deepEqual([bigmac.kcal, bigmac.protein_g], [513, 27]); // 2146 kJ / 27 g
+  assert.equal(findChain("肯德基")?.data_status, "partial");
 });
 
 test("ModelOutputSchema accepts a well-formed response", () => {

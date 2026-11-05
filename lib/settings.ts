@@ -10,8 +10,6 @@ export function buildSettings(input: {
   weight_kg?: number | null;
   weekly_budget_usd: number;
   protein_target_g?: number | null;
-  meal_swipe_usd?: number | null;
-  dining_hall?: string | null;
   currency?: Currency | null;
   created_at?: number;
 }): Settings {
@@ -24,8 +22,6 @@ export function buildSettings(input: {
     created_at: input.created_at ?? Date.now(),
   };
   if (input.weight_kg && input.weight_kg > 0) s.weight_kg = input.weight_kg;
-  if (input.meal_swipe_usd && input.meal_swipe_usd > 0) s.meal_swipe_usd = input.meal_swipe_usd;
-  if (input.dining_hall) s.dining_hall = input.dining_hall;
   s.currency = currencyOf(input.currency);
   return s;
 }

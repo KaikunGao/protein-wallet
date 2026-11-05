@@ -5,6 +5,7 @@ export interface ChainItem {
   kcal: number;
   protein_g: number;
   price_hint: number | null;
+  category?: string; // 国内连锁条目带官网分类(汉堡和卷 / 早餐 / 小食…),方便模型按类匹配
 }
 export type ChainDataStatus = "official" | "partial" | "unverified";
 export interface Chain {
@@ -87,7 +88,7 @@ export function chainsForPrompt(): string {
     const tag = c.data_status === "official" ? "" : " [未核实]";
     lines.push(`### ${c.merchant}${tag} (aliases: ${c.aliases.join(", ")})`);
     for (const i of c.items) {
-      const price = i.price_hint != null ? ` | $${i.price_hint}` : "";
+      const price = i.price_hint != null ? ` | ¥${i.price_hint}` : "";
       lines.push(`- ${i.name} | ${i.kcal} kcal | ${i.protein_g} g${price}`);
     }
   }

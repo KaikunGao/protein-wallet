@@ -62,7 +62,9 @@ export const EstimateInputSchema = z.object({
   // Dining-hall context (photo/text only): hall slug from data/dining/uchicago/halls.json.
   dining_hall: z.string().max(64).optional(),
   // Currency the user records in; the amount_usd / total_usd fields carry this currency.
-  currency: z.enum(["USD", "CNY"]).optional(),
+  currency: z.enum(["CNY"]).optional(),
+  // 日结模式 (text only): the sentence is a whole day's food, split into one item per 顿.
+  batch: z.boolean().optional(),
 });
 export type EstimateInput = z.infer<typeof EstimateInputSchema>;
 

@@ -54,7 +54,7 @@ assert.equal(r.avgCpg!.toFixed(2), "28.78");
 console.log("  ok - average ¢/g");
 
 // delta: prev spend 31.25, prev met days: Mon 51+50=101 >= 90 -> 1/1
-assert.equal(r.delta, "比上周多花 $52.45,蛋白达标天数 1/1 → 1/3。");
+assert.equal(r.delta, "比上周多花 ¥52.45,蛋白达标天数 1/1 → 1/3。");
 const r2 = buildWeeklyReport(week, [], settings, ws);
 assert.equal(r2.delta, "上周没有记录,从这周开始有对比。");
 console.log("  ok - delta sentence");
@@ -63,7 +63,6 @@ console.log("\nweekly report tests passed");
 
 import { fmtMoney, cpgUnit } from "../lib/money";
 assert.equal(fmtMoney(12.5, "CNY"), "¥12.50");
-assert.equal(fmtMoney(12, "USD"), "$12");
-assert.equal(cpgUnit("CNY"), "分/g");
-assert.equal(cpgUnit(), "¢/g");
+assert.equal(fmtMoney(12), "¥12");
+assert.equal(cpgUnit(), "分/g");
 console.log("  ok - currency formatting");

@@ -8,43 +8,35 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
   if (input.type === "grocery") {
     return {
       error: null,
-      merchant: "Trader Joe's",
-      total_usd: 34.2,
+      merchant: "盒马",
+      total_usd: 68.5,
       items: [],
-      grocery_ingredients: ["鸡胸肉 2lb", "鸡蛋 12 个", "希腊酸奶", "西兰花", "米"],
+      grocery_ingredients: ["鸡胸肉 1kg", "鸡蛋 30 个", "纯牛奶 1L", "西兰花", "大米"],
     };
   }
   if (input.type === "receipt") {
+    // 外卖订单截图: item names + prices are structured, nutrition is still estimated.
     return {
       error: null,
-      merchant: "Chipotle",
-      total_usd: 24.6,
+      merchant: "美团外卖 · 黄焖鸡米饭",
+      total_usd: 22,
       items: [
         {
-          meal_name: "鸡肉碗",
-          amount_usd: 11.25,
-          chain_match: {
-            merchant: "Chipotle",
-            components: [
-              { name: "Chicken", qty: 1 },
-              { name: "White Rice", qty: 1 },
-              { name: "Black Beans", qty: 1 },
-              { name: "Fresh Tomato Salsa", qty: 1 },
-              { name: "Cheese", qty: 1 },
-            ],
-          },
+          meal_name: "黄焖鸡米饭(中份)",
+          amount_usd: 19,
+          chain_match: null,
           dining_match: null,
-          kcal_low: 600, kcal_high: 720, protein_low_g: 46, protein_high_g: 56,
-          confidence: "high", basis: "Chipotle 官方营养表",
+          kcal_low: 700, kcal_high: 950, protein_low_g: 28, protein_high_g: 40,
+          confidence: "medium", basis: "外卖订单菜名 + 常见份量估算",
           portion: PORTION,
         },
         {
-          meal_name: "薯片配牛油果酱",
-          amount_usd: 5.2,
-          chain_match: { merchant: "Chipotle", components: [{ name: "Chips & Guacamole", qty: 1 }] },
+          meal_name: "冰红茶",
+          amount_usd: 3,
+          chain_match: null,
           dining_match: null,
-          kcal_low: 700, kcal_high: 840, protein_low_g: 8, protein_high_g: 10,
-          confidence: "high", basis: "Chipotle 官方营养表",
+          kcal_low: 90, kcal_high: 130, protein_low_g: 0, protein_high_g: 1,
+          confidence: "medium", basis: "瓶装饮料,按常见规格估算",
           portion: PORTION,
         },
       ],
@@ -99,54 +91,56 @@ export function mockModelOutput(input: EstimateInput): ModelOutput {
       grocery_ingredients: null,
     };
   }
-  // text
-  const m = input.content.match(/\$?\s*(\d+(?:\.\d{1,2})?)/);
-  const amount = m ? Number(m[1]) : null;
-  const lower = input.content.toLowerCase();
-  if (lower.includes("chipotle")) {
-    return {
-      error: null,
-      merchant: "Chipotle",
-      total_usd: amount,
-      items: [
-        {
-          meal_name: "鸡肉碗",
-          amount_usd: amount,
-          chain_match: {
-            merchant: "Chipotle",
-            components: [
-              { name: "Chicken", qty: 1 },
-              { name: "White Rice", qty: 1 },
-              { name: "Black Beans", qty: 1 },
-              { name: "Fresh Tomato Salsa", qty: 1 },
-              { name: "Cheese", qty: 1 },
-              { name: "Romaine Lettuce", qty: 1 },
-            ],
-          },
-          dining_match: null,
-          kcal_low: 600, kcal_high: 720, protein_low_g: 46, protein_high_g: 56,
-          confidence: "high", basis: "Chipotle 官方营养表,按常见配料估算",
-          portion: PORTION,
-        },
-      ],
-      grocery_ingredients: null,
-    };
-  }
-  return {
-    error: null,
-    merchant: null,
-    total_usd: amount,
-    items: [
-      {
-        meal_name: input.content.replace(/\$?\s*\d+(?:\.\d{1,2})?/g, "").trim().slice(0, 20) || "一餐",
+  // text: one item per segment. Segments are split on 、,，;；/ newline, so a 日结
+  // sentence ("早饭鸡蛋牛奶 5 元、午饭食堂鸡腿饭 12 元、一勺蛋白粉") becomes three items,
+  // while "食堂红烧鸡腿 + 米饭 12 元" stays one. Mirrors prompt rule 4 / 日结模式.
+  const AMOUNT = /[$¥]?\s*(\d+(?:\.\d{1,2})?)\s*(?:元|块)?/;
+  const segments = input.content.split(/[、,，;；\n]+/).map((x) => x.trim()).filter(Boolean);
+  const items = (segments.length ? segments : [input.content]).map((seg) => {
+    const m = seg.match(AMOUNT);
+    const amount = m ? Number(m[1]) : null;
+    const lower = seg.toLowerCase();
+    const name = seg.replace(new RegExp(AMOUNT.source, "g"), "").trim().slice(0, 20);
+    if (lower.includes("麦当劳") || lower.includes("麦辣")) {
+      // Chain name without chain_match: postProcess keeps it as a text estimate, never 官方.
+      return {
+        meal_name: "麦辣鸡腿堡",
         amount_usd: amount,
         chain_match: null,
         dining_match: null,
-        kcal_low: 500, kcal_high: 800, protein_low_g: 25, protein_high_g: 40,
-        confidence: "medium", basis: "按文字描述估算(mock)",
-          portion: PORTION,
-      },
-    ],
+        kcal_low: 480, kcal_high: 560, protein_low_g: 18, protein_high_g: 24,
+        confidence: "medium" as const, basis: "参考数据:麦当劳中国营养信息,待逐行核实",
+        portion: PORTION,
+      };
+    }
+    if (lower.includes("蛋白粉") || /一勺粉|勺粉/.test(lower)) {
+      return {
+        meal_name: "蛋白粉 1 勺",
+        amount_usd: amount,
+        chain_match: null,
+        dining_match: null,
+        kcal_low: 100, kcal_high: 130, protein_low_g: 20, protein_high_g: 27,
+        confidence: "medium" as const, basis: "按一勺乳清蛋白粉(约 30 g)估算",
+        portion: { unit: "勺", assumed: 1, unsure: false },
+      };
+    }
+    return {
+      meal_name: name || "一餐",
+      amount_usd: amount,
+      chain_match: null,
+      dining_match: null,
+      kcal_low: 500, kcal_high: 800, protein_low_g: 25, protein_high_g: 40,
+      confidence: "medium" as const, basis: "按文字描述估算(mock)",
+      portion: PORTION,
+    };
+  });
+  const priced = items.filter((i) => i.amount_usd != null);
+  const merchant = items.length === 1 && items[0].meal_name === "麦辣鸡腿堡" ? "麦当劳" : null;
+  return {
+    error: null,
+    merchant,
+    total_usd: priced.length ? priced.reduce((a, i) => a + (i.amount_usd ?? 0), 0) : null,
+    items,
     grocery_ingredients: null,
   };
 }

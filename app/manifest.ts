@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "蛋白钱包 ProteinWallet",
     short_name: "蛋白钱包",
-    description: "拍小票同时记账 + 记营养:每一美元换到多少克蛋白质",
+    description: "拍外卖订单或小票同时记账 + 记营养:每一块钱换到多少克蛋白质",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

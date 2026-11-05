@@ -1,5 +1,5 @@
 // Derived numbers over the meals table. Nothing here is persisted (PRD).
-import { fmtMoney, type Currency } from "./money";
+import { fmtMoney, type Currency, DEFAULT_CURRENCY } from "./money";
 import type { Meal, Settings } from "./types";
 
 export { fmtMoney, cpgUnit } from "./money";
@@ -51,7 +51,7 @@ export function centsPerGram(m: Meal): number | null {
 }
 
 /** Fixed, factual sentence (PRD F3). No recommendations, no judgement. */
-export function adviceSentence(deficitG: number, budgetLeft: number, currency: Currency = "USD"): string {
+export function adviceSentence(deficitG: number, budgetLeft: number, currency: Currency = DEFAULT_CURRENCY): string {
   const protein =
     deficitG > 0
       ? `今天蛋白还差约 ${Math.round(deficitG)}g`

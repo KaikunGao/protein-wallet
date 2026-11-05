@@ -3,19 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConfirmCard from "@/components/ConfirmCard";
+import FeedbackCard from "@/components/FeedbackCard";
 import VoiceButton from "@/components/VoiceButton";
-import { addMeal, getSettings, logEvent } from "@/lib/db";
+import { addMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, logEvent } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
+import { buildFeedback, type Feedback } from "@/lib/feedback";
 import { compressImage } from "@/lib/image";
-import { CURRENCIES, currencyOf } from "@/lib/money";
+import { currencyOf } from "@/lib/money";
 import type { InputType, Meal, Settings } from "@/lib/types";
-import halls from "@/data/dining/uchicago/halls.json";
 
 type Phase =
   | { kind: "input" }
   | { kind: "loading"; inputType: InputType; preview?: string }
   | { kind: "confirm"; inputType: InputType; result: Extract<EstimateResponse, { ok: true }> }
-  | { kind: "error"; inputType: InputType; message: string; retryable: boolean };
+  | { kind: "error"; inputType: InputType; message: string; retryable: boolean }
+  | { kind: "saved"; feedback: Feedback };
+
+// 记一餐 = one meal now (photo / receipt / sentence). 日结 = one sentence for the whole day,
+// split into one record per 顿 (PRD 2026-11-04 记录成本方案 #1).
+type Mode = "meal" | "day";
+const HISTORY_DAYS = 30;
 
 type PhotoType = Exclude<InputType, "text">;
 
@@ -62,29 +69,27 @@ export default function LogPage() {
   const [phase, setPhase] = useState<Phase>({ kind: "input" });
   const [text, setText] = useState("");
   const [settings, setSettings] = useState<Settings | null>(null);
-  // "" = not a dining hall. Defaults to the hall saved in settings; the chips override per record.
-  const [hall, setHall] = useState("");
+  const [mode, setMode] = useState<Mode>("meal");
   const startTs = useRef(0); // set in useEffect: Date.now() must not run during prerender
   const voiceBase = useRef(""); // text already in the box when a voice session starts
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     startTs.current = Date.now();
-    void logEvent("record_start");
-    getSettings().then((s) => {
-      setSettings(s);
-      if (s?.dining_hall) setHall(s.dining_hall);
-    });
+    // /log?mode=day comes from the home page's 日结 link; read it here so the page stays static.
+    const day = new URLSearchParams(window.location.search).get("mode") === "day";
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (day) setMode("day");
+    void logEvent("record_start", { mode: day ? "day" : "meal" });
+    getSettings().then(setSettings);
   }, []);
 
   const currency = currencyOf(settings?.currency);
-  const sym = CURRENCIES[currency].symbol;
 
   async function runEstimate(body: { type: InputType; content: string }, preview?: string) {
     setPhase({ kind: "loading", inputType: body.type, preview });
-    // Dining-hall context applies to plates and sentences, never to receipts.
-    const withHall = hall && (body.type === "photo" || body.type === "text") ? { ...body, dining_hall: hall } : body;
-    const payload = { ...withHall, currency };
+    // dining_hall is not sent: the 国内 食堂菜品库 does not exist yet (PRD 国内版 step 4).
+    const payload = { ...body, currency, ...(body.type === "text" && mode === "day" ? { batch: true } : {}) };
     try {
       const res = await fetch("/api/estimate", {
         method: "POST",
@@ -99,7 +104,6 @@ export default function LogPage() {
       }
       void logEvent("record_parsed", {
         input_type: body.type,
-        dining_hall: "dining_hall" in withHall ? withHall.dining_hall : null,
         items: data.kind === "meal" ? data.items.length : 0,
         sources: data.kind === "meal" ? data.items.map((i) => i.source) : ["grocery"],
         ms: Date.now() - startTs.current,
@@ -137,11 +141,39 @@ export default function LogPage() {
     for (const m of meals) await addMeal(m);
     void logEvent("record_saved", {
       input_type: meals[0]?.input_type,
+      mode,
       n: meals.length,
       corrected: meta.corrected,
       duration_ms: Date.now() - startTs.current,
     });
-    router.push("/");
+    const s = settings ?? (await getSettings());
+    if (!s || meals.every((m) => m.kind === "grocery")) {
+      router.push("/");
+      return;
+    }
+    // 即时回报: rank this meal within the week and turn today's gap into the cheapest
+    // item from the user's own history (PRD 记录成本方案 #3).
+    const [today, week, history] = await Promise.all([
+      listMealsByDay(),
+      listMealsByWeek(),
+      listMealsSince(Date.now() - HISTORY_DAYS * 86400e3),
+    ]);
+    const feedback = buildFeedback(meals, week, today, history, s);
+    void logEvent("feedback_shown", {
+      where: "log",
+      rank: feedback.rank?.rank ?? null,
+      total: feedback.rank?.total ?? null,
+      deficit: Math.round(feedback.deficit),
+      suggestion: feedback.suggestion?.name ?? null,
+    });
+    setPhase({ kind: "saved", feedback });
+  }
+
+  function another() {
+    startTs.current = Date.now();
+    setText("");
+    void logEvent("record_start", { mode, after_feedback: true });
+    setPhase({ kind: "input" });
   }
 
   function cancel() {
@@ -159,37 +191,54 @@ export default function LogPage() {
     if (final) textareaRef.current?.focus();
   }
 
-  const example = hall ? `例如:炒蛋两勺、烤鸡胸一块、米饭半碗` : `例如:Chipotle 鸡肉碗 ${sym}11.5`;
+  const example =
+    mode === "day"
+      ? "早饭鸡蛋牛奶 5 元、午饭食堂鸡腿饭 12 元、晚饭外卖黄焖鸡 22 元、一勺蛋白粉"
+      : "例如:食堂红烧鸡腿 + 米饭 12 元";
 
   return (
     <div className="space-y-4 py-2">
       <div className="flex items-end justify-between">
         <div>
           <p className="label-xs">记录</p>
-          <h1 className="text-2xl font-bold tracking-tight">记一餐</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{mode === "day" ? "日结" : "记一餐"}</h1>
         </div>
-        <button onClick={cancel} className="text-sm text-ink-400">
-          取消
-        </button>
+        {phase.kind !== "saved" && (
+          <button onClick={cancel} className="text-sm text-ink-400">
+            取消
+          </button>
+        )}
       </div>
 
       {phase.kind === "input" && (
         <div className="space-y-4">
-          <section className="card p-4">
-            <p className="label-xs">在哪吃的?</p>
-            <div className="mt-2 flex flex-wrap gap-2" data-testid="hall-chips">
-              <Chip active={hall === ""} onClick={() => setHall("")} label="不是食堂" />
-              {halls.halls.map((h) => (
-                <Chip key={h.slug} active={hall === h.slug} onClick={() => setHall(h.slug)} label={h.short} />
-              ))}
-            </div>
-            {hall && (
-              <p className="mt-2 text-[11px] leading-snug text-dining-700">
-                会按这家食堂的官方菜品库算每道菜,份数看图估,记得核对。
-              </p>
-            )}
-          </section>
+          <div className="flex rounded-2xl bg-ink-100 p-1" role="tablist" data-testid="mode-toggle">
+            {(["meal", "day"] as Mode[]).map((m) => {
+              const active = mode === m;
+              return (
+                <button
+                  key={m}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => {
+                    setMode(m);
+                    void logEvent("record_start", { mode: m, switched: true });
+                  }}
+                  className={`flex-1 rounded-xl py-2 text-sm transition ${active ? "bg-white font-semibold text-ink-900 shadow-sm" : "text-ink-600"}`}
+                >
+                  {m === "meal" ? "记一餐" : "日结 · 一句话记一天"}
+                </button>
+              );
+            })}
+          </div>
 
+          {mode === "day" && (
+            <p className="text-sm text-ink-600" data-testid="day-hint">
+              睡前一句话,把今天吃的按顿写出来,用顿号分开,带上价格。会拆成一条一条,保存前可以改。
+            </p>
+          )}
+
+          {mode === "meal" && (
           <section className="grid grid-cols-3 gap-2">
             {PHOTO_BUTTONS.map((b) => {
               const primary = b.type === "receipt";
@@ -208,15 +257,16 @@ export default function LogPage() {
               );
             })}
           </section>
+          )}
 
           <section className="card p-4">
             <div className="flex items-baseline justify-between">
-              <p className="text-sm font-medium text-ink-900">或者说一句、打一句</p>
-              <span className="text-[11px] text-ink-400">{hall ? "说菜名和份数" : "带上价格更好"}</span>
+              <p className="text-sm font-medium text-ink-900">{mode === "day" ? "今天吃了什么" : "或者说一句、打一句"}</p>
+              <span className="text-[11px] text-ink-400">{mode === "day" ? "一顿一个价格" : "带上价格更好"}</span>
             </div>
             <textarea
               ref={textareaRef}
-              rows={3}
+              rows={mode === "day" ? 4 : 3}
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => {
@@ -235,7 +285,7 @@ export default function LogPage() {
                 disabled={!text.trim()}
                 className="btn-primary h-12 flex-1"
               >
-                解析
+                {mode === "day" ? "拆成一条条" : "解析"}
               </button>
             </div>
           </section>
@@ -282,28 +332,16 @@ export default function LogPage() {
         <ConfirmCard
           result={phase.result}
           inputType={phase.inputType}
-          defaultAmount={settings?.meal_swipe_usd ?? null}
           currency={currency}
           onSave={onSave}
           onCancel={cancel}
         />
       )}
-    </div>
-  );
-}
 
-function Chip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full border px-3 py-1.5 text-sm transition ${
-        active ? "border-amber-400 bg-dining-100 font-medium text-dining-700" : "border-ink-200 bg-white text-ink-600"
-      }`}
-    >
-      {label}
-    </button>
+      {phase.kind === "saved" && (
+        <FeedbackCard feedback={phase.feedback} currency={currency} onDone={() => router.push("/")} onMore={another} />
+      )}
+    </div>
   );
 }
 

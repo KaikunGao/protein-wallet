@@ -7,7 +7,8 @@ import type { EstimateInput } from "./schema";
 // v2 (2026-10-28): user = 在校大学生; dining-hall menu tier (dining_match); unverified chains
 // are no longer presented as official.
 // v3 (2026-10-28): per-item `portion` (assumed amount + unsure flag) for the one-tap portion follow-up.
-export const PROMPT_VERSION = "v3";
+// v4 (2026-11-04): 日结模式 instruction (batch) for whole-day sentences; 蛋白粉 one-scoop rule.
+export const PROMPT_VERSION = "v4";
 
 const RULES = `你是「蛋白钱包」的营养与消费解析器。用户是美国校园里生活费有限、想增肌的在校大学生,会给你一句话、一张餐食照片、一张餐厅小票,或一张买菜小票。任务:识别吃了什么、花了多少钱,并给出热量和蛋白质的**区间**估算。
 
@@ -62,10 +63,14 @@ export function userContent(input: EstimateInput): Anthropic.ContentBlockParam[]
   const dining = hall ? `这餐吃的是学校食堂:${hall.name}(${hall.short})。请用系统提示里的食堂菜品库做 dining_match。` : null;
   const blocks: Anthropic.ContentBlockParam[] = [];
   if (dining) blocks.push({ type: "text", text: dining });
-  if (input.currency === "CNY") {
-    blocks.push({ type: "text", text: "用户用人民币记账:amount_usd 和 total_usd 两个字段填人民币元的数值(字段名沿用,不要换算成美元)。" });
-  }
+  blocks.push({ type: "text", text: "用户用人民币记账:amount_usd 和 total_usd 两个字段填人民币元的数值(字段名沿用,不要换算)。" });
   if (input.type === "text") {
+    if (input.batch) {
+      blocks.push({
+        type: "text",
+        text: "日结模式:下面这句话是用户一整天吃的全部东西。按顿 / 按项拆成多个 item(顿号、逗号、换行或「早饭 / 午饭 / 晚饭」是分隔),每个 item 的 amount_usd 只填这一项自己写明的价格,没写就 null;total_usd 填写明价格之和,一个都没写就 null。「一勺蛋白粉」「一勺粉」按一勺乳清蛋白粉(约 30 g 粉、20-27 g 蛋白)估。",
+      });
+    }
     blocks.push({ type: "text", text: `用户输入:「${input.content}」` });
     return blocks;
   }

@@ -1,14 +1,13 @@
-// Currency the user records in. One setting, no conversion: a record is in
-// whatever currency the user chose when they saved it.
-// DECISION: the storage/API fields keep their original names (amount_usd,
-// total_usd, weekly_budget_usd) — they now mean "amount in the user's
-// currency". Renaming them would be an IndexedDB migration for no user value.
-export type Currency = "USD" | "CNY";
+// 2026-11-04: the product is 国内-only, so there is exactly one currency. The
+// storage/API fields keep their original names (amount_usd, total_usd,
+// weekly_budget_usd) — they mean "amount in 元"; renaming them would be an
+// IndexedDB migration for no user value. The Currency type stays so a second
+// currency could be added later without touching call sites.
+export type Currency = "CNY";
 
-export const DEFAULT_CURRENCY: Currency = "USD";
+export const DEFAULT_CURRENCY: Currency = "CNY";
 
 export const CURRENCIES: Record<Currency, { code: Currency; symbol: string; name: string; minor: string }> = {
-  USD: { code: "USD", symbol: "$", name: "美元", minor: "¢" },
   CNY: { code: "CNY", symbol: "¥", name: "人民币", minor: "分" },
 };
 
@@ -22,7 +21,7 @@ export function fmtMoney(n: number, currency: Currency = DEFAULT_CURRENCY): stri
   return Number.isInteger(v) ? `${sym}${v}` : `${sym}${v.toFixed(2)}`;
 }
 
-/** Unit label for the protein-price metric: ¢/g for USD, 分/g for CNY (both are 1/100 of the main unit). */
+/** Unit label for the protein-price metric: 分/g (1/100 of the main unit). */
 export function cpgUnit(currency: Currency = DEFAULT_CURRENCY): string {
   return `${CURRENCIES[currencyOf(currency)].minor}/g`;
 }

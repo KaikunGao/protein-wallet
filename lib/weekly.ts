@@ -1,6 +1,7 @@
 // Weekly report: pure derivation over meals (no storage access) so it can be unit-tested.
 import { addDays, dayKey, startOfWeek } from "./dates";
 import { fmtMoney, mid, spend } from "./derive";
+import { currencyOf } from "./money";
 import type { Meal, Settings } from "./types";
 
 export interface RankRow {
@@ -98,7 +99,7 @@ export function buildWeeklyReport(
     const spendPart =
       Math.abs(diff) < 0.005
         ? "花销和上周持平"
-        : `比上周${diff > 0 ? "多" : "少"}花 ${fmtMoney(Math.abs(diff), settings.currency ?? "USD")}`;
+        : `比上周${diff > 0 ? "多" : "少"}花 ${fmtMoney(Math.abs(diff), currencyOf(settings.currency))}`;
     delta = `${spendPart},蛋白达标天数 ${prevMet}/${prevRecorded} → ${daysMet}/${daysRecorded}。`;
   }
 

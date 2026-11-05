@@ -65,14 +65,12 @@ function fmtQty(n: number): string {
 export default function ConfirmCard({
   result,
   inputType,
-  defaultAmount,
   currency,
   onSave,
   onCancel,
 }: {
   result: OkResponse;
   inputType: InputType;
-  defaultAmount?: number | null;
   currency?: Currency;
   onSave: (meals: Meal[], meta: { corrected: boolean }) => void;
   onCancel: () => void;
@@ -143,8 +141,7 @@ export default function ConfirmCard({
     }
     const meals: Meal[] = drafts.map((d) => {
       const amountRaw = num(d.amount);
-      // DECISION: an empty amount on a dining-hall photo falls back to the meal-swipe default.
-      const amount_usd = amountRaw ?? (inputType === "photo" ? (defaultAmount ?? null) : null);
+      const amount_usd = amountRaw ?? null;
       return {
         id: newId(),
         ts,
@@ -263,7 +260,7 @@ export default function ConfirmCard({
                 inputMode="decimal"
                 value={d.amount}
                 onChange={(e) => edit(d.key, "amount", e.target.value)}
-                placeholder={inputType === "photo" && defaultAmount ? `默认 ${defaultAmount}` : "没有价格就留空"}
+                placeholder="没有价格就留空"
                 className="input-base"
                 aria-label="金额"
               />
