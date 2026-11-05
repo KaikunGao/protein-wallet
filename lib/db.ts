@@ -1,6 +1,7 @@
 "use client";
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import type { SavedMenu } from "./menu-rank";
 import type { AppEvent, EventName, ExportBundle, Meal, Settings } from "./types";
 import { endOfDay, endOfWeek, startOfDay, startOfWeek } from "./dates";
 
@@ -8,10 +9,11 @@ interface PWSchema extends DBSchema {
   meals: { key: string; value: Meal; indexes: { ts: number } };
   settings: { key: string; value: Settings };
   events: { key: number; value: AppEvent; indexes: { ts: number } };
+  menus: { key: string; value: SavedMenu }; // v2: scanned menus kept as places the user goes to
 }
 
 const DB_NAME = "protein-wallet";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const SETTINGS_KEY = "main";
 
 let dbPromise: Promise<IDBPDatabase<PWSchema>> | null = null;
@@ -19,15 +21,19 @@ let dbPromise: Promise<IDBPDatabase<PWSchema>> | null = null;
 function db() {
   if (!dbPromise) {
     dbPromise = openDB<PWSchema>(DB_NAME, DB_VERSION, {
-      upgrade(d) {
-        const meals = d.createObjectStore("meals", { keyPath: "id" });
-        meals.createIndex("ts", "ts");
-        d.createObjectStore("settings");
-        const events = d.createObjectStore("events", {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-        events.createIndex("ts", "ts");
+      upgrade(d, oldVersion) {
+        if (oldVersion < 1) {
+          const meals = d.createObjectStore("meals", { keyPath: "id" });
+          meals.createIndex("ts", "ts");
+          d.createObjectStore("settings");
+          const events = d.createObjectStore("events", {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+          events.createIndex("ts", "ts");
+        }
+        // v2 (2026-11-04): existing users keep every record; only the new store is added.
+        if (oldVersion < 2) d.createObjectStore("menus", { keyPath: "id" });
       },
     });
   }
@@ -80,6 +86,22 @@ export async function listAllMeals(): Promise<Meal[]> {
   return rows.sort((a, b) => a.ts - b.ts);
 }
 
+// ---- saved menus (每日清单) ----
+
+/** Saved places, most recently scanned first. */
+export async function listMenus(): Promise<SavedMenu[]> {
+  const rows = await (await db()).getAll("menus");
+  return rows.sort((a, b) => b.ts - a.ts);
+}
+
+export async function saveMenu(m: SavedMenu): Promise<void> {
+  await (await db()).put("menus", m);
+}
+
+export async function deleteMenu(id: string): Promise<void> {
+  await (await db()).delete("menus", id);
+}
+
 // ---- settings ----
 
 export async function getSettings(): Promise<Settings | null> {
@@ -110,10 +132,11 @@ export async function listAllEvents(): Promise<AppEvent[]> {
 // ---- export / import ----
 
 export async function exportAll(): Promise<ExportBundle> {
-  const [settings, meals, events] = await Promise.all([
+  const [settings, meals, events, menus] = await Promise.all([
     getSettings(),
     listAllMeals(),
     listAllEvents(),
+    listMenus(),
   ]);
   return {
     version: 1,
@@ -121,6 +144,7 @@ export async function exportAll(): Promise<ExportBundle> {
     settings,
     meals,
     events,
+    menus,
   };
 }
 
@@ -131,10 +155,11 @@ export async function importAll(
     throw new Error("不是有效的蛋白钱包导出文件");
   }
   const d = await db();
-  const tx = d.transaction(["meals", "settings", "events"], "readwrite");
+  const tx = d.transaction(["meals", "settings", "events", "menus"], "readwrite");
   // DECISION: import merges by id (put), so re-importing the same file is idempotent.
   for (const m of bundle.meals) await tx.objectStore("meals").put(m);
   if (bundle.settings) await tx.objectStore("settings").put(bundle.settings, SETTINGS_KEY);
+  for (const m of bundle.menus ?? []) await tx.objectStore("menus").put(m);
   let events = 0;
   for (const e of bundle.events ?? []) {
     const { id: _ignored, ...rest } = e;

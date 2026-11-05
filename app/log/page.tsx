@@ -6,12 +6,13 @@ import ConfirmCard from "@/components/ConfirmCard";
 import FeedbackCard from "@/components/FeedbackCard";
 import MenuRanking from "@/components/MenuRanking";
 import VoiceButton from "@/components/VoiceButton";
-import { addMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, logEvent } from "@/lib/db";
+import { fmtDate, fmtTime } from "@/lib/dates";
+import { addMeal, deleteMenu, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, listMenus, logEvent, newId, saveMenu } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
 import { proteinDeficit } from "@/lib/derive";
 import { buildFeedback, type Feedback } from "@/lib/feedback";
 import { compressImage } from "@/lib/image";
-import { toEstimateItem, type MenuItem, type MenuResponse, type MenuSort, type RankedDish } from "@/lib/menu-rank";
+import { toEstimateItem, upsertMenu, type MenuResponse, type MenuSort, type RankedDish, type SavedMenu } from "@/lib/menu-rank";
 import { currencyOf } from "@/lib/money";
 import { spendableToday } from "@/lib/next-meal";
 import type { InputType, Meal, Settings } from "@/lib/types";
@@ -24,10 +25,9 @@ type Phase =
   | { kind: "saved"; feedback: Feedback }
   | { kind: "ranked"; ranking: Ranking };
 
-// A parsed menu plus today's context, kept so "取消" on the confirm card returns to the list.
+// A menu (kept as a place) plus today's context, held so "取消" on the confirm card returns to the list.
 interface Ranking {
-  merchant: string | null;
-  items: MenuItem[];
+  venue: SavedMenu;
   spendable: number | null;
   deficit: number | null;
 }
@@ -40,6 +40,9 @@ const MODE_LABEL: Record<Mode, string> = { meal: "记一餐", day: "日结", men
 const MODE_TITLE: Record<Mode, string> = { meal: "记一餐", day: "日结", menu: "拍菜单" };
 // Menu boards are text-heavy: keep more pixels than for a plate photo.
 const MENU_IMAGE_PX = 1568;
+// Wall-clock reads live outside the component: the purity lint treats any Date.now()
+// reachable from a handler that is wired up during render as a render-time call.
+const nowMs = () => Date.now();
 const HISTORY_DAYS = 30;
 
 type PhotoType = Exclude<InputType, "text">;
@@ -88,13 +91,14 @@ export default function LogPage() {
   const [text, setText] = useState("");
   const [settings, setSettings] = useState<Settings | null>(null);
   const [mode, setMode] = useState<Mode>("meal");
-  const startTs = useRef(0); // set in useEffect: Date.now() must not run during prerender
+  const [menus, setMenus] = useState<SavedMenu[]>([]); // saved places (每日清单)
+  const startTs = useRef(0); // set in useEffect: nowMs() must not run during prerender
   const voiceBase = useRef(""); // text already in the box when a voice session starts
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const rankingRef = useRef<Ranking | null>(null); // last parsed menu, to come back to from the confirm card
 
   useEffect(() => {
-    startTs.current = Date.now();
+    startTs.current = nowMs();
     // /log?mode=day comes from the home page's 日结 link; read it here so the page stays static.
     const q = new URLSearchParams(window.location.search).get("mode");
     const initial: Mode = q === "day" || q === "menu" ? q : "meal";
@@ -102,6 +106,7 @@ export default function LogPage() {
     if (initial !== "meal") setMode(initial);
     void logEvent("record_start", { mode: initial });
     getSettings().then(setSettings);
+    listMenus().then(setMenus);
   }, []);
 
   const currency = currencyOf(settings?.currency);
@@ -126,7 +131,7 @@ export default function LogPage() {
         input_type: body.type,
         items: data.kind === "meal" ? data.items.length : 0,
         sources: data.kind === "meal" ? data.items.map((i) => i.source) : ["grocery"],
-        ms: Date.now() - startTs.current,
+        ms: nowMs() - startTs.current,
       });
       setPhase({ kind: "confirm", inputType: body.type, result: data });
     } catch {
@@ -150,22 +155,20 @@ export default function LogPage() {
         setPhase({ kind: "error", inputType: body.type === "text" ? "text" : "menu", message: data.error, retryable: data.retryable });
         return;
       }
-      // Today's context for the "超出今天额度" flag and the summary line.
-      const s = settings ?? (await getSettings());
-      const [today, week] = await Promise.all([listMealsByDay(), listMealsByWeek()]);
-      const ranking: Ranking = {
-        merchant: data.merchant,
-        items: data.items,
-        spendable: s ? spendableToday(week, s, Date.now()) : null,
-        deficit: s ? proteinDeficit(today, s) : null,
-      };
+      // Keep the menu as a place right away: menus rarely change, so this scan is the only
+      // one this place needs. Scanning it again replaces its dishes.
+      const now = nowMs();
+      const venue = upsertMenu(await listMenus(), data.merchant ?? `菜单 ${fmtDate(now)} ${fmtTime(now)}`, data.items, newId(), now);
+      await saveMenu(venue);
+      setMenus(await listMenus());
+      const ranking: Ranking = { venue, ...(await todayContext()) };
       rankingRef.current = ranking;
       void logEvent("menu_ranked", {
         input: body.type,
         n: data.items.length,
         priced: data.items.filter((i) => i.price != null).length,
         from_table: data.items.filter((i) => i.source === "ingredient_table").length,
-        ms: Date.now() - startTs.current,
+        ms: nowMs() - startTs.current,
       });
       setPhase({ kind: "ranked", ranking });
     } catch {
@@ -174,10 +177,53 @@ export default function LogPage() {
     }
   }
 
+  /** Today's numbers for the "超出今天额度" flag and the summary line. */
+  async function todayContext(): Promise<{ spendable: number | null; deficit: number | null }> {
+    const s = settings ?? (await getSettings());
+    const [today, week] = await Promise.all([listMealsByDay(), listMealsByWeek()]);
+    return {
+      spendable: s ? spendableToday(week, s, nowMs()) : null,
+      deficit: s ? proteinDeficit(today, s) : null,
+    };
+  }
+
+  /** Open a saved place: no photo, no model call. */
+  async function openSaved(venue: SavedMenu) {
+    const ranking: Ranking = { venue, ...(await todayContext()) };
+    rankingRef.current = ranking;
+    void logEvent("menu_ranked", {
+      input: "saved",
+      n: venue.items.length,
+      priced: venue.items.filter((i) => i.price != null).length,
+      from_table: venue.items.filter((i) => i.source === "ingredient_table").length,
+      ms: 0,
+    });
+    setPhase({ kind: "ranked", ranking });
+  }
+
+  async function renameVenue(name: string) {
+    const cur = rankingRef.current;
+    const clean = name.trim();
+    if (!cur || !clean || clean === cur.venue.name) return;
+    const venue = { ...cur.venue, name: clean };
+    await saveMenu(venue);
+    rankingRef.current = { ...cur, venue };
+    setMenus(await listMenus());
+  }
+
+  async function deleteVenue() {
+    const cur = rankingRef.current;
+    if (!cur || !window.confirm(`删除「${cur.venue.name}」?首页的清单里不再出现这里的菜。`)) return;
+    await deleteMenu(cur.venue.id);
+    rankingRef.current = null;
+    setMenus(await listMenus());
+    setPhase({ kind: "input" });
+  }
+
   /** A row of the ranking was tapped: hand the dish to the normal confirm card. */
   function pickDish(d: RankedDish, position: number, sort: MenuSort) {
     void logEvent("rank_picked", { where: "menu", position, sort, cpg: Math.round(d.cpg * 10) / 10, over: d.over, source: d.source });
-    const merchant = rankingRef.current?.merchant ?? null;
+    const merchant = rankingRef.current?.venue.name ?? null; // the place name, so the record lines up with the saved menu
     setPhase({
       kind: "confirm",
       inputType: "menu",
@@ -214,14 +260,18 @@ export default function LogPage() {
     else if (type === "photo" || type === "receipt" || type === "grocery") void runEstimate({ type, content: dataUrl }, dataUrl);
   }
 
-  async function onSave(meals: Meal[], meta: { corrected: boolean }) {
+  async function onSave(saved: Meal[], meta: { corrected: boolean }) {
+    // A dish picked from a menu carries the menu's id, so the daily list still knows it
+    // after the place is renamed.
+    const menuId = mode === "menu" ? rankingRef.current?.venue.id : undefined;
+    const meals = menuId ? saved.map((m) => ({ ...m, menu_id: menuId })) : saved;
     for (const m of meals) await addMeal(m);
     void logEvent("record_saved", {
       input_type: meals[0]?.input_type,
       mode,
       n: meals.length,
       corrected: meta.corrected,
-      duration_ms: Date.now() - startTs.current,
+      duration_ms: nowMs() - startTs.current,
     });
     const s = settings ?? (await getSettings());
     if (!s || meals.every((m) => m.kind === "grocery")) {
@@ -233,7 +283,7 @@ export default function LogPage() {
     const [today, week, history] = await Promise.all([
       listMealsByDay(),
       listMealsByWeek(),
-      listMealsSince(Date.now() - HISTORY_DAYS * 86400e3),
+      listMealsSince(nowMs() - HISTORY_DAYS * 86400e3),
     ]);
     const feedback = buildFeedback(meals, week, today, history, s);
     void logEvent("feedback_shown", {
@@ -247,7 +297,7 @@ export default function LogPage() {
   }
 
   function another() {
-    startTs.current = Date.now();
+    startTs.current = nowMs();
     setText("");
     void logEvent("record_start", { mode, after_feedback: true });
     setPhase({ kind: "input" });
@@ -320,8 +370,21 @@ export default function LogPage() {
           {mode === "menu" && (
             <>
               <p className="text-sm text-ink-600" data-testid="menu-hint">
-                吃之前拍一下窗口价目牌、路边摊招牌或外卖店铺菜单,按每一块钱换多少克蛋白排好。只是排序,吃什么你定;点一样就记上。
+                常去的窗口、小摊、外卖店,菜单拍一次就存下来,之后首页每天直接按每一块钱换多少克蛋白排好,不用再拍。只是排序,吃什么你定。
               </p>
+              {menus.length > 0 && (
+                <section className="space-y-2" data-testid="saved-venues">
+                  <h2 className="label-xs">存过的地方 · 点开直接看</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {menus.map((m) => (
+                      <button key={m.id} onClick={() => openSaved(m)} className="card px-3 py-2 text-left text-sm active:scale-[0.98]" data-testid="venue-chip">
+                        <span className="font-medium">{m.name}</span>
+                        <span className="ml-1.5 text-xs text-ink-400">{m.items.length} 道</span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
               <section className="grid grid-cols-2 gap-2">
                 <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-[1.25rem] bg-brand-600 px-2 py-4 text-center text-white shadow-[0_10px_24px_-12px_rgb(21_128_61/0.8)] transition active:scale-[0.97]">
                   <PhotoInput type="menu" onFile={onFile} />
@@ -439,13 +502,16 @@ export default function LogPage() {
 
       {phase.kind === "ranked" && (
         <MenuRanking
-          merchant={phase.ranking.merchant}
-          items={phase.ranking.items}
+          key={phase.ranking.venue.id}
+          venueName={phase.ranking.venue.name}
+          items={phase.ranking.venue.items}
           spendable={phase.ranking.spendable}
           deficit={phase.ranking.deficit}
           currency={currency}
           onPick={pickDish}
           onBack={() => setPhase({ kind: "input" })}
+          onRename={renameVenue}
+          onDelete={deleteVenue}
         />
       )}
 

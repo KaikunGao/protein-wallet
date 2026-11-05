@@ -11,23 +11,28 @@ import { cpgUnit, fmtMoney, type Currency } from "@/lib/money";
  * says what the user should eat.
  */
 export default function MenuRanking({
-  merchant,
+  venueName,
   items,
   spendable,
   deficit,
   currency,
   onPick,
   onBack,
+  onRename,
+  onDelete,
 }: {
-  merchant: string | null;
+  venueName: string; // the menu is kept under this name as a place the user goes to
   items: MenuItem[];
   spendable: number | null;
   deficit: number | null;
   currency?: Currency;
   onPick: (d: RankedDish, position: number, sort: MenuSort) => void;
   onBack: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
 }) {
   const [sort, setSort] = useState<MenuSort>("cpg");
+  const [name, setName] = useState(venueName);
   const { ranked, unranked } = rankMenu(items, sort, spendable);
   const top = ranked.slice(0, MENU_TOP);
   const rest = ranked.slice(MENU_TOP);
@@ -67,9 +72,30 @@ export default function MenuRanking({
 
   return (
     <div className="space-y-4 rise" data-testid="menu-ranking">
+      {/* 每日清单: the menu is kept as a place, so the home page can rank it every day without a photo. */}
+      <div className="card p-3" data-testid="venue-bar">
+        <div className="flex items-center gap-2">
+          <span className="label-xs shrink-0">已存为</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={() => onRename(name)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+            }}
+            className="input-base py-1.5 text-sm"
+            aria-label="地点名称"
+          />
+          <button onClick={onDelete} className="shrink-0 px-1 text-xs text-ink-400">
+            删除
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-ink-400">存下来了。以后首页每天会把这里的菜和你记过的一起排,不用再拍。</p>
+      </div>
+
       <div>
         <p className="text-sm text-ink-600" data-testid="menu-summary">
-          {merchant ? `${merchant}:` : ""}读出 {items.length} 道,{ranked.length} 道有价格和蛋白来源,能排。
+          读出 {items.length} 道,{ranked.length} 道有价格和蛋白来源,能排。
           {deficit != null && spendable != null && deficit > 0 ? ` 今天还差 ${Math.round(deficit)} g,还能花 ${fmtMoney(spendable, currency)}。` : ""}
         </p>
         <div className="mt-3 flex rounded-2xl bg-ink-100 p-1" role="tablist">

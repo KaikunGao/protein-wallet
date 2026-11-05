@@ -5,12 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 import ConfidenceBadge from "@/components/ConfidenceBadge";
 import MealEditor from "@/components/MealEditor";
 import Onboarding from "@/components/Onboarding";
-import { addMeal, deleteMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, logEvent, newId, updateMeal } from "@/lib/db";
+import { addMeal, deleteMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, listMenus, logEvent, newId, updateMeal } from "@/lib/db";
 import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, mid, proteinDeficit, proteinRange, spend } from "@/lib/derive";
 import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
-import { buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
+import { mealFromDish } from "@/lib/menu-rank";
+import { NEXT_MEAL_MAX, buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
 import { isSupplement, presetMeal, scoopPrice } from "@/lib/supplement";
 import type { Meal, Settings, WheyPreset } from "@/lib/types";
 
@@ -46,6 +47,12 @@ function frequentMeals(meals: Meal[], today: Meal[], hasPreset: boolean): Freque
 function cloneForRepeat(m: Meal): Meal {
   return { ...m, id: newId(), ts: Date.now(), input_type: "repeat", user_corrected: false };
 }
+/** A record for a list row: re-log the user's own latest record, or take the numbers from the saved menu. */
+function recordFromOption(o: NextOption): Meal | null {
+  if (o.meal) return cloneForRepeat(o.meal);
+  if (o.dish) return mealFromDish(o.dish, o.venue, newId(), Date.now(), o.menuId);
+  return null;
+}
 /** One scoop of the user's powder, stamped now. Outside the component for the purity lint. */
 function makeScoop(w: WheyPreset): Meal {
   return presetMeal(w, newId(), Date.now());
@@ -59,18 +66,21 @@ export default function Home() {
   const [today, setToday] = useState<Meal[]>([]);
   const [week, setWeek] = useState<Meal[]>([]);
   const [recent, setRecent] = useState<Frequent[]>([]);
-  const [next, setNext] = useState<NextMeal | null>(null); // 下一顿卡片 (PRD F0-1)
+  const [next, setNext] = useState<NextMeal | null>(null); // 下一顿 / 每日清单 (PRD F0-1)
+  const [venues, setVenues] = useState(0); // how many menus are saved as places
+  const [showAll, setShowAll] = useState(false);
   const [editing, setEditing] = useState<Meal | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const since = Date.now() - RECENT_DAYS * 86400e3;
-    const [s, t, w, r] = await Promise.all([getSettings(), listMealsByDay(), listMealsByWeek(), listMealsSince(since)]);
+    const [s, t, w, r, menus] = await Promise.all([getSettings(), listMealsByDay(), listMealsByWeek(), listMealsSince(since), listMenus()]);
     setSettings(s);
     setToday(t);
     setWeek(w);
     setRecent(frequentMeals(r, t, !!s?.whey));
-    setNext(s ? buildNextMeal(r, w, t, s, Date.now()) : null);
+    setNext(s ? buildNextMeal(r, w, t, s, Date.now(), menus) : null);
+    setVenues(menus.length);
   }, []);
 
   useEffect(() => {
@@ -97,8 +107,10 @@ export default function Home() {
 
   /** 下一顿卡片: a tap on a ranked row re-logs that dish. `rank_picked` is the decision-line metric. */
   function pick(o: NextOption, position: number) {
-    void logEvent("rank_picked", { where: "next_meal", position, cpg: Math.round(o.cpg * 10) / 10, over: o.over });
-    return quickAdd(cloneForRepeat(o.meal), "next");
+    const copy = recordFromOption(o);
+    if (!copy) return;
+    void logEvent("rank_picked", { where: "next_meal", from: o.meal ? "history" : "menu", position, cpg: Math.round(o.cpg * 10) / 10, over: o.over });
+    return quickAdd(copy, "next");
   }
 
   async function quickAdd(copy: Meal, kind: "repeat" | "preset" | "next") {
@@ -215,21 +227,21 @@ export default function Home() {
         <section className="card p-4" data-testid="next-meal">
           <div className="flex items-baseline justify-between gap-2">
             <h2 className="text-sm font-semibold text-ink-900">下一顿</h2>
-            <span className="text-[11px] text-ink-400">你记过的 · 按每块钱蛋白排</span>
+            <span className="text-[11px] text-ink-400">记过的和存过的菜单 · 按每块钱蛋白排</span>
           </div>
           <p className="mt-1 text-sm text-ink-600" data-testid="next-meal-line">
             还差 {Math.round(next.deficit)} g,今天还能花 {fmtMoney(next.spendable, cur)}。
           </p>
           {next.state === "no_history" && (
-            <p className="mt-2 text-sm text-ink-400">还没有带价格的记录。先拍一张菜单,没吃过的也能比。</p>
+            <p className="mt-2 text-sm text-ink-400">还没有带价格的记录,也没存过菜单。把常去的窗口或外卖店拍一次,以后每天打开就有清单。</p>
           )}
           {next.state === "over_budget" && (
             <p className="mt-2 text-xs font-medium text-dining-700">你记过的都超过今天能花的钱。下面是每块钱蛋白最多的三样。</p>
           )}
           {next.options.length > 0 && (
             <ol className="mt-2 divide-y divide-ink-100">
-              {next.options.map((o, i) => (
-                <li key={o.meal.id}>
+              {(showAll ? next.options : next.options.slice(0, NEXT_MEAL_MAX)).map((o, i) => (
+                <li key={o.key}>
                   <button
                     onClick={() => pick(o, i + 1)}
                     className="flex w-full items-center gap-3 py-2.5 text-left active:opacity-70"
@@ -237,10 +249,11 @@ export default function Home() {
                   >
                     <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === 0 ? "bg-brand-600 text-white" : "bg-ink-100 text-ink-600"}`}>{i + 1}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{o.meal.meal_name}</span>
+                      <span className="block truncate text-sm font-medium">{o.name}</span>
                       <span className="block text-xs text-ink-400">
-                        {o.meal.merchant ? `${o.meal.merchant} · ` : ""}约 {Math.round(o.proteinMid)} g · {fmtMoney(o.amount, cur)}
+                        {o.venue ? `${o.venue} · ` : ""}约 {Math.round(o.proteinMid)} g · {fmtMoney(o.amount, cur)}
                         {o.times > 1 ? ` · 吃过 ${o.times} 次` : ""}
+                        {o.times === 0 ? " · 菜单上的,没记过" : ""}
                         {o.over ? " · 超出今天额度" : ""}
                       </span>
                     </span>
@@ -256,8 +269,13 @@ export default function Home() {
               ))}
             </ol>
           )}
+          {next.options.length > NEXT_MEAL_MAX && (
+            <button onClick={() => setShowAll((v) => !v)} className="mt-1 w-full py-1.5 text-center text-xs text-ink-400" data-testid="next-meal-more">
+              {showAll ? "收起" : `再看 ${next.options.length - NEXT_MEAL_MAX} 样`}
+            </button>
+          )}
           <Link href="/log?mode=menu" className="mt-2 block rounded-xl bg-brand-50 py-2 text-center text-sm font-medium text-brand-700" data-testid="menu-link">
-            拍菜单 · 没吃过的也能比
+            {venues > 0 ? `存过 ${venues} 个地方 · 再拍一个常去的` : "拍一次常去的菜单 · 以后不用再拍"}
           </Link>
         </section>
       )}
@@ -308,7 +326,7 @@ export default function Home() {
         </Link>
         <div className="grid grid-cols-2 gap-2">
           <Link href="/log?mode=menu" className="btn-secondary block py-3 text-center text-sm" data-testid="menu-link-main">
-            拍菜单 · 吃之前比一比
+            {venues > 0 ? "常去的地方 · 菜单" : "拍菜单 · 拍一次就存下"}
           </Link>
           <Link href="/log?mode=day" className="btn-secondary block py-3 text-center text-sm" data-testid="day-link">
             日结 · 一句话记一天

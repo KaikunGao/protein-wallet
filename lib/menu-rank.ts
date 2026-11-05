@@ -2,7 +2,7 @@
 // ranking itself. Pure and dependency-free so the client bundle never pulls in the tables
 // or the SDK. The model reads the menu; THIS code decides the order, by one visible key.
 import type { EstimateItem } from "./estimate/schema";
-import type { Confidence, Source } from "./types";
+import type { Confidence, Meal, Source } from "./types";
 
 export interface MenuItem {
   id: string;
@@ -29,6 +29,55 @@ export interface RankedDish extends MenuItem {
   cpgLow: number; // best case: price over the high end of the protein range
   cpgHigh: number; // worst case: price over the low end
   over: boolean; // costs more than today's spendable money
+}
+
+/**
+ * A scanned menu kept as a place the user goes to (每日清单, 2026-11-04). Menus rarely
+ * change, so the scan is paid once per place; afterwards the home page ranks these dishes
+ * every day without a photo.
+ */
+export interface SavedMenu {
+  id: string;
+  name: string; // "二食堂 3 号窗口", "老王快餐" — the shop name read off the menu, or one the user typed
+  ts: number; // last scanned / edited
+  items: MenuItem[];
+}
+
+function normName(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, "").trim();
+}
+
+/**
+ * The record to store for a freshly parsed menu: scanning the same place again replaces
+ * its dishes (prices change) instead of piling up duplicates.
+ */
+export function upsertMenu(existing: SavedMenu[], name: string, items: MenuItem[], newId: string, ts: number): SavedMenu {
+  const clean = name.trim() || "未命名菜单";
+  const same = existing.find((m) => normName(m.name) === normName(clean));
+  return { id: same?.id ?? newId, name: clean, ts, items };
+}
+
+/** A dish picked straight from a saved menu (no confirm card) as a meal record. */
+export function mealFromDish(d: MenuItem, venue: string | null, id: string, ts: number, menuId?: string | null): Meal {
+  return {
+    ...(menuId ? { menu_id: menuId } : {}),
+    id,
+    ts,
+    kind: "meal",
+    input_type: "menu",
+    meal_name: d.name,
+    merchant: venue,
+    amount_usd: d.price,
+    kcal_low: d.kcal_low,
+    kcal_high: d.kcal_high,
+    protein_low_g: d.protein_low_g,
+    protein_high_g: d.protein_high_g,
+    confidence: d.confidence,
+    basis: d.basis,
+    source: d.source,
+    user_corrected: false,
+    portion_factor: 1,
+  };
 }
 
 export type MenuSort = "cpg" | "protein";

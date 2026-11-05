@@ -1,5 +1,6 @@
 // Shared domain types. Kept dependency-free so both the Next app and the
 // eval script (plain Node) can import them.
+import type { SavedMenu } from "./menu-rank";
 import type { Currency } from "./money";
 
 export type Confidence = "high" | "medium" | "low";
@@ -42,6 +43,7 @@ export interface Meal {
   source: Source | null;
   user_corrected: boolean;
   portion_factor?: number; // one-tap portion correction applied on the confirm card (1 = as estimated)
+  menu_id?: string; // the saved menu this record was picked from; survives renaming the place
   supplement?: boolean; // 蛋白粉 etc.: own row in the weekly report, never in the food ranking
   ingredients?: string[]; // grocery only: archived shopping list
   photo_ref?: string; // reserved; v1 does not persist photos
@@ -96,6 +98,7 @@ export interface ExportBundle {
   settings: Settings | null;
   meals: Meal[];
   events: AppEvent[];
+  menus?: SavedMenu[]; // saved places (since 2026-11-04); absent in older exports
 }
 
 export const DEFAULT_PROTEIN_TARGET_G = 100;

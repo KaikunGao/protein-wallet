@@ -1,6 +1,7 @@
 // Hand-calculated check of the 下一顿 card (PRD F0-1). Run: npx tsx scripts/test-next-meal.ts
 import assert from "node:assert/strict";
-import { buildNextMeal, pricedDishes, spendableToday } from "../lib/next-meal";
+import { buildNextMeal, candidates, menuDishes, pricedDishes, spendableToday } from "../lib/next-meal";
+import { mealFromDish, upsertMenu, type MenuItem, type SavedMenu } from "../lib/menu-rank";
 import { addDays, startOfWeek } from "../lib/dates";
 import type { Meal, Settings } from "../lib/types";
 
@@ -39,17 +40,17 @@ console.log("  ok - today's spendable money spreads the remaining budget over th
 
 // dishes by 分/g: 鸡蛋 3/13 = 23.1, 食堂番茄炒蛋盖饭 8/25 = 32, 食堂鸡腿饭 24/50 = 48, 外卖黄焖鸡 22/34 = 64.7, 牛肉面 16/22 = 72.7
 const dishes = pricedDishes(history);
-assert.deepEqual(dishes.map((d) => d.meal.meal_name), ["鸡蛋 2 个", "食堂番茄炒蛋盖饭", "食堂鸡腿饭", "外卖黄焖鸡", "牛肉面"]);
+assert.deepEqual(dishes.map((d) => d.name), ["鸡蛋 2 个", "食堂番茄炒蛋盖饭", "食堂鸡腿饭", "外卖黄焖鸡", "牛肉面"]);
 assert.deepEqual(dishes.map((d) => d.cpg.toFixed(1)), ["23.1", "32.0", "48.0", "64.7", "72.7"]);
 assert.equal(dishes[2].times, 2);
-assert.equal(dishes[2].meal.id, tue.id); // a tap re-logs the latest record
+assert.equal(dishes[2].meal?.id, tue.id); // a tap re-logs the latest record
 console.log("  ok - priced food only, cheapest protein first; free meals and supplements left out");
 
 // deficit 100 − 25 = 75; affordable (≤ ¥12): 鸡蛋, 番茄炒蛋盖饭, 食堂鸡腿饭
 const nm = buildNextMeal(history, week, today, settings, now);
 assert.equal(nm.state, "ok");
 assert.equal(nm.deficit, 75);
-assert.deepEqual(nm.options.map((o) => [o.meal.meal_name, o.amount, o.over]), [["鸡蛋 2 个", 3, false], ["食堂番茄炒蛋盖饭", 8, false], ["食堂鸡腿饭", 12, false]]);
+assert.deepEqual(nm.options.map((o) => [o.name, o.amount, o.over]), [["鸡蛋 2 个", 3, false], ["食堂番茄炒蛋盖饭", 8, false], ["食堂鸡腿饭", 12, false]]);
 console.log("  ok - options fit today's money and are ordered by 分/g");
 
 // Tight day: ¥18 already spent today -> spendable 2 -> nothing fits, cheapest three shown flagged.
@@ -59,7 +60,7 @@ assert.equal(tight.spendable, 2);
 assert.equal(tight.state, "over_budget");
 assert.equal(tight.options.length, 3);
 assert.ok(tight.options.every((o) => o.over));
-assert.equal(tight.options[0].meal.meal_name, "鸡蛋 2 个");
+assert.equal(tight.options[0].name, "鸡蛋 2 个");
 console.log("  ok - nothing affordable: cheapest protein still shown, flagged");
 
 // Target met and empty history.
@@ -70,5 +71,71 @@ assert.equal(buildNextMeal([older[3], older[4]], [], [], settings, now).state, "
 // Overspent week never yields a negative amount.
 assert.equal(spendableToday([meal({ ts: at(0, 12), meal_name: "聚餐", amount_usd: 300 })], settings, now), 0);
 console.log("  ok - met / no history / overspent week");
+
+// ---- 每日清单: dishes from saved menus join the list without a photo ----
+const dish = (id: string, name: string, price: number | null, pl: number, ph: number, extra: Partial<MenuItem> = {}): MenuItem => ({
+  id, name, price, kcal_low: 100, kcal_high: 200, protein_low_g: pl, protein_high_g: ph,
+  confidence: "medium", basis: "食材表", source: "ingredient_table", ...extra,
+});
+const laowang: SavedMenu = {
+  id: "m1", name: "老王快餐", ts: at(-1, 12),
+  items: [
+    dish("0", "卤蛋", 2, 5, 8), // 2/6.5 = 30.8 分/g
+    dish("1", "黄焖鸡米饭(小份)", 16, 25, 41), // 16/33 = 48.5, over ¥12
+    dish("2", "米饭", 1, 4, 6, { side: true }), // staple: never ranked
+    dish("3", "可乐", 3, 0, 1, { source: "text_estimate" }),
+    dish("4", "每日例汤", null, 2, 8),
+  ],
+};
+const canteen: SavedMenu = {
+  id: "m2", name: "二食堂", ts: at(-2, 12),
+  items: [dish("0", "食堂鸡腿饭", 12, 18, 29), dish("1", "红烧牛肉面", 16, 13, 22)], // the first one is already in the history
+};
+const md = menuDishes([laowang, canteen]);
+assert.deepEqual(md.map((o) => `${o.venue}/${o.name}`), ["老王快餐/卤蛋", "老王快餐/黄焖鸡米饭(小份)", "二食堂/食堂鸡腿饭", "二食堂/红烧牛肉面"]);
+console.log("  ok - saved menus contribute only ranked dishes (priced, real protein source)");
+
+// History wins over the menu row for the same place + dish; never-eaten dishes come in with times 0.
+const all = candidates(history, [laowang, canteen]);
+const leg = all.filter((o) => o.name === "食堂鸡腿饭");
+assert.equal(leg.length, 1);
+assert.ok(leg[0].meal && !leg[0].dish && leg[0].times === 2);
+const egg = all.find((o) => o.name === "卤蛋")!;
+assert.ok(egg.dish && !egg.meal && egg.times === 0 && egg.venue === "老王快餐");
+console.log("  ok - a dish already logged at that place is not listed twice");
+
+// Same day as above (spendable ¥12, gap 75 g): 鸡蛋 23.1, 卤蛋 30.8, 番茄炒蛋盖饭 32, 食堂鸡腿饭 48; the ¥16 dishes do not fit.
+const withMenus = buildNextMeal(history, week, today, settings, now, [laowang, canteen]);
+assert.equal(withMenus.state, "ok");
+assert.deepEqual(withMenus.options.map((o) => [o.name, o.cpg.toFixed(1), o.times]), [
+  ["鸡蛋 2 个", "23.1", 2], ["卤蛋", "30.8", 0], ["食堂番茄炒蛋盖饭", "32.0", 1], ["食堂鸡腿饭", "48.0", 2],
+]);
+assert.equal(withMenus.candidates, 8); // 5 logged dishes + 4 rankable menu dishes − 1 duplicate (食堂鸡腿饭)
+console.log("  ok - daily list mixes logged dishes and saved-menu dishes, cheapest protein first");
+
+// A brand-new user with one saved menu and no records gets a list at once.
+const fresh = buildNextMeal([], [], [], settings, now, [laowang]);
+assert.equal(fresh.state, "ok");
+assert.deepEqual(fresh.options.map((o) => o.name), ["卤蛋", "黄焖鸡米饭(小份)"]); // spendable 140/5 = 28
+console.log("  ok - zero records + one saved menu still yields a list");
+
+// Tapping a never-eaten dish records it from the menu numbers.
+const rec = mealFromDish(egg.dish!, egg.venue, "new", now);
+assert.deepEqual([rec.meal_name, rec.merchant, rec.amount_usd, rec.protein_low_g, rec.protein_high_g, rec.input_type, rec.source], ["卤蛋", "老王快餐", 2, 5, 8, "menu", "ingredient_table"]);
+// Scanning the same place again replaces its dishes instead of adding a second entry.
+const again = upsertMenu([laowang, canteen], " 老王 快餐 ", [dish("0", "卤蛋", 2.5, 5, 8)], "fresh-id", now);
+assert.deepEqual([again.id, again.name, again.items.length], ["m1", "老王 快餐", 1]);
+assert.equal(upsertMenu([laowang], "新开的店", [], "fresh-id", now).id, "fresh-id");
+assert.equal(upsertMenu([], "  ", [], "x", now).name, "未命名菜单");
+console.log("  ok - picking from a saved menu makes a record; rescanning a place updates it");
+
+// Renaming a place must not bring back a dish the user already picked from it.
+const picked = mealFromDish(egg.dish!, "老王快餐", "picked", at(1, 12), "m1");
+assert.equal(picked.menu_id, "m1");
+const renamed: SavedMenu = { ...laowang, name: "老王快餐(北门)" };
+const afterRename = candidates([picked], [renamed]).filter((o) => o.name === "卤蛋");
+assert.equal(afterRename.length, 1);
+assert.ok(afterRename[0].meal && afterRename[0].times === 1);
+console.log("  ok - a renamed place does not duplicate dishes already picked from it");
 
 console.log("\nnext-meal tests passed");
