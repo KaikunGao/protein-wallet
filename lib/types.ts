@@ -43,6 +43,7 @@ export interface Meal {
   source: Source | null;
   user_corrected: boolean;
   portion_factor?: number; // one-tap portion correction applied on the confirm card (1 = as estimated)
+  demo?: boolean; // part of the built-in example data; removed by "清空示例"
   menu_id?: string; // the saved menu this record was picked from; survives renaming the place
   supplement?: boolean; // 蛋白粉 etc.: own row in the weekly report, never in the food ranking
   ingredients?: string[]; // grocery only: archived shopping list
@@ -64,6 +65,8 @@ export interface Settings {
   weekly_budget_usd: number;
   currency?: Currency; // always CNY since 2026-11-04; kept so old exports still parse
   whey?: WheyPreset;
+  demo?: boolean; // the app is showing the example data
+  starter_seeded?: boolean; // the built-in starter list was added once; never re-add after the user deletes it
   created_at: number;
 }
 
@@ -77,6 +80,10 @@ export type EventName =
   | "record_cancelled"
   | "record_repeated"
   | "feedback_shown" // 即时回报 card / toast rendered after a save
+  | "demo_start" // the visitor chose the example data on the first screen
+  | "demo_clear" // the example data was cleared
+  | "menu_shared" // a share link was made for one or all saved places
+  | "menu_imported" // places from a share link were saved on this device
   | "menu_ranked" // a menu (photo or text) was parsed and ranked by 分/g
   | "rank_picked" // a record created by tapping a row in a 分/g ranking (下一顿 card, later: menu scan)
   | "decision_changed" // weekly one-tap answer: did the numbers change where / what the user ate this week?

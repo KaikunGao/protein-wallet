@@ -17,6 +17,7 @@ export interface NextOption {
   name: string;
   venue: string | null;
   menuId: string | null; // the saved menu this row belongs to (a menu row, or a record picked from one)
+  origin: "history" | "menu" | "shared" | "starter"; // where the row comes from; shown on the row
   meal: Meal | null; // from the user's records: the latest one, re-logged on tap
   dish: MenuItem | null; // from a saved menu and never logged: recorded from the menu numbers on tap
   times: number; // how often it was logged in the history window (0 = never eaten)
@@ -82,6 +83,7 @@ export function pricedDishes(history: Meal[]): NextOption[] {
       name: g.meal.meal_name,
       venue: g.meal.merchant,
       menuId: g.meal.menu_id ?? null,
+      origin: "history" as const,
       meal: g.meal,
       dish: null,
       times: g.times,
@@ -105,6 +107,7 @@ export function menuDishes(menus: SavedMenu[]): NextOption[] {
         name: d.name,
         venue: menu.name,
         menuId: menu.id,
+        origin: menu.starter ? "starter" : menu.shared_ts ? "shared" : "menu",
         meal: null,
         dish: d,
         times: 0,
@@ -150,7 +153,11 @@ export function buildNextMeal(
   const spendable = spendableToday(weekMeals, settings, now);
   if (deficit <= 0) return { state: "met", deficit, spendable, options: [], candidates: 0 };
 
-  const all = candidates(history, menus);
+  // The built-in starter list only fills in during cold start: once the user's own records
+  // and places give enough affordable rows, generic supermarket items stay out of the way.
+  const own = candidates(history, menus.filter((m) => !m.starter));
+  const ownAffordable = own.filter((d) => d.amount <= spendable).length;
+  const all = ownAffordable >= NEXT_MEAL_MAX ? own : candidates(history, menus);
   if (all.length === 0) return { state: "no_history", deficit, spendable, options: [], candidates: 0 };
 
   const affordable = all.filter((d) => d.amount <= spendable);

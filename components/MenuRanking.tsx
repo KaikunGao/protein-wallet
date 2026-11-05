@@ -20,6 +20,9 @@ export default function MenuRanking({
   onBack,
   onRename,
   onDelete,
+  onShare,
+  origin = "own",
+  scannedOn,
 }: {
   venueName: string; // the menu is kept under this name as a place the user goes to
   items: MenuItem[];
@@ -30,6 +33,9 @@ export default function MenuRanking({
   onBack: () => void;
   onRename: (name: string) => void;
   onDelete: () => void;
+  onShare?: () => void; // make a link other people can import (not offered for the starter list)
+  origin?: "own" | "shared" | "starter";
+  scannedOn?: string; // for a shared menu: the day the sharer scanned it
 }) {
   const [sort, setSort] = useState<MenuSort>("cpg");
   const [name, setName] = useState(venueName);
@@ -86,11 +92,22 @@ export default function MenuRanking({
             className="input-base py-1.5 text-sm"
             aria-label="地点名称"
           />
+          {onShare && (
+            <button onClick={onShare} className="shrink-0 rounded-lg bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700" data-testid="share-venue">
+              分享
+            </button>
+          )}
           <button onClick={onDelete} className="shrink-0 px-1 text-xs text-ink-400">
             删除
           </button>
         </div>
-        <p className="mt-2 text-xs text-ink-400">存下来了。以后首页每天会把这里的菜和你记过的一起排,不用再拍。</p>
+        <p className="mt-2 text-xs text-ink-400" data-testid="venue-note">
+          {origin === "starter"
+            ? "内置的起步清单:超市能买到的基础食材,价格是参考价,以你那里的为准。用不上可以删掉,删了不会再出现。"
+            : origin === "shared"
+              ? `这是别人分享的菜单${scannedOn ? `,拍于 ${scannedOn}` : ""}。价格可能已经变了,数字也没经过你核对;自己重拍一次这个地方就会更新。`
+              : "存下来了。以后首页每天会把这里的菜和你记过的一起排,不用再拍。点「分享」把它发给同学,对方不用再拍。"}
+        </p>
       </div>
 
       <div>

@@ -41,6 +41,8 @@ export interface SavedMenu {
   name: string; // "二食堂 3 号窗口", "老王快餐" — the shop name read off the menu, or one the user typed
   ts: number; // last scanned / edited
   items: MenuItem[];
+  shared_ts?: number; // imported from a share link: when the sharer scanned it
+  starter?: boolean; // the built-in starter list (reference prices)
 }
 
 function normName(s: string): string {

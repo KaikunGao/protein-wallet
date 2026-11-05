@@ -12,6 +12,8 @@ export function buildSettings(input: {
   protein_target_g?: number | null;
   currency?: Currency | null;
   whey?: WheyPreset | null;
+  starter_seeded?: boolean;
+  demo?: boolean;
   created_at?: number;
 }): Settings {
   const s: Settings = {
@@ -24,6 +26,8 @@ export function buildSettings(input: {
   };
   if (input.weight_kg && input.weight_kg > 0) s.weight_kg = input.weight_kg;
   s.currency = currencyOf(input.currency);
+  if (input.starter_seeded) s.starter_seeded = true;
+  if (input.demo) s.demo = true; // editing settings while in the example keeps the "清空示例" banner
   // The preset only exists once the label's protein-per-scoop is filled in.
   if (input.whey && input.whey.protein_g > 0) {
     s.whey = {

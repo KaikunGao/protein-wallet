@@ -5,13 +5,15 @@ import { useCallback, useEffect, useState } from "react";
 import ConfidenceBadge from "@/components/ConfidenceBadge";
 import MealEditor from "@/components/MealEditor";
 import Onboarding from "@/components/Onboarding";
-import { addMeal, deleteMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, listMenus, logEvent, newId, updateMeal } from "@/lib/db";
+import { addMeal, deleteDemoMeals, deleteMeal, deleteSettings, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, listMenus, logEvent, newId, saveMenu, saveSettings, updateMeal } from "@/lib/db";
 import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, mid, proteinDeficit, proteinRange, spend } from "@/lib/derive";
 import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
 import { mealFromDish } from "@/lib/menu-rank";
 import { NEXT_MEAL_MAX, buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
+import { DEMO_ORDER_COUNT, demoMeals, demoSettings } from "@/lib/demo";
+import { starterMenu } from "@/lib/starter";
 import { isSupplement, presetMeal, scoopPrice } from "@/lib/supplement";
 import type { Meal, Settings, WheyPreset } from "@/lib/types";
 
@@ -53,6 +55,11 @@ function recordFromOption(o: NextOption): Meal | null {
   if (o.dish) return mealFromDish(o.dish, o.venue, newId(), Date.now(), o.menuId);
   return null;
 }
+/** The example data stamped relative to now. Outside the component for the purity lint. */
+function buildDemo(): { settings: Settings; meals: Meal[] } {
+  const now = Date.now();
+  return { settings: demoSettings(now), meals: demoMeals(now, newId) };
+}
 /** One scoop of the user's powder, stamped now. Outside the component for the purity lint. */
 function makeScoop(w: WheyPreset): Meal {
   return presetMeal(w, newId(), Date.now());
@@ -74,13 +81,23 @@ export default function Home() {
 
   const load = useCallback(async () => {
     const since = Date.now() - RECENT_DAYS * 86400e3;
-    const [s, t, w, r, menus] = await Promise.all([getSettings(), listMealsByDay(), listMealsByWeek(), listMealsSince(since), listMenus()]);
+    const [s0, t, w, r, m0] = await Promise.all([getSettings(), listMealsByDay(), listMealsByWeek(), listMealsSince(since), listMenus()]);
+    let s = s0;
+    let menus = m0;
+    // 内置起步清单: added once, so the list is not empty before the first scan. It is an
+    // ordinary saved place afterwards; if the user deletes it, the flag keeps it gone.
+    if (s && !s.starter_seeded) {
+      await saveMenu(starterMenu(Date.now()));
+      s = { ...s, starter_seeded: true };
+      await saveSettings(s);
+      menus = await listMenus();
+    }
     setSettings(s);
     setToday(t);
     setWeek(w);
     setRecent(frequentMeals(r, t, !!s?.whey));
     setNext(s ? buildNextMeal(r, w, t, s, Date.now(), menus) : null);
-    setVenues(menus.length);
+    setVenues(menus.filter((m) => !m.starter).length);
   }, []);
 
   useEffect(() => {
@@ -109,7 +126,7 @@ export default function Home() {
   function pick(o: NextOption, position: number) {
     const copy = recordFromOption(o);
     if (!copy) return;
-    void logEvent("rank_picked", { where: "next_meal", from: o.meal ? "history" : "menu", position, cpg: Math.round(o.cpg * 10) / 10, over: o.over });
+    void logEvent("rank_picked", { where: "next_meal", from: o.origin, position, cpg: Math.round(o.cpg * 10) / 10, over: o.over });
     return quickAdd(copy, "next");
   }
 
@@ -126,6 +143,23 @@ export default function Home() {
       void logEvent("feedback_shown", { where: kind, rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit) });
     }
     flash(`已记「${m.meal_name}」${line}`, 2800);
+    await load();
+  }
+
+  /** 示例数据: fill the app with the 13 parsed 外卖 orders so a visitor sees it working. */
+  async function startDemo() {
+    const d = buildDemo();
+    await saveSettings(d.settings);
+    for (const m of d.meals) await addMeal(m);
+    void logEvent("demo_start", { orders: DEMO_ORDER_COUNT, meals: d.meals.length });
+    await load();
+  }
+
+  async function clearDemo() {
+    if (!window.confirm("清空示例数据,换成你自己的?你自己记的不会被删。")) return;
+    const removed = await deleteDemoMeals();
+    await deleteSettings();
+    void logEvent("demo_clear", { removed });
     await load();
   }
 
@@ -146,7 +180,7 @@ export default function Home() {
   }
 
   if (settings === undefined) return <p className="py-8 text-ink-400">加载中…</p>;
-  if (settings === null) return <Onboarding onDone={(s) => { setSettings(s); void load(); }} />;
+  if (settings === null) return <Onboarding onDone={(s) => { setSettings(s); void load(); }} onDemo={startDemo} />;
 
   const cur = currencyOf(settings.currency);
   const eaten = proteinRange(today);
@@ -175,6 +209,18 @@ export default function Home() {
         </div>
         <p className="text-xs text-ink-400">蛋白钱包</p>
       </header>
+
+      {settings.demo && (
+        <section className="card flex items-center gap-3 border-2 border-dashed border-brand-200 p-3" data-testid="demo-banner">
+          <p className="min-w-0 flex-1 text-xs leading-relaxed text-ink-600">
+            <b className="text-ink-900">这是示例。</b>
+            {DEMO_ORDER_COUNT} 张真实外卖订单截图,由应用自己解析,钱按实付分摊;日期是为演示排的。
+          </p>
+          <button onClick={clearDemo} className="shrink-0 rounded-lg bg-ink-900 px-3 py-1.5 text-xs font-medium text-white">
+            清空,用自己的
+          </button>
+        </section>
+      )}
 
       {/* Hero: protein ring + budget bar on one card */}
       <section className="card-hero p-5" data-testid="hero">
@@ -227,7 +273,7 @@ export default function Home() {
         <section className="card p-4" data-testid="next-meal">
           <div className="flex items-baseline justify-between gap-2">
             <h2 className="text-sm font-semibold text-ink-900">下一顿</h2>
-            <span className="text-[11px] text-ink-400">记过的和存过的菜单 · 按每块钱蛋白排</span>
+            <span className="text-[11px] text-ink-400">记过的和存过的地方 · 按每块钱蛋白排</span>
           </div>
           <p className="mt-1 text-sm text-ink-600" data-testid="next-meal-line">
             还差 {Math.round(next.deficit)} g,今天还能花 {fmtMoney(next.spendable, cur)}。
@@ -253,7 +299,7 @@ export default function Home() {
                       <span className="block text-xs text-ink-400">
                         {o.venue ? `${o.venue} · ` : ""}约 {Math.round(o.proteinMid)} g · {fmtMoney(o.amount, cur)}
                         {o.times > 1 ? ` · 吃过 ${o.times} 次` : ""}
-                        {o.times === 0 ? " · 菜单上的,没记过" : ""}
+                        {o.origin === "starter" ? " · 参考价" : o.origin === "shared" ? " · 同学分享的菜单" : o.origin === "menu" ? " · 菜单上的,没记过" : ""}
                         {o.over ? " · 超出今天额度" : ""}
                       </span>
                     </span>

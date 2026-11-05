@@ -1,0 +1,426 @@
+{
+ "_meta": {
+  "compiled_on": "2026-11-04",
+  "note": "示例数据:13 张真实的美团外卖订单截图,经应用自己的拍小票流程解析(模型读菜名和价格并估营养,代码把标价按实付分摊)后原样保存,没有手工改数字。只保留品牌名,门店名去掉了。days_ago 和 time 是为了让示例铺在最近 12 天里而排的,不是真实下单时间。",
+  "parsed_with": "POST /api/estimate type=receipt, prompt v4, 2026-11-04",
+  "check": "对照截图:13 张的合计全对;25 行菜品的名字和标价全对;3 行非食物(无需餐具、环保单)被跳过;御小灶一单被多拆出一条没有价格的「小吃三件套」。"
+ },
+ "orders": [
+  {
+   "shop": "真功夫",
+   "days_ago": 0,
+   "time": "12:10",
+   "paid": 30.5,
+   "items": [
+    {
+     "meal_name": "冬菇鸡腿肉+蒸蛋彩豆套餐",
+     "amount": 30.5,
+     "list_price": 34.5,
+     "kcal_low": 600,
+     "kcal_high": 900,
+     "protein_low_g": 32,
+     "protein_high_g": 48,
+     "confidence": "medium",
+     "basis": "真功夫不在参考表内,按常见搭配估算:冬菇鸡腿肉约120g + 米饭一碗 + 蒸蛋一份 + 彩豆一小份(标价 ¥34.5,按实付 ¥30.5 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "金戈戈香港豉油鸡",
+   "days_ago": 1,
+   "time": "18:30",
+   "paid": 29.7,
+   "items": [
+    {
+     "meal_name": "至尊豉油鸡腿饭",
+     "amount": 29.7,
+     "list_price": 37.7,
+     "kcal_low": 750,
+     "kcal_high": 1100,
+     "protein_low_g": 36,
+     "protein_high_g": 54,
+     "confidence": "medium",
+     "basis": "按经验估算,未匹配官方营养数据;假设一整只带皮豉油鸡腿(切块)约 350-450 kcal,配一份白米饭约 300-400 kcal,加青菜、酸菜和黄豆配菜及酱汁。(标价 ¥37.7,按实付 ¥29.7 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "客语客家菜",
+   "days_ago": 2,
+   "time": "12:20",
+   "paid": 30.1,
+   "items": [
+    {
+     "meal_name": "【一人食】客家酿豆腐套餐",
+     "amount": 30.1,
+     "list_price": 29.6,
+     "kcal_low": 550,
+     "kcal_high": 950,
+     "protein_low_g": 24,
+     "protein_high_g": 42,
+     "confidence": "low",
+     "basis": "客家菜目测估算:酿豆腐3块(猪肉馅,带酱汁)约360-550kcal,加一碗米饭约230-300kcal,套餐内其他配菜不明。(标价 ¥29.6,按实付 ¥30.1 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "米陀饭团",
+   "days_ago": 2,
+   "time": "19:00",
+   "paid": 19.5,
+   "items": [
+    {
+     "meal_name": "海鸭咸蛋黄饭团(加卤蛋半个)",
+     "amount": 19.5,
+     "list_price": 25.9,
+     "kcal_low": 360,
+     "kcal_high": 540,
+     "protein_low_g": 10,
+     "protein_high_g": 16,
+     "confidence": "medium",
+     "basis": "非连锁,按小票标注201克估算:紫米饭约120-140克加咸蛋黄、常见馅料(如肉松/油条)和半个卤蛋,馅料比例不确定。(标价 ¥25.9,按实付 ¥19.5 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "御小灶",
+   "days_ago": 3,
+   "time": "12:15",
+   "paid": 34.5,
+   "items": [
+    {
+     "meal_name": "烧汁黑猪五花盖饭",
+     "amount": 34.5,
+     "list_price": 42.9,
+     "kcal_low": 800,
+     "kcal_high": 1200,
+     "protein_low_g": 24,
+     "protein_high_g": 38,
+     "confidence": "medium",
+     "basis": "按常见做法估算：烧汁五花肉约120-150g，米饭一碗，可能有一个蛋；五花肉脂肪多，热量偏高。金额为套餐折后价，含小吃三件套。(标价 ¥42.9,按实付 ¥34.5 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "小吃三件套",
+     "amount": null,
+     "list_price": null,
+     "kcal_low": 200,
+     "kcal_high": 450,
+     "protein_low_g": 5,
+     "protein_high_g": 15,
+     "confidence": "low",
+     "basis": "小票上小吃名称被截断，具体内容不明，按三样小份炸物或小菜估算。价格已含在套餐价里。",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "金戈戈香港豉油鸡",
+   "days_ago": 4,
+   "time": "18:40",
+   "paid": 38.6,
+   "items": [
+    {
+     "meal_name": "至尊豉油鸡腿饭",
+     "amount": 32.14,
+     "list_price": 38.8,
+     "kcal_low": 650,
+     "kcal_high": 1100,
+     "protein_low_g": 33,
+     "protein_high_g": 55,
+     "confidence": "low",
+     "basis": "本地快餐目测估算，按一只豉油鸡腿+一碗白米饭+青菜、酸菜、黄豆配菜及酱汁估算(标价 ¥38.8,按实付 ¥32.14 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "蒸水蛋",
+     "amount": 4.89,
+     "list_price": 5.9,
+     "kcal_low": 100,
+     "kcal_high": 160,
+     "protein_low_g": 7,
+     "protein_high_g": 12,
+     "confidence": "medium",
+     "basis": "按一人份约1.5个鸡蛋的蒸蛋估算，含少量酱油和油(标价 ¥5.9,按实付 ¥4.89 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "咸鸭蛋(半个)",
+     "amount": 1.57,
+     "list_price": 1.9,
+     "kcal_low": 55,
+     "kcal_high": 80,
+     "protein_low_g": 4,
+     "protein_high_g": 6,
+     "confidence": "medium",
+     "basis": "按半个咸鸭蛋约35克估算(标价 ¥1.9,按实付 ¥1.57 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "百利家炸鸡",
+   "days_ago": 5,
+   "time": "19:30",
+   "paid": 41,
+   "items": [
+    {
+     "meal_name": "芝士鸡翅(8块)",
+     "amount": 41,
+     "list_price": 54,
+     "kcal_low": 800,
+     "kcal_high": 1250,
+     "protein_low_g": 55,
+     "protein_high_g": 85,
+     "confidence": "medium",
+     "basis": "非参考表连锁,按韩式炸鸡翅裹芝士粉/芝士酱估算,每块约100-155千卡、7-10克蛋白质,共8块(标价 ¥54,按实付 ¥41 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "酸萝卜",
+     "amount": 0,
+     "list_price": 0,
+     "kcal_low": 30,
+     "kcal_high": 60,
+     "protein_low_g": 0,
+     "protein_high_g": 1,
+     "confidence": "low",
+     "basis": "炸鸡店配送的腌渍萝卜小盒,约100克,糖醋腌制,热量主要来自糖,目测估算",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "必胜客",
+   "days_ago": 6,
+   "time": "12:30",
+   "paid": 72,
+   "items": [
+    {
+     "meal_name": "浓情香鸡翼 2只",
+     "amount": 18.74,
+     "list_price": 19,
+     "kcal_low": 190,
+     "kcal_high": 290,
+     "protein_low_g": 15,
+     "protein_high_g": 23,
+     "confidence": "medium",
+     "basis": "必胜客不在参考表,按烤鸡翅每只约100-140千卡、8-11克蛋白估算,共2只(标价 ¥19,按实付 ¥18.74 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "经典意式肉酱面",
+     "amount": 34.52,
+     "list_price": 35,
+     "kcal_low": 480,
+     "kcal_high": 720,
+     "protein_low_g": 18,
+     "protein_high_g": 28,
+     "confidence": "medium",
+     "basis": "必胜客不在参考表,按一盘番茄肉酱意面(面约250-300克熟重+肉酱)常见营养估算(标价 ¥35,按实付 ¥34.52 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "鸡茸蘑菇汤",
+     "amount": 18.74,
+     "list_price": 19,
+     "kcal_low": 140,
+     "kcal_high": 220,
+     "protein_low_g": 4,
+     "protein_high_g": 7,
+     "confidence": "medium",
+     "basis": "必胜客不在参考表,按一人份奶油浓汤含少量鸡肉蘑菇估算(标价 ¥19,按实付 ¥18.74 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "鸟鹏烧鸟居酒屋",
+   "days_ago": 7,
+   "time": "19:10",
+   "paid": 62,
+   "items": [
+    {
+     "meal_name": "牛油果加州卷",
+     "amount": 62,
+     "list_price": 58,
+     "kcal_low": 380,
+     "kcal_high": 620,
+     "protein_low_g": 11,
+     "protein_high_g": 17,
+     "confidence": "medium",
+     "basis": "按常见加州卷估算:一盘约8块,含寿司饭、蟹棒、牛油果,表面淋酱和鱼籽;店家份量和酱料用量不确定。(标价 ¥58,按实付 ¥62 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "the eating table",
+   "days_ago": 8,
+   "time": "12:40",
+   "paid": 73,
+   "items": [
+    {
+     "meal_name": "三道式澳洲M3麦黑牛肉饭套餐",
+     "amount": 73,
+     "list_price": 68,
+     "kcal_low": 750,
+     "kcal_high": 1350,
+     "protein_low_g": 30,
+     "protein_high_g": 50,
+     "confidence": "low",
+     "basis": "非连锁西餐目测估算:按全熟M3牛肉约120-150g、白米饭一碗、卤蛋约一个、南瓜汤一碗,第三道小票被截断未知,故区间放宽(标价 ¥68,按实付 ¥73 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "必胜客",
+   "days_ago": 9,
+   "time": "18:50",
+   "paid": 92,
+   "items": [
+    {
+     "meal_name": "鸡茸蘑菇汤",
+     "amount": 19.86,
+     "list_price": 19,
+     "kcal_low": 130,
+     "kcal_high": 200,
+     "protein_low_g": 4,
+     "protein_high_g": 8,
+     "confidence": "medium",
+     "basis": "必胜客奶油浓汤,参考表无官方数据,按一人份约250ml奶油鸡茸汤估算(标价 ¥19,按实付 ¥19.86 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "浓情香鸡翼 2只",
+     "amount": 19.86,
+     "list_price": 19,
+     "kcal_low": 200,
+     "kcal_high": 300,
+     "protein_low_g": 14,
+     "protein_high_g": 22,
+     "confidence": "medium",
+     "basis": "必胜客烤鸡翅,参考表无官方数据,按两只腌烤鸡翅中估算(标价 ¥19,按实付 ¥19.86 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "经典意式肉酱面(加一块羊排)",
+     "amount": 52.28,
+     "list_price": 50,
+     "kcal_low": 650,
+     "kcal_high": 950,
+     "protein_low_g": 30,
+     "protein_high_g": 48,
+     "confidence": "medium",
+     "basis": "必胜客肉酱意面一份约550-700kcal,加一块羊排约150-250kcal,参考表无官方数据(标价 ¥50,按实付 ¥52.28 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "汉堡王",
+   "days_ago": 10,
+   "time": "12:25",
+   "paid": 98.1,
+   "items": [
+    {
+     "meal_name": "牛肉芝士堡4件套",
+     "amount": 41.73,
+     "list_price": 39.9,
+     "kcal_low": 850,
+     "kcal_high": 1250,
+     "protein_low_g": 34,
+     "protein_high_g": 50,
+     "confidence": "medium",
+     "basis": "汉堡王不在参考表;按双层牛肉芝士堡 + 王道嫩香鸡块4块,另两件按常见搭配假设为小薯条和含糖可乐估算(标价 ¥39.9,按实付 ¥41.73 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "牛肉芝士堡4件套",
+     "amount": 41.73,
+     "list_price": 39.9,
+     "kcal_low": 850,
+     "kcal_high": 1250,
+     "protein_low_g": 34,
+     "protein_high_g": 50,
+     "confidence": "medium",
+     "basis": "汉堡王不在参考表;按双层牛肉芝士堡 + 王道嫩香鸡块4块,另两件按常见搭配假设为小薯条和含糖可乐估算(标价 ¥39.9,按实付 ¥41.73 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "洋葱圈(8pcs)",
+     "amount": 14.64,
+     "list_price": 14,
+     "kcal_low": 240,
+     "kcal_high": 380,
+     "protein_low_g": 3,
+     "protein_high_g": 6,
+     "confidence": "medium",
+     "basis": "汉堡王洋葱圈8个,按常见油炸洋葱圈营养估算(标价 ¥14,按实付 ¥14.64 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  },
+  {
+   "shop": "必胜客",
+   "days_ago": 11,
+   "time": "19:20",
+   "paid": 119.5,
+   "items": [
+    {
+     "meal_name": "鸡茸蘑菇汤",
+     "amount": 18.31,
+     "list_price": 19,
+     "kcal_low": 160,
+     "kcal_high": 240,
+     "protein_low_g": 4,
+     "protein_high_g": 8,
+     "confidence": "medium",
+     "basis": "必胜客不在参考表,按奶油浓汤一人份(约250ml)估算(标价 ¥19,按实付 ¥18.31 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "香草凤尾虾(3只装)",
+     "amount": 18.31,
+     "list_price": 19,
+     "kcal_low": 190,
+     "kcal_high": 300,
+     "protein_low_g": 9,
+     "protein_high_g": 15,
+     "confidence": "medium",
+     "basis": "裹粉炸虾3只加番茄酱,按同类油炸虾估算(标价 ¥19,按实付 ¥18.31 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "浓情香鸡翼(4只)",
+     "amount": 34.69,
+     "list_price": 36,
+     "kcal_low": 330,
+     "kcal_high": 480,
+     "protein_low_g": 24,
+     "protein_high_g": 36,
+     "confidence": "medium",
+     "basis": "烤/腌制鸡翅4只,按每只约80-120kcal估算(标价 ¥36,按实付 ¥34.69 分摊)",
+     "source": "visual_estimate"
+    },
+    {
+     "meal_name": "意式肉酱面(加羊排)",
+     "amount": 48.19,
+     "list_price": 50,
+     "kcal_low": 720,
+     "kcal_high": 1050,
+     "protein_low_g": 32,
+     "protein_high_g": 50,
+     "confidence": "medium",
+     "basis": "肉酱意面一份约550-750kcal,加一块羊排约170-300kcal(标价 ¥50,按实付 ¥48.19 分摊)",
+     "source": "visual_estimate"
+    }
+   ]
+  }
+ ]
+}

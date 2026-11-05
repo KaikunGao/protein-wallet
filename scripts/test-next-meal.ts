@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { buildNextMeal, candidates, menuDishes, pricedDishes, spendableToday } from "../lib/next-meal";
 import { mealFromDish, upsertMenu, type MenuItem, type SavedMenu } from "../lib/menu-rank";
+import { starterMenu } from "../lib/starter";
 import { addDays, startOfWeek } from "../lib/dates";
 import type { Meal, Settings } from "../lib/types";
 
@@ -137,5 +138,19 @@ const afterRename = candidates([picked], [renamed]).filter((o) => o.name === "�
 assert.equal(afterRename.length, 1);
 assert.ok(afterRename[0].meal && afterRename[0].times === 1);
 console.log("  ok - a renamed place does not duplicate dishes already picked from it");
+
+// The starter list fills in only during cold start.
+const starter = starterMenu(at(-10, 0));
+// Enough of the user's own rows fit today's money (3 or more): no starter rows at all.
+const settled = buildNextMeal(history, week, today, settings, now, [laowang, canteen, starter]);
+assert.ok(settled.options.every((o) => o.origin !== "starter"));
+assert.deepEqual(settled.options.map((o) => o.name), withMenus.options.map((o) => o.name));
+// One own record only: starter rows join, still ordered by 分/g (鸡蛋 1 个 9.2 first).
+const oneRecord = [meal({ ts: at(-1, 12), meal_name: "食堂鸡腿饭", merchant: "二食堂", amount_usd: 12, protein_low_g: 20, protein_high_g: 30 })];
+const cold = buildNextMeal(oneRecord, [], [], settings, now, [starter]);
+assert.equal(cold.options[0].name, "鸡蛋 1 个");
+assert.equal(cold.options[0].origin, "starter");
+assert.ok(cold.options.some((o) => o.name === "食堂鸡腿饭"));
+console.log("  ok - starter list fills in only while the user's own rows are fewer than three");
 
 console.log("\nnext-meal tests passed");

@@ -86,6 +86,8 @@ export default function SettingsPage() {
       weekly_budget_usd: Number(budget),
       currency: DEFAULT_CURRENCY,
       whey: wheyDraft.protein_g > 0 ? wheyDraft : null,
+      starter_seeded: existing?.starter_seeded,
+      demo: existing?.demo,
       created_at: existing?.created_at,
     });
     await saveSettings(s);

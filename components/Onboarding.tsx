@@ -7,7 +7,7 @@ import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { Settings } from "@/lib/types";
 
 // First-launch flow: two questions, no account. Weight is optional.
-export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }) {
+export default function Onboarding({ onDone, onDemo }: { onDone: (s: Settings) => void; onDemo?: () => void }) {
   const [step, setStep] = useState<0 | 1>(0);
   const [weight, setWeight] = useState("");
   const [budget, setBudget] = useState("");
@@ -85,6 +85,17 @@ export default function Onboarding({ onDone }: { onDone: (s: Settings) => void }
             返回
           </button>
         </div>
+      )}
+
+      {/* 示例数据: a visitor (an interviewer, a curious classmate) can see a filled app in one tap. */}
+      {onDemo && (
+        <button onClick={onDemo} className="card flex w-full items-center gap-3 p-4 text-left active:scale-[0.99]" data-testid="demo-button">
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-ink-900">不想填?先看示例</span>
+            <span className="mt-0.5 block text-xs text-ink-400">13 张真实的外卖订单截图,解析之后的样子。随时可以清空,换成自己的。</span>
+          </span>
+          <span className="shrink-0 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">看示例</span>
+        </button>
       )}
     </div>
   );

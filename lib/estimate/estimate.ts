@@ -174,7 +174,37 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
     };
   });
 
-  return { ok: true, kind: "meal", merchant, total_usd, items };
+  return { ok: true, kind: "meal", merchant, total_usd, items: input.type === "receipt" ? allocateToPaid(items, total_usd) : items };
+}
+
+// 外卖订单 (PRD 国内版 step 3): the menu price of each dish is not what the user paid.
+// 红包 and 满减 pull the total down, 打包费 and 配送费 push it up, and 分/g should be
+// computed on real money. When a receipt shows a total that differs from the sum of the
+// item prices, each priced item is scaled so the items add up to the amount paid.
+// Guarded: outside 0.3–1.6× the receipt was probably misread (missing dishes, a wrong
+// total), so the menu prices are kept.
+const PAID_FACTOR_MIN = 0.3;
+const PAID_FACTOR_MAX = 1.6;
+
+export function allocateToPaid(items: EstimateItem[], total: number | null): EstimateItem[] {
+  if (total == null || !(total > 0)) return items;
+  const priced = items.filter((i) => i.amount_usd != null && i.amount_usd > 0);
+  const sum = priced.reduce((a, i) => a + (i.amount_usd ?? 0), 0);
+  if (priced.length === 0 || Math.abs(total - sum) < 0.005) return items;
+  const factor = total / sum;
+  if (factor < PAID_FACTOR_MIN || factor > PAID_FACTOR_MAX) return items;
+  const cents = (n: number) => Math.round(n * 100);
+  const scaled = new Map<EstimateItem, number>(priced.map((i) => [i, cents((i.amount_usd ?? 0) * factor)]));
+  // Rounding drift goes to the most expensive dish so the items still add up to the total exactly.
+  const drift = cents(total) - [...scaled.values()].reduce((a, c) => a + c, 0);
+  const biggest = priced.reduce((a, i) => ((i.amount_usd ?? 0) > (a.amount_usd ?? 0) ? i : a));
+  scaled.set(biggest, (scaled.get(biggest) ?? 0) + drift);
+  return items.map((i) => {
+    const c = scaled.get(i);
+    if (c == null) return i;
+    const paid = c / 100;
+    return { ...i, amount_usd: paid, basis: `${i.basis}(标价 ¥${i.amount_usd},按实付 ¥${paid} 分摊)` };
+  });
 }
 
 /** One model call. Returns null when the response did not parse against the schema. */

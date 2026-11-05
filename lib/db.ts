@@ -112,6 +112,26 @@ export async function saveSettings(s: Settings): Promise<void> {
   await (await db()).put("settings", s, SETTINGS_KEY);
 }
 
+/** Back to the first screen (used when the example data is cleared). */
+export async function deleteSettings(): Promise<void> {
+  await (await db()).delete("settings", SETTINGS_KEY);
+}
+
+/** Remove the example records only; anything the visitor logged themselves stays. */
+export async function deleteDemoMeals(): Promise<number> {
+  const d = await db();
+  const tx = d.transaction("meals", "readwrite");
+  let n = 0;
+  for (const m of await tx.store.getAll()) {
+    if (m.demo) {
+      await tx.store.delete(m.id);
+      n++;
+    }
+  }
+  await tx.done;
+  return n;
+}
+
 // ---- events (local analytics, exported with the JSON bundle) ----
 
 export async function logEvent(

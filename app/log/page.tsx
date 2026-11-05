@@ -13,6 +13,7 @@ import { proteinDeficit } from "@/lib/derive";
 import { buildFeedback, type Feedback } from "@/lib/feedback";
 import { compressImage } from "@/lib/image";
 import { toEstimateItem, upsertMenu, type MenuResponse, type MenuSort, type RankedDish, type SavedMenu } from "@/lib/menu-rank";
+import { decodeMenus, encodeMenus, payloadFromHash, shareUrl, type IncomingMenu } from "@/lib/menu-share";
 import { currencyOf } from "@/lib/money";
 import { spendableToday } from "@/lib/next-meal";
 import type { InputType, Meal, Settings } from "@/lib/types";
@@ -23,7 +24,8 @@ type Phase =
   | { kind: "confirm"; inputType: InputType; result: Extract<EstimateResponse, { ok: true }> }
   | { kind: "error"; inputType: InputType; message: string; retryable: boolean }
   | { kind: "saved"; feedback: Feedback }
-  | { kind: "ranked"; ranking: Ranking };
+  | { kind: "ranked"; ranking: Ranking }
+  | { kind: "incoming"; menus: IncomingMenu[] }; // places from a share link, waiting for the user's OK
 
 // A menu (kept as a place) plus today's context, held so "取消" on the confirm card returns to the list.
 interface Ranking {
@@ -92,6 +94,7 @@ export default function LogPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [mode, setMode] = useState<Mode>("meal");
   const [menus, setMenus] = useState<SavedMenu[]>([]); // saved places (每日清单)
+  const [toast, setToast] = useState<string | null>(null);
   const startTs = useRef(0); // set in useEffect: nowMs() must not run during prerender
   const voiceBase = useRef(""); // text already in the box when a voice session starts
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -107,6 +110,22 @@ export default function LogPage() {
     void logEvent("record_start", { mode: initial });
     getSettings().then(setSettings);
     listMenus().then(setMenus);
+    // 菜单分享链接: /log?mode=menu#m=… carries someone else's saved places. Nothing is stored
+    // until the user says so; the hash is dropped so a reload does not ask again.
+    const readShare = () => {
+      const shared = payloadFromHash(window.location.hash);
+      if (!shared) return;
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      void decodeMenus(shared).then((incoming) => {
+        setMode("menu");
+        if (incoming) setPhase({ kind: "incoming", menus: incoming });
+        else setPhase({ kind: "error", inputType: "text", message: "这个分享链接打不开:内容不完整,或者版本不对。让对方重新发一次。", retryable: false });
+      });
+    };
+    readShare();
+    // A link pasted into a tab that already shows this page only changes the hash: no reload, so listen for it.
+    window.addEventListener("hashchange", readShare);
+    return () => window.removeEventListener("hashchange", readShare);
   }, []);
 
   const currency = currencyOf(settings?.currency);
@@ -199,6 +218,53 @@ export default function LogPage() {
       ms: 0,
     });
     setPhase({ kind: "ranked", ranking });
+  }
+
+  function flash(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2600);
+  }
+
+  /** Make a link that carries these places; the receiver imports them without scanning. */
+  async function sharePlaces(places: SavedMenu[]) {
+    const own = places.filter((m) => !m.starter); // everyone already has the starter list
+    if (own.length === 0) return;
+    const url = shareUrl(window.location.origin, await encodeMenus(own));
+    const title = own.length === 1 ? `「${own[0].name}」的菜单` : `${own.length} 个地方的菜单`;
+    void logEvent("menu_shared", { places: own.length, dishes: own.reduce((a, m) => a + m.items.length, 0), chars: url.length });
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `蛋白钱包 · ${title}`, text: `${title},按每块钱蛋白排好了,点开就能用,不用再拍。`, url });
+        return;
+      }
+    } catch {
+      /* cancelled or not allowed: fall through to copying */
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      flash("链接已复制,发给同学就行");
+    } catch {
+      window.prompt("复制这个链接发给同学", url);
+    }
+  }
+
+  /** The user accepted the places from a share link: store them. Same-named places are updated. */
+  async function acceptIncoming(incoming: IncomingMenu[]) {
+    let existing = await listMenus();
+    let last: SavedMenu | null = null;
+    for (const inc of incoming) {
+      const venue: SavedMenu = { ...upsertMenu(existing, inc.name, inc.items, newId(), nowMs()), shared_ts: inc.scanned_ts || nowMs() };
+      await saveMenu(venue);
+      existing = [venue, ...existing.filter((m) => m.id !== venue.id)];
+      last = venue;
+    }
+    void logEvent("menu_imported", { places: incoming.length, dishes: incoming.reduce((a, m) => a + m.items.length, 0) });
+    setMenus(await listMenus());
+    if (incoming.length === 1 && last) await openSaved(last);
+    else {
+      setPhase({ kind: "input" });
+      flash(`存好了 ${incoming.length} 个地方,首页清单已经用上`);
+    }
   }
 
   async function renameVenue(name: string) {
@@ -383,6 +449,11 @@ export default function LogPage() {
                       </button>
                     ))}
                   </div>
+                  {menus.some((m) => !m.starter) && (
+                    <button onClick={() => sharePlaces(menus)} className="text-xs font-medium text-brand-700" data-testid="share-all">
+                      把我存的地方分享给同学 · 对方不用再拍
+                    </button>
+                  )}
                 </section>
               )}
               <section className="grid grid-cols-2 gap-2">
@@ -512,7 +583,45 @@ export default function LogPage() {
           onBack={() => setPhase({ kind: "input" })}
           onRename={renameVenue}
           onDelete={deleteVenue}
+          onShare={phase.ranking.venue.starter ? undefined : () => sharePlaces([phase.ranking.venue])}
+          origin={phase.ranking.venue.starter ? "starter" : phase.ranking.venue.shared_ts ? "shared" : "own"}
+          scannedOn={phase.ranking.venue.shared_ts ? fmtDate(phase.ranking.venue.shared_ts) : undefined}
         />
+      )}
+
+      {phase.kind === "incoming" && (
+        <div className="space-y-4 rise" data-testid="incoming">
+          <div className="card space-y-3 p-4">
+            <h2 className="text-lg font-semibold">同学分享给你的菜单</h2>
+            <ul className="divide-y divide-ink-100">
+              {phase.menus.map((m) => (
+                <li key={m.name} className="flex items-baseline justify-between gap-2 py-2">
+                  <span className="min-w-0 truncate text-sm font-medium">{m.name}</span>
+                  <span className="shrink-0 text-xs text-ink-400">
+                    {m.items.length} 道{m.scanned_ts ? ` · 拍于 ${fmtDate(m.scanned_ts)}` : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-ink-400">
+              存下来之后,首页的清单每天会把这些地方的菜和你记过的一起按每块钱蛋白排,你不用再拍。价格可能已经变了,数字也没经过你核对;和你已存的地方同名的会被更新。
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setPhase({ kind: "input" })} className="btn-secondary flex-1 py-3">
+              不用了
+            </button>
+            <button onClick={() => acceptIncoming(phase.menus)} className="btn-primary flex-[2] py-3" data-testid="accept-incoming">
+              存下来
+            </button>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <p className="fixed inset-x-0 bottom-24 z-30 mx-auto w-fit max-w-[90%] rounded-full bg-ink-900 px-4 py-2 text-center text-sm text-white shadow-lg rise" role="status">
+          {toast}
+        </p>
       )}
 
       {phase.kind === "saved" && (
