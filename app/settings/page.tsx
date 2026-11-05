@@ -13,6 +13,7 @@ import {
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { ExportBundle, Settings } from "@/lib/types";
 import { CURRENCIES, DEFAULT_CURRENCY, cpgUnit, fmtMoney } from "@/lib/money";
+import { demoActive, enterDemo, exitDemo } from "@/lib/demo-mode";
 import { presetCpg, scoopPrice } from "@/lib/supplement";
 
 export default function SettingsPage() {
@@ -186,6 +187,20 @@ export default function SettingsPage() {
       <button onClick={onSave} disabled={!budget} className="btn-primary w-full py-3">
         保存
       </button>
+
+      <Section title="示例">
+        <p className="text-sm text-ink-600">
+          第一次打开的人(比如面试官)看到的是一份示例:13 张真实外卖订单解析后的样子。示例单独存放,不会碰你自己的记录。直接发给别人的链接是
+          <span className="break-all font-medium text-ink-900"> /?demo=1</span>。
+        </p>
+        <button
+          onClick={() => (demoActive() ? exitDemo() : void enterDemo())}
+          className="btn-secondary w-full py-2.5 text-sm"
+          data-testid="demo-toggle"
+        >
+          {existing?.demo ? "退出示例,回到我的数据" : "看示例"}
+        </button>
+      </Section>
 
       <Section title="数据">
         <p className="text-sm text-ink-600" data-testid="counts">

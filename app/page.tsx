@@ -12,7 +12,8 @@ import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
 import { mealFromDish } from "@/lib/menu-rank";
 import { NEXT_MEAL_MAX, buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
-import { DEMO_ORDER_COUNT, demoMeals, demoSettings } from "@/lib/demo";
+import { DEMO_ORDER_COUNT } from "@/lib/demo";
+import { demoActive, demoDismissed, demoRequested, enterDemo, exitDemo } from "@/lib/demo-mode";
 import { starterMenu } from "@/lib/starter";
 import { isSupplement, presetMeal, scoopPrice } from "@/lib/supplement";
 import type { Meal, Settings, WheyPreset } from "@/lib/types";
@@ -55,11 +56,6 @@ function recordFromOption(o: NextOption): Meal | null {
   if (o.dish) return mealFromDish(o.dish, o.venue, newId(), Date.now(), o.menuId);
   return null;
 }
-/** The example data stamped relative to now. Outside the component for the purity lint. */
-function buildDemo(): { settings: Settings; meals: Meal[] } {
-  const now = Date.now();
-  return { settings: demoSettings(now), meals: demoMeals(now, newId) };
-}
 /** One scoop of the user's powder, stamped now. Outside the component for the purity lint. */
 function makeScoop(w: WheyPreset): Meal {
   return presetMeal(w, newId(), Date.now());
@@ -82,6 +78,13 @@ export default function Home() {
   const load = useCallback(async () => {
     const since = Date.now() - RECENT_DAYS * 86400e3;
     const [s0, t, w, r, m0] = await Promise.all([getSettings(), listMealsByDay(), listMealsByWeek(), listMealsSince(since), listMenus()]);
+    // 示例模式: someone with no data of their own (an interviewer opening the link) lands on
+    // the example instead of two empty questions. /?demo=1 asks for it explicitly. The
+    // example lives in its own database, so entering it reloads the page.
+    if (!demoActive() && (demoRequested() || (!s0 && !demoDismissed()))) {
+      void logEvent("demo_start", { via: demoRequested() ? "link" : "first_visit" });
+      if (await enterDemo()) return;
+    }
     let s = s0;
     let menus = m0;
     // 内置起步清单: added once, so the list is not empty before the first scan. It is an
@@ -146,15 +149,7 @@ export default function Home() {
     await load();
   }
 
-  /** 示例数据: fill the app with the 13 parsed 外卖 orders so a visitor sees it working. */
-  async function startDemo() {
-    const d = buildDemo();
-    await saveSettings(d.settings);
-    for (const m of d.meals) await addMeal(m);
-    void logEvent("demo_start", { orders: DEMO_ORDER_COUNT, meals: d.meals.length });
-    await load();
-  }
-
+  /** Old-style example (written into the real database by the 2026-11-04 build): clear it. */
   async function clearDemo() {
     if (!window.confirm("清空示例数据,换成你自己的?你自己记的不会被删。")) return;
     const removed = await deleteDemoMeals();
@@ -180,7 +175,7 @@ export default function Home() {
   }
 
   if (settings === undefined) return <p className="py-8 text-ink-400">加载中…</p>;
-  if (settings === null) return <Onboarding onDone={(s) => { setSettings(s); void load(); }} onDemo={startDemo} />;
+  if (settings === null) return <Onboarding onDone={(s) => { setSettings(s); void load(); }} onDemo={() => void enterDemo()} />;
 
   const cur = currencyOf(settings.currency);
   const eaten = proteinRange(today);
@@ -213,11 +208,15 @@ export default function Home() {
       {settings.demo && (
         <section className="card flex items-center gap-3 border-2 border-dashed border-brand-200 p-3" data-testid="demo-banner">
           <p className="min-w-0 flex-1 text-xs leading-relaxed text-ink-600">
-            <b className="text-ink-900">这是示例。</b>
-            {DEMO_ORDER_COUNT} 张真实外卖订单截图,由应用自己解析,钱按实付分摊;日期是为演示排的。
+            <b className="text-ink-900">这是示例,不是你的数据。</b>
+            {DEMO_ORDER_COUNT} 张真实外卖订单截图,由应用自己解析,钱按实付分摊;日期是为演示排的。随便点,不会影响任何人。
           </p>
-          <button onClick={clearDemo} className="shrink-0 rounded-lg bg-ink-900 px-3 py-1.5 text-xs font-medium text-white">
-            清空,用自己的
+          <button
+            onClick={() => (demoActive() ? exitDemo() : void clearDemo())}
+            className="shrink-0 rounded-lg bg-ink-900 px-3 py-1.5 text-xs font-medium text-white"
+            data-testid="demo-exit"
+          >
+            开始用自己的
           </button>
         </section>
       )}

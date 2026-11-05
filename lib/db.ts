@@ -1,6 +1,8 @@
 "use client";
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { demoMeals, demoSettings } from "./demo";
+import { DEMO_DB_NAME, demoActive } from "./demo-mode";
 import type { SavedMenu } from "./menu-rank";
 import type { AppEvent, EventName, ExportBundle, Meal, Settings } from "./types";
 import { endOfDay, endOfWeek, startOfDay, startOfWeek } from "./dates";
@@ -40,9 +42,22 @@ export function dbReady(): Promise<void> {
   return db().then(() => undefined);
 }
 
+/** Fill the example database once. Runs inside the open promise, so no page ever reads it half-seeded. */
+async function seedDemo(d: IDBPDatabase<PWSchema>): Promise<void> {
+  if (await d.get("settings", SETTINGS_KEY)) return;
+  const now = Date.now();
+  const tx = d.transaction(["settings", "meals"], "readwrite");
+  await tx.objectStore("settings").put(demoSettings(now), SETTINGS_KEY);
+  for (const m of demoMeals(now, newId)) await tx.objectStore("meals").put(m);
+  await tx.done;
+}
+
 function db() {
   if (!dbPromise) {
-    dbPromise = openDB<PWSchema>(DB_NAME, DB_VERSION, {
+    // 示例模式: this tab reads and writes a separate database, so the example never mixes
+    // with the visitor's own records (see lib/demo-mode.ts).
+    const demo = demoActive();
+    dbPromise = openDB<PWSchema>(demo ? DEMO_DB_NAME : DB_NAME, DB_VERSION, {
       blocked() {
         report("blocked");
       },
@@ -69,6 +84,9 @@ function db() {
         // v2 (2026-11-04): existing users keep every record; only the new store is added.
         if (oldVersion < 2) d.createObjectStore("menus", { keyPath: "id" });
       },
+    }).then(async (d) => {
+      if (demo) await seedDemo(d);
+      return d;
     });
   }
   return dbPromise;
