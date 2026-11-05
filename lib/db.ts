@@ -18,9 +18,43 @@ const SETTINGS_KEY = "main";
 
 let dbPromise: Promise<IDBPDatabase<PWSchema>> | null = null;
 
+// A schema upgrade cannot start while another tab (or the home-screen app) still holds the
+// database open at the old version: the open request just waits, and every page would sit
+// on "加载中…" forever. These two signals let the UI say what is going on instead.
+//   "blocked" = this page wants to upgrade and an older page is in the way
+//   "stale"   = a newer page upgraded the database; this page must reload
+export type DbIssue = "blocked" | "stale";
+const issueListeners = new Set<(issue: DbIssue) => void>();
+export function onDbIssue(cb: (issue: DbIssue) => void): () => void {
+  issueListeners.add(cb);
+  return () => {
+    issueListeners.delete(cb);
+  };
+}
+function report(issue: DbIssue) {
+  issueListeners.forEach((cb) => cb(issue));
+}
+
+/** Resolves once the database is open (after any upgrade). Used by the guard in the layout. */
+export function dbReady(): Promise<void> {
+  return db().then(() => undefined);
+}
+
 function db() {
   if (!dbPromise) {
     dbPromise = openDB<PWSchema>(DB_NAME, DB_VERSION, {
+      blocked() {
+        report("blocked");
+      },
+      // A newer version of the app wants to upgrade: get out of its way, or it hangs like above.
+      blocking(_current, _wanted, event) {
+        (event.target as IDBDatabase).close();
+        dbPromise = null;
+        report("stale");
+      },
+      terminated() {
+        dbPromise = null;
+      },
       upgrade(d, oldVersion) {
         if (oldVersion < 1) {
           const meals = d.createObjectStore("meals", { keyPath: "id" });

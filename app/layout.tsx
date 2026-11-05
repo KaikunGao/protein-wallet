@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import DbGuard from "@/components/DbGuard";
 
 export const metadata: Metadata = {
   title: "蛋白钱包",
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* DECISION: single column, max 400px wide, phone-first per PRD */}
         <div className="mx-auto flex min-h-dvh w-full max-w-[400px] flex-col">
           <main className="flex-1 px-4 pb-24 pt-[max(1rem,env(safe-area-inset-top))]">
+            <DbGuard />
             {children}
           </main>
           <BottomNav />
