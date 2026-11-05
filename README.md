@@ -1,13 +1,14 @@
 # 蛋白钱包 ProteinWallet
 
-给在健身房练、想增肌、生活费有限的大学生和年轻人:蛋白粉只能便宜地补掉一天所需的两三成,剩下的七八成得从三餐来,而三餐的蛋白每克贵 5 倍。拍一张餐食或小票照片,同时记下花销和营养(热量 / 蛋白质区间),回答一个问题:
+给在健身房练、想增肌、生活费有限的大学生和年轻人:蛋白粉一天一勺只补得上需求的两成,剩下的七八成得从三餐来,而同样一克蛋白在三餐内部差 10 倍(鸡蛋约 9 分,食堂 25-50,外卖约 100)。拍一张餐食、外卖订单或小票,同时记下花销和营养(热量 / 蛋白质区间),回答一个问题:
 **在每月 2000 元左右的生活费里,每一块钱换到了多少克蛋白质。**
 
-- 核心指标:蛋白质单价 **¢/g**
+- 核心指标:蛋白质单价 **分/g**
 - 设计哲学:诚实的模糊,所有估算都是「区间 + 置信度 + 依据」,永不假装精确
 - 三级估算:先匹配连锁官方营养表(`data/chains.json`),再匹配学校食堂官方菜品库(`data/dining/`),都匹配不上才让模型目测;算术一律由代码完成
 - 2026-11-04 起只做国内:货币只有人民币,界面里没有美元、餐卡 meal plan 和芝大食堂选择;`data/chains.json`(美国连锁)和 `data/dining/`(芝大食堂库)作为 v1 的数据层和三级估算的机制保留,国内连锁官方表和国内高校食堂菜品库按 PRD「国内版」排期替换
 - 不做:生成饮食建议(只允许纯代码对官方数据排序)、热量警告、评判性文案、微量营养素、社交(见 PRD Non-goals)
+- 补剂与决策(2026-11-04):蛋白粉一键预设(设置里照标签填一次,首页一键记一勺,来源 `label`)、周报里补剂单列一行不进食物排名(`lib/supplement.ts`)、周报一键问题记 `decision_changed` 事件
 - 记录留存三件套(2026-11-04):日结模式(一句话记一天,`batch` 请求 + prompt v4)、常吃清单(首页最近 30 天按次数取 5 条一键复记)、即时回报(保存后显示本周 分/g 排名 + 差额换算成自己历史里最便宜的食物,`lib/feedback.ts`)
 
 产品需求文档见仓库上一级目录的 PRD。每次更新的内容、原因和简历可用的素材都记在 [CHANGELOG.md](CHANGELOG.md)。
@@ -42,7 +43,7 @@ app/            页面:/ 今日  /log 记录流  /weekly 周报  /settings 设�
 components/     Onboarding、ConfirmCard(可编辑确认卡 + 一键份量修正)、MealEditor(改已保存记录)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
-lib/derive.ts   今日差额、周花销、¢/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
+lib/derive.ts   今日差额、周花销、分/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/supplement.ts 蛋白粉预设与补剂判定;lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
 data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
 data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)
@@ -97,5 +98,5 @@ docs/使用说明.md  给种子用户的一页说明
 | 3.1 – 3.2 | 评测集结构 + 评测脚本 | 完成;30 张照片按 eval/samples/PLAN.md 采集,拍完才有拍照基线 |
 | 3.3 | 周报页 | 完成 |
 | 2.5 | 语音输入、货币选择、份量追问(模型给 portion,确认卡一键 ×0.5/1/1.5/2)、再来一份、记录可编辑、餐卡算每次刷卡单价、周报分享图、整体视觉重做 | 完成 2026-10-28 |
-| 国内 | 人民币唯一货币、麦当劳中国官方表 76 行、日结模式 / 常吃清单 / 即时回报 | 完成 2026-11-04 |
+| 国内 | 人民币唯一货币、麦当劳中国官方表 76 行、日结模式 / 常吃清单 / 即时回报、蛋白粉预设 / 补剂单列 / decision_changed | 完成 2026-11-04 |
 | 4.x | 种子用户 | 运营阶段,见 docs/使用说明.md |

@@ -13,9 +13,11 @@ export type Source =
   | "reference_table"
   | "dining_menu"
   | "visual_estimate"
-  | "text_estimate";
+  | "text_estimate"
+  | "label"; // 蛋白粉预设: numbers the user copied from the product label
 // "repeat" = one-tap copy of a recent meal from the home page (no model call).
-export type InputType = "text" | "photo" | "receipt" | "grocery" | "repeat";
+// "preset" = one-tap scoop of the user's own protein powder (settings.whey), no model call.
+export type InputType = "text" | "photo" | "receipt" | "grocery" | "repeat" | "preset";
 // DECISION: grocery purchases live in the same `meals` table with kind="grocery"
 // and null nutrition fields, instead of a fourth table. Weekly spend sums every
 // row; protein sums skip grocery rows.
@@ -38,8 +40,18 @@ export interface Meal {
   source: Source | null;
   user_corrected: boolean;
   portion_factor?: number; // one-tap portion correction applied on the confirm card (1 = as estimated)
+  supplement?: boolean; // 蛋白粉 etc.: own row in the weekly report, never in the food ranking
   ingredients?: string[]; // grocery only: archived shopping list
   photo_ref?: string; // reserved; v1 does not persist photos
+}
+
+// 蛋白粉一键预设 (PRD F1.5): typed once from the label and the receipt.
+export interface WheyPreset {
+  name: string; // brand / product, shown on the chip
+  protein_g: number; // protein per scoop, from the label
+  kcal: number; // kcal per scoop, from the label (0 = not given)
+  tub_price: number; // what the tub cost, 元 (0 = not given)
+  tub_scoops: number; // scoops per tub (0 = not given)
 }
 
 export interface Settings {
@@ -47,6 +59,7 @@ export interface Settings {
   protein_target_g: number;
   weekly_budget_usd: number;
   currency?: Currency; // always CNY since 2026-11-04; kept so old exports still parse
+  whey?: WheyPreset;
   created_at: number;
 }
 
@@ -60,6 +73,7 @@ export type EventName =
   | "record_cancelled"
   | "record_repeated"
   | "feedback_shown" // 即时回报 card / toast rendered after a save
+  | "decision_changed" // weekly one-tap answer: did the numbers change where / what the user ate this week?
   | "meal_edited"
   | "meal_deleted"
   | "export"

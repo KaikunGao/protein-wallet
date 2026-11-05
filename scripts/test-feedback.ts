@@ -66,6 +66,16 @@ assert.equal(f4.suggestion, null);
 assert.equal(cheapestInHistory([]), null);
 console.log("  ok - empty history: no suggestion");
 
+// Supplements: saving a scoop gives no food rank, and whey is never the suggestion
+// even when it is the cheapest protein in the history.
+const scoop = meal({ ts: now, meal_name: "蛋白粉 1 勺", amount_usd: 2, protein_low_g: 22, protein_high_g: 26, supplement: true }); // 8.3 分/g
+const f5 = buildFeedback([scoop], [earlier, scoop], [earlier, scoop], [...history, scoop], settings);
+assert.equal(f5.rank, null);
+assert.equal(f5.supplement, true);
+assert.equal(f5.unpriced, false);
+assert.equal(f5.suggestion?.name, "鸡蛋");
+console.log("  ok - supplement save: no food rank, never suggested");
+
 // 日结 mock: one sentence -> one item per 顿, each with its own price.
 const day = postProcess(
   mockModelOutput({ type: "text", content: "早饭鸡蛋牛奶 5 元、午饭食堂鸡腿饭 12 元、一勺蛋白粉", batch: true }),

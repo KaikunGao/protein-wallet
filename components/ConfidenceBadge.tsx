@@ -14,6 +14,7 @@ const SOURCE_STYLE: Record<Source, { label: string; cls: string }> = {
   reference_table: { label: "参考数据·未核实", cls: "bg-sky-100 text-sky-800" },
   visual_estimate: { label: "目测估算", cls: "bg-ink-100 text-ink-600" },
   text_estimate: { label: "目测估算", cls: "bg-ink-100 text-ink-600" },
+  label: { label: "标签数据", cls: "bg-brand-100 text-brand-700" },
 };
 
 export default function ConfidenceBadge({

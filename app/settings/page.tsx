@@ -12,7 +12,8 @@ import {
 } from "@/lib/db";
 import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
 import type { ExportBundle, Settings } from "@/lib/types";
-import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/money";
+import { CURRENCIES, DEFAULT_CURRENCY, cpgUnit, fmtMoney } from "@/lib/money";
+import { presetCpg, scoopPrice } from "@/lib/supplement";
 
 export default function SettingsPage() {
   const [loaded, setLoaded] = useState(false);
@@ -20,6 +21,12 @@ export default function SettingsPage() {
   const [weight, setWeight] = useState("");
   const [target, setTarget] = useState("");
   const [budget, setBudget] = useState("");
+  // 蛋白粉一键预设: typed once from the label and the receipt (PRD F1.5).
+  const [wheyName, setWheyName] = useState("");
+  const [wheyProtein, setWheyProtein] = useState("");
+  const [wheyKcal, setWheyKcal] = useState("");
+  const [wheyPrice, setWheyPrice] = useState("");
+  const [wheyScoops, setWheyScoops] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [counts, setCounts] = useState({ meals: 0, events: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
@@ -35,7 +42,22 @@ export default function SettingsPage() {
     setWeight(s.weight_kg ? String(s.weight_kg) : "");
     setTarget(String(s.protein_target_g));
     setBudget(String(s.weekly_budget_usd));
+    setWheyName(s.whey?.name ?? "");
+    setWheyProtein(s.whey ? String(s.whey.protein_g) : "");
+    setWheyKcal(s.whey?.kcal ? String(s.whey.kcal) : "");
+    setWheyPrice(s.whey?.tub_price ? String(s.whey.tub_price) : "");
+    setWheyScoops(s.whey?.tub_scoops ? String(s.whey.tub_scoops) : "");
   }
+
+  const wheyDraft = {
+    name: wheyName,
+    protein_g: Number(wheyProtein) || 0,
+    kcal: Number(wheyKcal) || 0,
+    tub_price: Number(wheyPrice) || 0,
+    tub_scoops: Number(wheyScoops) || 0,
+  };
+  const perScoop = scoopPrice(wheyDraft);
+  const wheyCpg = presetCpg(wheyDraft);
 
   useEffect(() => {
     (async () => {
@@ -63,9 +85,11 @@ export default function SettingsPage() {
       protein_target_g: target ? Number(target) : null,
       weekly_budget_usd: Number(budget),
       currency: DEFAULT_CURRENCY,
+      whey: wheyDraft.protein_g > 0 ? wheyDraft : null,
       created_at: existing?.created_at,
     });
     await saveSettings(s);
+    if (!!s.whey !== !!existing?.whey) void logEvent("page_open", { page: "settings", whey_preset: !!s.whey });
     setExisting(s);
     fill(s);
     setMsg("已保存");
@@ -125,6 +149,36 @@ export default function SettingsPage() {
         <Field label={`每周饮食预算 (${sym})`}>
           <input inputMode="decimal" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="例如 500" className="input-base" />
         </Field>
+      </Section>
+
+      <Section title="蛋白粉(可选)">
+        <p className="text-xs text-ink-400">
+          照着罐子上的标签填一次,首页就多一个「记一勺」。周报里补剂单列一行,不和食物排名。
+        </p>
+        <Field label="名称">
+          <input value={wheyName} onChange={(e) => setWheyName(e.target.value)} placeholder="例如 京造乳清" className="input-base" aria-label="蛋白粉名称" />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="每勺蛋白 (g)">
+            <input inputMode="decimal" value={wheyProtein} onChange={(e) => setWheyProtein(e.target.value)} placeholder="24" className="input-base" aria-label="每勺蛋白" />
+          </Field>
+          <Field label="每勺热量 (kcal,可选)">
+            <input inputMode="numeric" value={wheyKcal} onChange={(e) => setWheyKcal(e.target.value)} placeholder="120" className="input-base" aria-label="每勺热量" />
+          </Field>
+          <Field label={`整桶价格 (${sym})`}>
+            <input inputMode="decimal" value={wheyPrice} onChange={(e) => setWheyPrice(e.target.value)} placeholder="189" className="input-base" aria-label="整桶价格" />
+          </Field>
+          <Field label="整桶勺数">
+            <input inputMode="numeric" value={wheyScoops} onChange={(e) => setWheyScoops(e.target.value)} placeholder="25" className="input-base" aria-label="整桶勺数" />
+          </Field>
+        </div>
+        {wheyDraft.protein_g > 0 && (
+          <p className="text-sm text-ink-600" data-testid="whey-summary">
+            {perScoop != null && wheyCpg != null
+              ? `每勺约 ${fmtMoney(perScoop)},${wheyCpg.toFixed(1)}${cpgUnit()}。`
+              : "没填价格和勺数:这一勺只记蛋白,不记钱。"}
+          </p>
+        )}
       </Section>
 
       <button onClick={onSave} disabled={!budget} className="btn-primary w-full py-3">

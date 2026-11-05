@@ -2,6 +2,7 @@
 import { addDays, dayKey, startOfWeek } from "./dates";
 import { fmtMoney, mid, spend } from "./derive";
 import { currencyOf } from "./money";
+import { isSupplement } from "./supplement";
 import type { Meal, Settings } from "./types";
 
 export interface RankRow {
@@ -11,6 +12,15 @@ export interface RankRow {
   amount: number;
   proteinMid: number;
   times: number;
+}
+
+/** Supplements (蛋白粉) summed into one row that sits outside the food ranking. */
+export interface SupplementRow {
+  name: string; // the most-logged supplement's name
+  times: number;
+  amount: number; // spend on the priced records
+  proteinMid: number; // protein from all supplement records, priced or not
+  cpg: number | null; // over priced records only; null when none has a price
 }
 
 export interface DayCell {
@@ -28,8 +38,9 @@ export interface WeeklyReport {
   days: DayCell[];
   daysRecorded: number;
   daysMet: number;
-  ranking: RankRow[];
-  avgCpg: number | null;
+  ranking: RankRow[]; // food only
+  supplement: SupplementRow | null;
+  avgCpg: number | null; // every priced gram of protein this week, supplements included
   delta: string;
 }
 
@@ -51,10 +62,11 @@ function dayCells(weekStart: Date, meals: Meal[], target: number): DayCell[] {
   });
 }
 
+/** Food ranking by 分/g. Supplements are left out on purpose (see lib/supplement.ts). */
 export function rankByCentsPerGram(meals: Meal[]): RankRow[] {
   const groups = new Map<string, RankRow>();
   for (const m of meals) {
-    if (m.kind !== "meal" || m.amount_usd == null || m.amount_usd <= 0) continue;
+    if (m.kind !== "meal" || isSupplement(m) || m.amount_usd == null || m.amount_usd <= 0) continue;
     const p = mid(m.protein_low_g ?? 0, m.protein_high_g ?? 0);
     if (p <= 0) continue;
     const key = `${(m.merchant ?? "").toLowerCase().trim()}|${m.meal_name.toLowerCase().trim()}`;
@@ -69,6 +81,26 @@ export function rankByCentsPerGram(meals: Meal[]): RankRow[] {
     .sort((a, b) => a.cpg - b.cpg);
 }
 
+export function supplementRow(meals: Meal[]): SupplementRow | null {
+  const rows = meals.filter(isSupplement);
+  if (rows.length === 0) return null;
+  const names = new Map<string, number>();
+  let amount = 0;
+  let pricedProtein = 0;
+  let proteinMid = 0;
+  for (const m of rows) {
+    const p = mid(m.protein_low_g ?? 0, m.protein_high_g ?? 0);
+    proteinMid += p;
+    names.set(m.meal_name, (names.get(m.meal_name) ?? 0) + 1);
+    if (m.amount_usd != null && m.amount_usd > 0) {
+      amount += m.amount_usd;
+      pricedProtein += p;
+    }
+  }
+  const name = [...names.entries()].sort((a, b) => b[1] - a[1])[0][0];
+  return { name, times: rows.length, amount, proteinMid, cpg: pricedProtein > 0 ? (amount * 100) / pricedProtein : null };
+}
+
 export function buildWeeklyReport(
   weekMeals: Meal[],
   prevWeekMeals: Meal[],
@@ -81,8 +113,12 @@ export function buildWeeklyReport(
   const daysRecorded = days.filter((d) => d.proteinMid != null).length;
   const daysMet = days.filter((d) => d.met).length;
   const ranking = rankByCentsPerGram(weekMeals);
-  const totalAmount = ranking.reduce((a, r) => a + r.amount, 0);
-  const totalProtein = ranking.reduce((a, r) => a + r.proteinMid, 0);
+  const supplement = supplementRow(weekMeals);
+  // The weekly average is about the wallet, so priced supplement grams count here even
+  // though they are not ranked against food.
+  const suppPricedProtein = supplement?.cpg != null ? (supplement.amount * 100) / supplement.cpg : 0;
+  const totalAmount = ranking.reduce((a, r) => a + r.amount, 0) + (supplement?.cpg != null ? supplement.amount : 0);
+  const totalProtein = ranking.reduce((a, r) => a + r.proteinMid, 0) + suppPricedProtein;
   const avgCpg = totalProtein > 0 ? (totalAmount * 100) / totalProtein : null;
 
   const thisSpend = spend(weekMeals);
@@ -105,6 +141,6 @@ export function buildWeeklyReport(
 
   return {
     weekStart, weekEnd, spend: thisSpend, budget: settings.weekly_budget_usd,
-    days, daysRecorded, daysMet, ranking, avgCpg, delta,
+    days, daysRecorded, daysMet, ranking, supplement, avgCpg, delta,
   };
 }

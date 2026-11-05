@@ -59,6 +59,29 @@ const r2 = buildWeeklyReport(week, [], settings, ws);
 assert.equal(r2.delta, "上周没有记录,从这周开始有对比。");
 console.log("  ok - delta sentence");
 
+// Supplements: own row, never in the food ranking, but counted in the weekly average.
+import { supplementRow } from "../lib/weekly";
+import { isSupplement, presetMeal, scoopPrice, presetCpg } from "../lib/supplement";
+const whey = { name: "京造乳清", protein_g: 24, kcal: 120, tub_price: 189, tub_scoops: 25 };
+assert.equal(scoopPrice(whey), 7.56);
+assert.equal(presetCpg(whey)!.toFixed(1), "31.5");
+const scoop = presetMeal(whey, "w1", at(1, 8));
+assert.deepEqual([scoop.protein_low_g, scoop.protein_high_g, scoop.amount_usd, scoop.source, scoop.confidence], [22, 26, 7.56, "label", "high"]);
+assert.equal(scoop.meal_name, "京造乳清 1 勺");
+const named = meal({ ts: at(1, 21), meal_name: "一勺蛋白粉", protein_low_g: 20, protein_high_g: 27 }); // from a 日结 sentence, no price
+assert.ok(isSupplement(scoop) && isSupplement(named) && !isSupplement(week[0]));
+const withSupp = [...week, scoop, { ...scoop, id: "w2", ts: at(2, 8) }, named];
+assert.deepEqual(rankByCentsPerGram(withSupp).map((x) => x.name), ["鸡肉碗", "食堂烤鸡胸", "中餐外卖"]); // unchanged
+const sr = supplementRow(withSupp)!;
+// 2 priced scoops: ¥15.12 / 48 g = 31.5 分/g; protein incl. the unpriced one = 48 + 23.5
+assert.deepEqual([sr.name, sr.times, sr.amount.toFixed(2), sr.proteinMid, sr.cpg!.toFixed(1)], ["京造乳清 1 勺", 3, "15.12", 71.5, "31.5"]);
+assert.equal(supplementRow(week), null);
+const r3 = buildWeeklyReport(withSupp, [], settings, ws);
+// avg = (49.5 + 15.12) * 100 / (172 + 48) = 29.37
+assert.equal(r3.avgCpg!.toFixed(2), "29.37");
+assert.equal(r3.supplement?.times, 3);
+console.log("  ok - supplements get their own row and stay out of the food ranking");
+
 console.log("\nweekly report tests passed");
 
 import { fmtMoney, cpgUnit } from "../lib/money";

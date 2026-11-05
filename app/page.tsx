@@ -10,7 +10,8 @@ import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, mid, proteinDeficit, p
 import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
-import type { Meal, Settings } from "@/lib/types";
+import { isSupplement, presetMeal, scoopPrice } from "@/lib/supplement";
+import type { Meal, Settings, WheyPreset } from "@/lib/types";
 
 // 常吃清单 (PRD 2026-11-04 记录成本方案 #2): the 5 meals the user logs most often in the
 // last 30 days, one tap each. Meals already logged today are left out so a tap is never
@@ -21,11 +22,12 @@ const RECENT_MAX = 5;
 interface Frequent { meal: Meal; times: number }
 
 /** Most-repeated meals (ties broken by recency); grocery rows and today's meals excluded. */
-function frequentMeals(meals: Meal[], today: Meal[]): Frequent[] {
+function frequentMeals(meals: Meal[], today: Meal[], hasPreset: boolean): Frequent[] {
   const todayKeys = new Set(today.map((m) => keyOf(m)));
   const groups = new Map<string, Frequent>();
   for (const m of meals) {
     if (m.kind !== "meal") continue;
+    if (hasPreset && isSupplement(m)) continue; // the preset chip already covers the powder
     const k = keyOf(m);
     if (todayKeys.has(k)) continue;
     const g = groups.get(k);
@@ -42,6 +44,10 @@ function frequentMeals(meals: Meal[], today: Meal[]): Frequent[] {
 /** New record with the same nutrition/amount as `m`, stamped now. Kept outside the component for the purity lint. */
 function cloneForRepeat(m: Meal): Meal {
   return { ...m, id: newId(), ts: Date.now(), input_type: "repeat", user_corrected: false };
+}
+/** One scoop of the user's powder, stamped now. Outside the component for the purity lint. */
+function makeScoop(w: WheyPreset): Meal {
+  return presetMeal(w, newId(), Date.now());
 }
 function keyOf(m: Meal) {
   return `${(m.merchant ?? "").toLowerCase().trim()}|${m.meal_name.toLowerCase().trim()}`;
@@ -61,7 +67,7 @@ export default function Home() {
     setSettings(s);
     setToday(t);
     setWeek(w);
-    setRecent(frequentMeals(r, t));
+    setRecent(frequentMeals(r, t, !!s?.whey));
   }, []);
 
   useEffect(() => {
@@ -75,18 +81,28 @@ export default function Home() {
     setTimeout(() => setToast(null), ms);
   }
 
-  async function repeat(m: Meal) {
-    const copy = cloneForRepeat(m);
-    await addMeal(copy);
+  function repeat(m: Meal) {
     void logEvent("record_repeated", { source: m.source, merchant: m.merchant });
-    void logEvent("record_saved", { input_type: "repeat", n: 1, corrected: false, duration_ms: 0 });
+    return quickAdd(cloneForRepeat(m), "repeat");
+  }
+
+  /** 蛋白粉一键预设: one tap logs a scoop from the label numbers in settings. */
+  function scoop() {
+    if (!settings?.whey) return;
+    return quickAdd(makeScoop(settings.whey), "preset");
+  }
+
+  async function quickAdd(copy: Meal, kind: "repeat" | "preset") {
+    const m = copy;
+    await addMeal(copy);
+    void logEvent("record_saved", { input_type: kind, n: 1, corrected: false, duration_ms: 0 });
     // 即时回报 in toast form: the gap and this meal's rank, right where the tap happened.
     let line = "";
     if (settings) {
       const [t, w, r] = await Promise.all([listMealsByDay(), listMealsByWeek(), listMealsSince(copy.ts - RECENT_DAYS * 86400e3)]);
       const f = buildFeedback([copy], w, t, r, settings);
       line = ` · ${feedbackLine(f)}`;
-      void logEvent("feedback_shown", { where: "repeat", rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit) });
+      void logEvent("feedback_shown", { where: kind, rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit) });
     }
     flash(`已记「${m.meal_name}」${line}`, 2800);
     await load();
@@ -121,6 +137,10 @@ export default function Home() {
   const budget = settings.weekly_budget_usd;
   const budgetLeft = budget - weekSpent;
   const budgetPct = budget > 0 ? Math.min(1, weekSpent / budget) : 0;
+
+  const whey = settings.whey;
+  const scoopsToday = today.filter(isSupplement).length;
+  const perScoop = whey ? scoopPrice(whey) : null;
 
   const R = 44;
   const C = 2 * Math.PI * R;
@@ -181,10 +201,25 @@ export default function Home() {
         </p>
       </section>
 
-      {recent.length > 0 && (
+      {(recent.length > 0 || whey) && (
         <section className="space-y-2" data-testid="repeat">
           <h2 className="label-xs">常吃 · 点一下就记上</h2>
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {whey && (
+              <button
+                onClick={scoop}
+                className="card flex min-w-[46%] shrink-0 flex-col items-start gap-1 border-2 border-solid border-brand-200 p-3 text-left active:scale-[0.98]"
+                data-testid="whey-chip"
+              >
+                <span className="line-clamp-1 text-sm font-semibold">{whey.name || "蛋白粉"} 1 勺</span>
+                <span className="text-[11px] text-ink-400">
+                  标签 · 蛋白 {whey.protein_g} g{perScoop != null ? ` · ${fmtMoney(perScoop, cur)}` : ""}
+                </span>
+                <span className="mt-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700">
+                  + 记一勺{scoopsToday > 0 ? ` · 今天 ${scoopsToday} 勺` : ""}
+                </span>
+              </button>
+            )}
             {recent.map(({ meal: m, times }) => (
               <button
                 key={m.id}
@@ -237,6 +272,7 @@ export default function Home() {
                     {m.merchant ? ` · ${m.merchant}` : ""}
                     {m.user_corrected ? " · 已修正" : ""}
                     {m.input_type === "repeat" ? " · 再来一份" : ""}
+                    {m.input_type === "preset" ? " · 预设" : ""}
                   </p>
                 </div>
                 <p className="shrink-0 font-semibold tabular-nums">{m.amount_usd != null ? fmtMoney(m.amount_usd, cur) : "—"}</p>

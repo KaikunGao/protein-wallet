@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getSettings, listMealsByWeek, logEvent } from "@/lib/db";
-import { addDays, fmtDate } from "@/lib/dates";
+import { getSettings, listAllEvents, listMealsByWeek, logEvent } from "@/lib/db";
+import { addDays, dayKey, fmtDate, startOfWeek } from "@/lib/dates";
 import { cpgUnit, fmtMoney } from "@/lib/derive";
 import { CURRENCIES, currencyOf } from "@/lib/money";
 import { renderWeeklyShareImage } from "@/lib/share-image";
@@ -16,6 +16,8 @@ export default function WeeklyPage() {
   const [share, setShare] = useState<{ url: string; blob: Blob } | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  // 决策改变 (PRD 成功指标): the user's one-tap answer for the week on screen; null = not answered.
+  const [changed, setChanged] = useState<boolean | null>(null);
 
   const load = useCallback(async (off: number) => {
     const s = await getSettings();
@@ -24,6 +26,11 @@ export default function WeeklyPage() {
     const ref = addDays(Date.now(), off * 7);
     const [week, prev] = await Promise.all([listMealsByWeek(ref), listMealsByWeek(addDays(ref, -7))]);
     setReport(buildWeeklyReport(week, prev, s, ref));
+    // Latest answer for this week wins, so the user can change their mind.
+    const wk = dayKey(startOfWeek(ref));
+    const answers = (await listAllEvents()).filter((e) => e.name === "decision_changed" && e.data?.week === wk);
+    const last = answers[answers.length - 1];
+    setChanged(last ? last.data?.changed === true : null);
   }, []);
 
   useEffect(() => {
@@ -41,6 +48,12 @@ export default function WeeklyPage() {
   const over = report.spend > report.budget;
   const cur = currencyOf(settings.currency);
   const money = (n: number) => fmtMoney(n, cur);
+
+  function answer(v: boolean) {
+    if (!report) return;
+    setChanged(v);
+    void logEvent("decision_changed", { week: dayKey(report.weekStart), changed: v, offset, days_recorded: report.daysRecorded });
+  }
 
   async function makeImage() {
     if (!report) return;
@@ -151,6 +164,21 @@ export default function WeeklyPage() {
             ))}
           </ol>
         )}
+        {report.supplement && (
+          <div className="mt-3 flex items-center gap-3 rounded-xl bg-ink-100/70 px-3 py-2.5" data-testid="supplement-row">
+            <span className="shrink-0 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-ink-600">补剂</span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{report.supplement.name}</p>
+              <p className="text-xs text-ink-400">
+                {report.supplement.times} 次 · {report.supplement.amount > 0 ? `${money(report.supplement.amount)} / ` : ""}约 {Math.round(report.supplement.proteinMid)} g · 单列,不参与排名
+              </p>
+            </div>
+            <span className="text-base font-semibold tabular-nums">
+              {report.supplement.cpg != null ? report.supplement.cpg.toFixed(1) : "—"}
+              <span className="text-xs font-normal text-ink-400">{cpgUnit(cur)}</span>
+            </span>
+          </div>
+        )}
       </section>
 
       {/* 4. vs last week */}
@@ -159,7 +187,30 @@ export default function WeeklyPage() {
         <p className="mt-1 text-sm">{report.delta}</p>
       </section>
 
-      {/* 5. share */}
+      {/* 5. did the numbers change a decision? One tap, no judgement either way. */}
+      {report.daysRecorded > 0 && (
+        <section className="card p-4" data-testid="mod-decision">
+          <p className="label-xs">一个问题</p>
+          <p className="mt-1 text-sm">这周有没有因为看到这些数字,换过一次吃的地方或点的东西?</p>
+          <div className="mt-3 flex gap-3">
+            {([true, false] as const).map((v) => (
+              <button
+                key={String(v)}
+                onClick={() => answer(v)}
+                aria-pressed={changed === v}
+                className={`flex-1 rounded-xl py-2.5 text-sm transition ${
+                  changed === v ? "bg-ink-900 font-semibold text-white" : "bg-ink-100 text-ink-600"
+                }`}
+              >
+                {v ? "换过" : "没换过"}
+              </button>
+            ))}
+          </div>
+          {changed != null && <p className="mt-2 text-xs text-ink-400">已记下,可以再点改。</p>}
+        </section>
+      )}
+
+      {/* 6. share */}
       <section className="card p-4" data-testid="mod-share">
         <p className="label-xs">分享</p>
         {share ? (

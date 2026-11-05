@@ -7,6 +7,7 @@
 //     cheapest-per-gram item in the user's OWN recent history. No external food list,
 //     no model call, so it stays inside the Non-goal (no diet advice).
 import { centsPerGram, mid, proteinRange } from "./derive";
+import { isSupplement } from "./supplement";
 import { rankByCentsPerGram } from "./weekly";
 import type { Meal, Settings } from "./types";
 
@@ -30,6 +31,7 @@ export interface Feedback {
   saved: number;
   rank: RankInfo | null; // null when none of the saved meals has a price + protein
   unpriced: boolean; // true when the saved meal(s) carried no price
+  supplement: boolean; // true when only supplements were saved: they have their own row, no food rank
   eatenMid: number;
   target: number;
   deficit: number; // target − eaten midpoint; positive = still missing
@@ -60,7 +62,9 @@ export function buildFeedback(
   settings: Settings,
 ): Feedback {
   // Rank: the saved meal with a computable 分/g (the cheapest if several).
-  const priced = saved
+  // Supplements never enter the food ranking, and cheapestInHistory() never suggests them.
+  const food = saved.filter((m) => !isSupplement(m));
+  const priced = food
     .map((m) => ({ m, cpg: centsPerGram(m) }))
     .filter((x): x is { m: Meal; cpg: number } => x.cpg != null)
     .sort((a, b) => a.cpg - b.cpg);
@@ -89,7 +93,8 @@ export function buildFeedback(
   return {
     saved: saved.length,
     rank,
-    unpriced: priced.length === 0 && saved.some((m) => m.kind === "meal"),
+    unpriced: priced.length === 0 && food.some((m) => m.kind === "meal"),
+    supplement: food.length === 0 && saved.some(isSupplement),
     eatenMid,
     target,
     deficit,

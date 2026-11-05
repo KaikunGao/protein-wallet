@@ -33,7 +33,7 @@ export default function FeedbackCard({
           </p>
         ) : (
           <p className="mt-1 text-base font-medium text-white/90" data-testid="feedback-rank">
-            {f.unpriced ? "没填价格,这顿不进 分/g 排名" : "已记入花销"}
+            {f.unpriced ? "没填价格,这顿不进 分/g 排名" : f.supplement ? "补剂在周报里单列一行,不和食物排名" : "已记入花销"}
           </p>
         )}
         <div className="mt-4 border-t border-white/15 pt-3">
