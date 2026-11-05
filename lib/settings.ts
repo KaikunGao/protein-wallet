@@ -6,6 +6,24 @@ export function proteinTargetFromWeight(weightKg?: number | null): number {
   return Math.round(weightKg * PROTEIN_G_PER_KG);
 }
 
+/**
+ * 预算按天填 (2026-11-05). Storage keeps the weekly figure (seven days), so the weekly
+ * report, exports and old data are untouched; the forms show and take the per-day amount.
+ */
+export function dailyBudgetOf(s: Pick<Settings, "weekly_budget_usd">): number {
+  return Math.round((s.weekly_budget_usd / 7) * 100) / 100;
+}
+
+/**
+ * Weekly figure for a per-day amount. `prev` is the weekly figure already stored: saving an
+ * unchanged day amount keeps it to the cent (¥500 a week shows as ¥71.43 a day and must not
+ * come back as ¥500.01).
+ */
+export function weeklyFromDaily(daily: number, prev?: number | null): number {
+  const w = Math.round(Math.max(0, Number(daily) || 0) * 7 * 100) / 100;
+  return prev != null && Math.abs(w - prev) < 0.05 ? prev : w;
+}
+
 export function buildSettings(input: {
   weight_kg?: number | null;
   weekly_budget_usd: number;

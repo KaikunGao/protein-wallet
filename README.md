@@ -44,7 +44,7 @@ app/            页面:/ 今日  /log 记录流  /weekly 周报  /settings 设�
 components/     Onboarding、ConfirmCard(可编辑确认卡 + 一键份量修正)、MealEditor(改已保存记录)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
-lib/derive.ts   今日差额、周花销、分/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/supplement.ts 蛋白粉预设与补剂判定;lib/next-meal.ts 下一顿卡片(今天可花金额 + 按 分/g 排序);lib/menu-rank.ts 菜单排序(浏览器里算);lib/estimate/menu.ts 菜单解析(服务端);lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
+lib/derive.ts   今日差额、周花销、分/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/supplement.ts 蛋白粉预设与补剂判定;lib/next-meal.ts 下一顿卡片(每天的预算、花超提醒 + 按 分/g 排序);lib/menu-rank.ts 菜单排序(浏览器里算);lib/estimate/menu.ts 菜单解析(服务端);lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
 data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
 data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)

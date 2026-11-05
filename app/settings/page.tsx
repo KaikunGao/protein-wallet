@@ -10,7 +10,7 @@ import {
   logEvent,
   saveSettings,
 } from "@/lib/db";
-import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
+import { buildSettings, dailyBudgetOf, proteinTargetFromWeight, weeklyFromDaily } from "@/lib/settings";
 import type { ExportBundle, Settings } from "@/lib/types";
 import { CURRENCIES, DEFAULT_CURRENCY, cpgUnit, fmtMoney } from "@/lib/money";
 import { demoActive, enterDemo, exitDemo } from "@/lib/demo-mode";
@@ -42,7 +42,7 @@ export default function SettingsPage() {
   function fill(s: Settings) {
     setWeight(s.weight_kg ? String(s.weight_kg) : "");
     setTarget(String(s.protein_target_g));
-    setBudget(String(s.weekly_budget_usd));
+    setBudget(String(dailyBudgetOf(s))); // shown and edited per day
     setWheyName(s.whey?.name ?? "");
     setWheyProtein(s.whey ? String(s.whey.protein_g) : "");
     setWheyKcal(s.whey?.kcal ? String(s.whey.kcal) : "");
@@ -84,7 +84,7 @@ export default function SettingsPage() {
     const s = buildSettings({
       weight_kg: weight ? Number(weight) : null,
       protein_target_g: target ? Number(target) : null,
-      weekly_budget_usd: Number(budget),
+      weekly_budget_usd: weeklyFromDaily(Number(budget), existing?.weekly_budget_usd),
       currency: DEFAULT_CURRENCY,
       whey: wheyDraft.protein_g > 0 ? wheyDraft : null,
       starter_seeded: existing?.starter_seeded,
@@ -149,8 +149,11 @@ export default function SettingsPage() {
       </Section>
 
       <Section title="钱">
-        <Field label={`每周饮食预算 (${sym})`}>
-          <input inputMode="decimal" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="例如 500" className="input-base" />
+        <Field
+          label={`每天饮食预算 (${sym})`}
+          hint={`${Number(budget) > 0 ? `一周约 ${fmtMoney(weeklyFromDaily(Number(budget), existing?.weekly_budget_usd))}。` : ""}可以花超,花超了首页会提醒。`}
+        >
+          <input inputMode="decimal" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="例如 40" className="input-base" data-testid="budget-input" />
         </Field>
       </Section>
 

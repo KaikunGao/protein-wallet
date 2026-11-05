@@ -50,13 +50,15 @@ export function centsPerGram(m: Meal): number | null {
   return (m.amount_usd * 100) / p;
 }
 
-/** Fixed, factual sentence (PRD F3). No recommendations, no judgement. */
-export function adviceSentence(deficitG: number, budgetLeft: number, currency: Currency = DEFAULT_CURRENCY): string {
+/**
+ * Fixed, factual sentence (PRD F3). No recommendations, no judgement. The money half is
+ * about today: what is left of today's budget, or the 花超提醒 once today went past it.
+ */
+export function adviceSentence(deficitG: number, todayLeft: number, currency: Currency = DEFAULT_CURRENCY, overspend?: string | null): string {
   const protein =
     deficitG > 0
       ? `今天蛋白还差约 ${Math.round(deficitG)}g`
       : `今天蛋白已到目标(约多 ${Math.round(-deficitG)}g)`;
-  const budget =
-    budgetLeft >= 0 ? `预算还剩 ${fmtMoney(budgetLeft, currency)}` : `预算已超 ${fmtMoney(-budgetLeft, currency)}`;
+  const budget = overspend ?? `今天预算还剩 ${fmtMoney(Math.max(0, todayLeft), currency)}`;
   return `${protein},${budget}。`;
 }

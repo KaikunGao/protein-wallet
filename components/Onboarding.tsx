@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import { logEvent, saveSettings } from "@/lib/db";
-import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/money";
-import { buildSettings, proteinTargetFromWeight } from "@/lib/settings";
+import { CURRENCIES, DEFAULT_CURRENCY, fmtMoney } from "@/lib/money";
+import { buildSettings, proteinTargetFromWeight, weeklyFromDaily } from "@/lib/settings";
 import type { Settings } from "@/lib/types";
 
 // First-launch flow: two questions, no account. Weight is optional.
 export default function Onboarding({ onDone, onDemo }: { onDone: (s: Settings) => void; onDemo?: () => void }) {
   const [step, setStep] = useState<0 | 1>(0);
   const [weight, setWeight] = useState("");
-  const [budget, setBudget] = useState("");
+  const [budget, setBudget] = useState(""); // per day; stored as seven of them
 
   const target = proteinTargetFromWeight(weight ? Number(weight) : null);
 
   async function finish() {
     const s = buildSettings({
       weight_kg: weight ? Number(weight) : null,
-      weekly_budget_usd: Number(budget),
+      weekly_budget_usd: weeklyFromDaily(Number(budget)),
       currency: DEFAULT_CURRENCY,
     });
     await saveSettings(s);
@@ -35,12 +35,12 @@ export default function Onboarding({ onDone, onDemo }: { onDone: (s: Settings) =
           <span className={`h-1.5 w-8 rounded-full ${step === 1 ? "bg-brand-600" : "bg-ink-200"}`} />
         </div>
         <h1 className="mt-3 text-[28px] font-bold leading-tight tracking-tight">
-          {step === 0 ? "你的体重是多少?" : "每周饮食预算多少?"}
+          {step === 0 ? "你的体重是多少?" : "每天吃饭的预算是多少?"}
         </h1>
         <p className="mt-2 text-sm text-ink-600">
           {step === 0
             ? "用来算每日蛋白质目标(体重 × 1.6g)。可以跳过,跳过则按 100g/天。"
-            : "包括外食和买菜。首页会显示本周还剩多少钱。"}
+            : "一天三餐加起来大概花多少。首页按这个数列出今天吃得起的;可以花超,花超了会提醒你。"}
         </p>
       </div>
 
@@ -73,11 +73,17 @@ export default function Onboarding({ onDone, onDemo }: { onDone: (s: Settings) =
               inputMode="decimal"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              placeholder="500"
+              placeholder="40"
               className="input-base text-2xl"
+              data-testid="budget-input"
             />
-            <span className="text-ink-400">/周</span>
+            <span className="text-ink-400">/天</span>
           </div>
+          {Number(budget) > 0 && (
+            <p className="text-sm text-ink-600" data-testid="budget-week-hint">
+              一周约 <b className="text-ink-900">{fmtMoney(weeklyFromDaily(Number(budget)))}</b>
+            </p>
+          )}
           <button onClick={finish} disabled={!budget || Number(budget) <= 0} className="btn-primary w-full py-3">
             开始记录
           </button>

@@ -6,6 +6,7 @@
 import { addDays, startOfDay, startOfWeek } from "./dates";
 import { mid, proteinRange, spend } from "./derive";
 import { rankMenu, type MenuItem, type SavedMenu } from "./menu-rank";
+import { fmtMoney, type Currency } from "./money";
 import { isSupplement } from "./supplement";
 import type { Meal, Settings } from "./types";
 
@@ -45,19 +46,74 @@ function keyOf(venue: string | null, name: string): string {
   return `${(venue ?? "").toLowerCase().replace(/\s+/g, "")}|${name.toLowerCase().replace(/\s+/g, "")}`;
 }
 
+export interface TodayBudget {
+  base: number; // what the user set per day (the stored weekly figure ÷ 7)
+  allowance: number; // today's budget: the day amount, less when earlier days this week went over; never negative
+  spent: number; // spent today
+  left: number; // allowance − spent, never negative
+  over: number; // spent − allowance once today went past its budget, else 0
+  daysAfter: number; // days left in the week after today
+  next: number | null; // tomorrow's budget if today's spending stands; null on the last day of the week
+  cut: number; // how much lower than today's each remaining day gets because of today's overspend; 0 when earlier savings cover it
+}
+
+const round2 = (x: number) => Math.round(x * 100) / 100;
+
 /**
- * Today's spendable money = (weekly budget − spent before today) ÷ days left in the week
- * including today, minus what was already spent today. Unspent money from earlier days is
- * spread over the rest of the week instead of being lost.
+ * 每天的预算 (2026-11-05): the user sets a per-day amount and the week is seven of them.
+ * Today's budget is that amount, capped by what the week has left per remaining day:
+ * (weekly budget − spent before today) ÷ days left including today. So money saved on
+ * earlier days does not raise a day above the amount the user set (days without records
+ * would otherwise inflate it, and a first visit on a Thursday would show almost double),
+ * but it does absorb overspending; once it is used up, overspending comes off the days left.
+ * Going over is allowed; `over` and `cut` feed the 花超提醒.
  */
-export function spendableToday(weekMeals: Meal[], settings: Settings, now: number): number {
+export function todayBudget(weekMeals: Meal[], settings: Settings, now: number): TodayBudget {
   const dayStart = startOfDay(now).getTime();
   const weekEnd = addDays(startOfWeek(now), 7).getTime();
   const daysLeft = Math.max(1, Math.round((weekEnd - dayStart) / 86400e3));
+  const daysAfter = daysLeft - 1;
+  const weekly = settings.weekly_budget_usd;
+  const base = weekly / 7;
   const before = spend(weekMeals.filter((m) => m.ts < dayStart));
-  const today = spend(weekMeals.filter((m) => m.ts >= dayStart));
-  const allowance = (settings.weekly_budget_usd - before) / daysLeft;
-  return Math.max(0, Math.round((allowance - today) * 100) / 100);
+  const spent = spend(weekMeals.filter((m) => m.ts >= dayStart));
+  const allowance = Math.max(0, Math.min(base, (weekly - before) / daysLeft));
+  const next = daysAfter > 0 ? Math.max(0, Math.min(base, (weekly - before - spent) / daysAfter)) : null;
+  const over = Math.max(0, spent - allowance);
+  return {
+    base: round2(base),
+    allowance: round2(allowance),
+    spent: round2(spent),
+    left: round2(Math.max(0, allowance - spent)),
+    over: round2(over),
+    daysAfter,
+    next: next == null ? null : round2(next),
+    cut: next == null || over <= 0 ? 0 : round2(Math.max(0, allowance - next)),
+  };
+}
+
+/** What is left to spend today, never negative. */
+export function spendableToday(weekMeals: Meal[], settings: Settings, now: number): number {
+  return todayBudget(weekMeals, settings, now).left;
+}
+
+/** 花超提醒, short form for a toast: "今天花超 ¥8", or null while today is within budget. */
+export function overspendHead(b: TodayBudget, currency?: Currency): string | null {
+  return b.over > 0 ? `今天花超 ${fmtMoney(b.over, currency)}` : null;
+}
+
+/**
+ * 花超提醒 with what it does to the rest of the week. Facts, not a judgement: either the
+ * money saved on earlier days covers it, or each day left gets that much less.
+ */
+export function overspendLine(b: TodayBudget, currency?: Currency): string | null {
+  const head = overspendHead(b, currency);
+  if (!head) return null;
+  if (b.allowance <= 0) return `${head},本周的预算已经花完`;
+  if (b.next == null) return head;
+  if (b.next <= 0) return `${head},本周剩下 ${b.daysAfter} 天的预算也花完了`;
+  if (b.cut <= 0) return `${head},本周前几天省下的够抵,后面几天不变`;
+  return `${head},本周剩下 ${b.daysAfter} 天每天少 ${fmtMoney(b.cut, currency)}`;
 }
 
 /** Priced food the user has logged, one row per dish, cheapest protein first. Supplements and grocery rows are left out. */

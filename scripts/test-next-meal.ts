@@ -35,9 +35,9 @@ const week = [mon, monDinner, tue, todayLunch];
 const today = [todayLunch];
 const history = [...older, ...week];
 
-// spendable: (140 − 40 spent before today) / 5 days = 20 per day; minus 8 today = 12
+// ¥140 a week = ¥20 a day. spendable: min(20, (140 − 40 spent before today) / 5 days = 20) = 20; minus 8 today = 12
 assert.equal(spendableToday(week, settings, now), 12);
-console.log("  ok - today's spendable money spreads the remaining budget over the days left");
+console.log("  ok - today's spendable money is the day amount, capped by what the week has left per remaining day");
 
 // dishes by 分/g: 鸡蛋 3/13 = 23.1, 食堂番茄炒蛋盖饭 8/25 = 32, 食堂鸡腿饭 24/50 = 48, 外卖黄焖鸡 22/34 = 64.7, 牛肉面 16/22 = 72.7
 const dishes = pricedDishes(history);
@@ -117,7 +117,7 @@ console.log("  ok - daily list mixes logged dishes and saved-menu dishes, cheape
 // A brand-new user with one saved menu and no records gets a list at once.
 const fresh = buildNextMeal([], [], [], settings, now, [laowang]);
 assert.equal(fresh.state, "ok");
-assert.deepEqual(fresh.options.map((o) => o.name), ["卤蛋", "黄焖鸡米饭(小份)"]); // spendable 140/5 = 28
+assert.deepEqual(fresh.options.map((o) => o.name), ["卤蛋", "黄焖鸡米饭(小份)"]); // spendable = the day amount, ¥20 (140/5 = 28 is capped)
 console.log("  ok - zero records + one saved menu still yields a list");
 
 // Tapping a never-eaten dish records it from the menu numbers.

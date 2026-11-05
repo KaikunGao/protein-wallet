@@ -10,7 +10,7 @@ export const DEMO_ORDER_COUNT = demoData.orders.length;
 const MINUTE = 60_000;
 
 export function demoSettings(now: number): Settings {
-  return { protein_target_g: 100, weekly_budget_usd: 500, currency: "CNY", created_at: now, demo: true };
+  return { protein_target_g: 100, weekly_budget_usd: 490, currency: "CNY", created_at: now, demo: true }; // ¥70 a day
 }
 
 /** The demo orders as meal records, laid out over the last 12 days ending today. */

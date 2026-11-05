@@ -15,7 +15,7 @@ import { compressImage } from "@/lib/image";
 import { toEstimateItem, upsertMenu, type MenuResponse, type MenuSort, type RankedDish, type SavedMenu } from "@/lib/menu-rank";
 import { decodeMenus, encodeMenus, payloadFromHash, shareUrl, type IncomingMenu } from "@/lib/menu-share";
 import { currencyOf } from "@/lib/money";
-import { spendableToday } from "@/lib/next-meal";
+import { overspendLine, todayBudget } from "@/lib/next-meal";
 import type { InputType, Meal, Settings } from "@/lib/types";
 
 type Phase =
@@ -23,7 +23,7 @@ type Phase =
   | { kind: "loading"; inputType: InputType; preview?: string }
   | { kind: "confirm"; inputType: InputType; result: Extract<EstimateResponse, { ok: true }> }
   | { kind: "error"; inputType: InputType; message: string; retryable: boolean }
-  | { kind: "saved"; feedback: Feedback }
+  | { kind: "saved"; feedback: Feedback; overspend: string | null } // overspend = the 花超提醒, when this save took today past its budget
   | { kind: "ranked"; ranking: Ranking }
   | { kind: "incoming"; menus: IncomingMenu[] }; // places from a share link, waiting for the user's OK
 
@@ -32,6 +32,7 @@ interface Ranking {
   venue: SavedMenu;
   spendable: number | null;
   deficit: number | null;
+  over: number | null; // how far today is already past its budget
 }
 
 // 记一餐 = one meal now (photo / receipt / sentence). 日结 = one sentence for the whole day,
@@ -197,12 +198,14 @@ export default function LogPage() {
   }
 
   /** Today's numbers for the "超出今天额度" flag and the summary line. */
-  async function todayContext(): Promise<{ spendable: number | null; deficit: number | null }> {
+  async function todayContext(): Promise<{ spendable: number | null; deficit: number | null; over: number | null }> {
     const s = settings ?? (await getSettings());
     const [today, week] = await Promise.all([listMealsByDay(), listMealsByWeek()]);
+    const b = s ? todayBudget(week, s, nowMs()) : null;
     return {
-      spendable: s ? spendableToday(week, s, nowMs()) : null,
+      spendable: b ? b.left : null,
       deficit: s ? proteinDeficit(today, s) : null,
+      over: b ? b.over : null,
     };
   }
 
@@ -352,14 +355,18 @@ export default function LogPage() {
       listMealsSince(nowMs() - HISTORY_DAYS * 86400e3),
     ]);
     const feedback = buildFeedback(meals, week, today, history, s);
+    // 花超提醒: only when what was just saved cost money and today is now past its budget.
+    const b = todayBudget(week, s, nowMs());
+    const overspend = meals.some((m) => (m.amount_usd ?? 0) > 0) ? overspendLine(b, currency) : null;
     void logEvent("feedback_shown", {
       where: "log",
       rank: feedback.rank?.rank ?? null,
       total: feedback.rank?.total ?? null,
       deficit: Math.round(feedback.deficit),
       suggestion: feedback.suggestion?.name ?? null,
+      over_today: b.over,
     });
-    setPhase({ kind: "saved", feedback });
+    setPhase({ kind: "saved", feedback, overspend });
   }
 
   function another() {
@@ -578,6 +585,7 @@ export default function LogPage() {
           items={phase.ranking.venue.items}
           spendable={phase.ranking.spendable}
           deficit={phase.ranking.deficit}
+          over={phase.ranking.over}
           currency={currency}
           onPick={pickDish}
           onBack={() => setPhase({ kind: "input" })}
@@ -625,7 +633,7 @@ export default function LogPage() {
       )}
 
       {phase.kind === "saved" && (
-        <FeedbackCard feedback={phase.feedback} currency={currency} onDone={() => router.push("/")} onMore={another} />
+        <FeedbackCard feedback={phase.feedback} overspend={phase.overspend} currency={currency} onDone={() => router.push("/")} onMore={another} />
       )}
     </div>
   );

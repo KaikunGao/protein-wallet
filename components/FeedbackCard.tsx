@@ -10,11 +10,13 @@ import { cpgUnit, fmtMoney, type Currency } from "@/lib/money";
  */
 export default function FeedbackCard({
   feedback: f,
+  overspend,
   currency,
   onDone,
   onMore,
 }: {
   feedback: Feedback;
+  overspend?: string | null; // 花超提醒: set when this save took today past its budget
   currency?: Currency;
   onDone: () => void;
   onMore: () => void;
@@ -45,6 +47,13 @@ export default function FeedbackCard({
           </p>
         </div>
       </div>
+
+      {overspend && (
+        <div className="card border border-dining-100 bg-dining-100 p-4" role="status" data-testid="feedback-overspend">
+          <p className="text-sm font-medium text-dining-700">{overspend}。</p>
+          <p className="mt-1 text-xs text-dining-700/80">已经记上了,不拦你;只是把数告诉你。</p>
+        </div>
+      )}
 
       {!met && (
         <div className="card p-4" data-testid="feedback-suggestion">

@@ -11,7 +11,7 @@ import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
 import { mealFromDish } from "@/lib/menu-rank";
-import { NEXT_MEAL_MAX, buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
+import { NEXT_MEAL_MAX, buildNextMeal, overspendHead, overspendLine, todayBudget, type NextMeal, type NextOption, type TodayBudget } from "@/lib/next-meal";
 import { DEMO_ORDER_COUNT } from "@/lib/demo";
 import { demoActive, demoDismissed, demoRequested, enterDemo, exitDemo } from "@/lib/demo-mode";
 import { starterMenu } from "@/lib/starter";
@@ -70,6 +70,7 @@ export default function Home() {
   const [week, setWeek] = useState<Meal[]>([]);
   const [recent, setRecent] = useState<Frequent[]>([]);
   const [next, setNext] = useState<NextMeal | null>(null); // 下一顿 / 每日清单 (PRD F0-1)
+  const [dayBudget, setDayBudget] = useState<TodayBudget | null>(null); // 今天预算 and the 花超提醒
   const [venues, setVenues] = useState(0); // how many menus are saved as places
   const [showAll, setShowAll] = useState(false);
   const [editing, setEditing] = useState<Meal | null>(null);
@@ -100,6 +101,7 @@ export default function Home() {
     setWeek(w);
     setRecent(frequentMeals(r, t, !!s?.whey));
     setNext(s ? buildNextMeal(r, w, t, s, Date.now(), menus) : null);
+    setDayBudget(s ? todayBudget(w, s, Date.now()) : null);
     setVenues(menus.filter((m) => !m.starter).length);
   }, []);
 
@@ -138,14 +140,18 @@ export default function Home() {
     await addMeal(copy);
     void logEvent("record_saved", { input_type: kind, n: 1, corrected: false, duration_ms: 0 });
     // 即时回报 in toast form: the gap and this meal's rank, right where the tap happened.
+    // 花超提醒 rides along when this record took today past its budget.
     let line = "";
+    let over: string | null = null;
     if (settings) {
       const [t, w, r] = await Promise.all([listMealsByDay(), listMealsByWeek(), listMealsSince(copy.ts - RECENT_DAYS * 86400e3)]);
       const f = buildFeedback([copy], w, t, r, settings);
-      line = ` · ${feedbackLine(f)}`;
-      void logEvent("feedback_shown", { where: kind, rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit) });
+      const b = todayBudget(w, settings, copy.ts);
+      if ((copy.amount_usd ?? 0) > 0) over = overspendHead(b, currencyOf(settings.currency));
+      line = ` · ${feedbackLine(f)}${over ? ` · ${over}` : ""}`;
+      void logEvent("feedback_shown", { where: kind, rank: f.rank?.rank ?? null, deficit: Math.round(f.deficit), over_today: b.over });
     }
-    flash(`已记「${m.meal_name}」${line}`, 2800);
+    flash(`已记「${m.meal_name}」${line}`, over ? 4200 : 2800);
     await load();
   }
 
@@ -186,7 +192,10 @@ export default function Home() {
   const weekSpent = spend(week);
   const budget = settings.weekly_budget_usd;
   const budgetLeft = budget - weekSpent;
-  const budgetPct = budget > 0 ? Math.min(1, weekSpent / budget) : 0;
+  // Today's budget is set in load(); the fallback only covers the first paint after onboarding.
+  const tb: TodayBudget = dayBudget ?? { base: budget / 7, allowance: budget / 7, spent: 0, left: budget / 7, over: 0, daysAfter: 0, next: null, cut: 0 };
+  const dayPct = tb.allowance > 0 ? Math.min(1, tb.spent / tb.allowance) : tb.spent > 0 ? 1 : 0;
+  const overLine = overspendLine(tb, cur);
 
   const whey = settings.whey;
   const scoopsToday = today.filter(isSupplement).length;
@@ -248,22 +257,31 @@ export default function Home() {
             </p>
             <div className="mt-4" data-testid="budget-card">
               <div className="flex items-baseline justify-between text-xs text-white/75">
-                <span>本周预算</span>
+                <span>今天预算</span>
                 <span className="tabular-nums">
-                  {fmtMoney(weekSpent, cur)} / {fmtMoney(budget, cur)}
+                  {fmtMoney(tb.spent, cur)} / {fmtMoney(tb.allowance, cur)}
                 </span>
               </div>
               <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/25">
-                <div className={`h-full rounded-full ${budgetLeft < 0 ? "bg-red-300" : "bg-white"}`} style={{ width: `${budgetPct * 100}%`, transition: "width .6s ease" }} />
+                <div className={`h-full rounded-full ${tb.over > 0 ? "bg-red-300" : "bg-white"}`} style={{ width: `${dayPct * 100}%`, transition: "width .6s ease" }} />
               </div>
-              <p className="mt-1 text-sm font-semibold tabular-nums">
-                {budgetLeft < 0 ? `超出 ${fmtMoney(-budgetLeft, cur)}` : `还剩 ${fmtMoney(budgetLeft, cur)}`}
+              <p className="mt-1 text-sm font-semibold tabular-nums" data-testid="budget-today">
+                {tb.over > 0 ? `花超 ${fmtMoney(tb.over, cur)}` : `还剩 ${fmtMoney(tb.left, cur)}`}
               </p>
+              <p className="mt-0.5 text-[11px] tabular-nums text-white/70" data-testid="budget-week">
+                每天 {fmtMoney(tb.base, cur)} · 本周 {fmtMoney(weekSpent, cur)} / {fmtMoney(budget, cur)}
+                {budgetLeft < 0 ? ` · 超出 ${fmtMoney(-budgetLeft, cur)}` : ""}
+              </p>
+              {tb.allowance < tb.base && (
+                <p className="mt-0.5 text-[11px] text-white/70" data-testid="budget-reduced">
+                  本周前面花超了,今天按 {fmtMoney(tb.allowance, cur)} 算
+                </p>
+              )}
             </div>
           </div>
         </div>
         <p className="mt-4 border-t border-white/15 pt-3 text-sm text-white/90" data-testid="advice">
-          {adviceSentence(deficit, budgetLeft, cur)}
+          {adviceSentence(deficit, tb.left, cur, overLine)}
         </p>
       </section>
 
@@ -275,7 +293,7 @@ export default function Home() {
             <span className="text-[11px] text-ink-400">记过的和存过的地方 · 按每块钱蛋白排</span>
           </div>
           <p className="mt-1 text-sm text-ink-600" data-testid="next-meal-line">
-            还差 {Math.round(next.deficit)} g,今天还能花 {fmtMoney(next.spendable, cur)}。
+            还差 {Math.round(next.deficit)} g,{tb.over > 0 ? `今天已花超 ${fmtMoney(tb.over, cur)}` : `今天还能花 ${fmtMoney(next.spendable, cur)}`}。
           </p>
           {next.state === "no_history" && (
             <p className="mt-2 text-sm text-ink-400">还没有带价格的记录,也没存过菜单。把常去的窗口或外卖店拍一次,以后每天打开就有清单。</p>
@@ -431,7 +449,7 @@ export default function Home() {
         <MealEditor meal={editing} currency={cur} onSave={saveEdit} onDelete={remove} onClose={() => setEditing(null)} />
       )}
       {toast && (
-        <p className="fixed inset-x-0 bottom-24 z-30 mx-auto w-fit rounded-full bg-ink-900 px-4 py-2 text-sm text-white shadow-lg rise" role="status">
+        <p className="fixed inset-x-0 bottom-24 z-30 mx-auto w-fit max-w-[92vw] rounded-3xl bg-ink-900 px-4 py-2 text-center text-sm text-white shadow-lg rise" role="status" data-testid="toast">
           {toast}
         </p>
       )}

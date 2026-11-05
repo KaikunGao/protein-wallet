@@ -15,6 +15,7 @@ export default function MenuRanking({
   items,
   spendable,
   deficit,
+  over,
   currency,
   onPick,
   onBack,
@@ -28,6 +29,7 @@ export default function MenuRanking({
   items: MenuItem[];
   spendable: number | null;
   deficit: number | null;
+  over?: number | null; // how far today is already past its budget
   currency?: Currency;
   onPick: (d: RankedDish, position: number, sort: MenuSort) => void;
   onBack: () => void;
@@ -113,7 +115,9 @@ export default function MenuRanking({
       <div>
         <p className="text-sm text-ink-600" data-testid="menu-summary">
           读出 {items.length} 道,{ranked.length} 道有价格和蛋白来源,能排。
-          {deficit != null && spendable != null && deficit > 0 ? ` 今天还差 ${Math.round(deficit)} g,还能花 ${fmtMoney(spendable, currency)}。` : ""}
+          {deficit != null && spendable != null && deficit > 0
+            ? ` 今天还差 ${Math.round(deficit)} g,${over != null && over > 0 ? `今天已花超 ${fmtMoney(over, currency)}` : `还能花 ${fmtMoney(spendable, currency)}`}。`
+            : ""}
         </p>
         <div className="mt-3 flex rounded-2xl bg-ink-100 p-1" role="tablist">
           {(["cpg", "protein"] as MenuSort[]).map((s) => (
