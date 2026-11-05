@@ -14,10 +14,12 @@ export type Source =
   | "dining_menu"
   | "visual_estimate"
   | "text_estimate"
+  | "ingredient_table" // 拍菜单: protein summed from data/ingredients.json (reference data, never 官方)
   | "label"; // 蛋白粉预设: numbers the user copied from the product label
 // "repeat" = one-tap copy of a recent meal from the home page (no model call).
 // "preset" = one-tap scoop of the user's own protein powder (settings.whey), no model call.
-export type InputType = "text" | "photo" | "receipt" | "grocery" | "repeat" | "preset";
+// "menu" = picked from a 拍菜单 ranking (the dish was estimated from a menu, before eating).
+export type InputType = "text" | "photo" | "receipt" | "grocery" | "repeat" | "preset" | "menu";
 // DECISION: grocery purchases live in the same `meals` table with kind="grocery"
 // and null nutrition fields, instead of a fourth table. Weekly spend sums every
 // row; protein sums skip grocery rows.
@@ -73,6 +75,8 @@ export type EventName =
   | "record_cancelled"
   | "record_repeated"
   | "feedback_shown" // 即时回报 card / toast rendered after a save
+  | "menu_ranked" // a menu (photo or text) was parsed and ranked by 分/g
+  | "rank_picked" // a record created by tapping a row in a 分/g ranking (下一顿 card, later: menu scan)
   | "decision_changed" // weekly one-tap answer: did the numbers change where / what the user ate this week?
   | "meal_edited"
   | "meal_deleted"

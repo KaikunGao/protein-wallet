@@ -1,0 +1,671 @@
+{
+ "_meta": {
+  "compiled_on": "2026-11-04",
+  "data_status": "reference",
+  "note": "食材级蛋白来源表:每个常见单位(一个蛋、一只鸡腿、一份肉)的蛋白质和热量。数值按常见份量估算,口径参照《中国食物成分表(标准版)》的每 100 g 数值乘以典型可食部重量,但没有逐行对照原书,所以整张表是参考数据:代码用它算出的蛋白最高只给中置信度,界面标「食材表·未核实」,不标官方。逐行核对原书并写上页码后,data_status 才能改。",
+  "how_used": "拍菜单(lib/estimate/menu.ts):模型把每道菜拆成蛋白来源 [{name, qty}],代码查这张表相加。只算蛋白;热量仍用模型给的区间,因为油和酱不在表里。",
+  "unit_note": "grams 是该单位的典型可食部重量(熟重),只用于说明份量,不参与计算。",
+  "kind_note": "kind: protein = 肉蛋豆奶等蛋白来源;staple = 主食;veg = 蔬菜。一道菜的蛋白如果只来自 staple / veg(白米饭、凉皮、清炒时蔬),拍菜单的排序里不参与排名,单列在下面:它们每块钱的蛋白看起来很多,但不是增肌要找的那种蛋白来源。"
+ },
+ "items": [
+  {
+   "name": "鸡蛋",
+   "aliases": [
+    "蛋",
+    "煎蛋",
+    "荷包蛋",
+    "卤蛋",
+    "茶叶蛋",
+    "炒蛋",
+    "水煮蛋"
+   ],
+   "unit": "个",
+   "grams": 50,
+   "protein_g": 6.5,
+   "kcal": 72,
+   "kind": "protein"
+  },
+  {
+   "name": "牛奶",
+   "aliases": [
+    "纯牛奶",
+    "鲜奶"
+   ],
+   "unit": "盒",
+   "grams": 250,
+   "protein_g": 8,
+   "kcal": 160,
+   "kind": "protein"
+  },
+  {
+   "name": "酸奶",
+   "aliases": [],
+   "unit": "杯",
+   "grams": 150,
+   "protein_g": 4.5,
+   "kcal": 110,
+   "kind": "protein"
+  },
+  {
+   "name": "豆浆",
+   "aliases": [],
+   "unit": "杯",
+   "grams": 300,
+   "protein_g": 6,
+   "kcal": 100,
+   "kind": "protein"
+  },
+  {
+   "name": "豆腐",
+   "aliases": [
+    "北豆腐",
+    "老豆腐",
+    "麻婆豆腐",
+    "家常豆腐"
+   ],
+   "unit": "份",
+   "grams": 100,
+   "protein_g": 9,
+   "kcal": 100,
+   "kind": "protein"
+  },
+  {
+   "name": "嫩豆腐",
+   "aliases": [
+    "豆腐脑",
+    "豆花",
+    "内酯豆腐"
+   ],
+   "unit": "份",
+   "grams": 100,
+   "protein_g": 5,
+   "kcal": 55,
+   "kind": "protein"
+  },
+  {
+   "name": "豆干",
+   "aliases": [
+    "豆腐干",
+    "香干",
+    "素鸡"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 8,
+   "kcal": 70,
+   "kind": "protein"
+  },
+  {
+   "name": "豆皮",
+   "aliases": [
+    "千张",
+    "腐皮",
+    "干豆腐"
+   ],
+   "unit": "份",
+   "grams": 30,
+   "protein_g": 7,
+   "kcal": 78,
+   "kind": "protein"
+  },
+  {
+   "name": "腐竹",
+   "aliases": [],
+   "unit": "份",
+   "grams": 20,
+   "protein_g": 9,
+   "kcal": 95,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡腿",
+   "aliases": [
+    "琵琶腿",
+    "卤鸡腿",
+    "炸鸡腿",
+    "烤鸡腿",
+    "小鸡腿"
+   ],
+   "unit": "只",
+   "grams": 85,
+   "protein_g": 17,
+   "kcal": 150,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡大腿",
+   "aliases": [
+    "手枪腿",
+    "鸡全腿",
+    "大鸡腿",
+    "鸡腿肉",
+    "黄焖鸡"
+   ],
+   "unit": "只",
+   "grams": 150,
+   "protein_g": 28,
+   "kcal": 280,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡翅",
+   "aliases": [
+    "鸡中翅",
+    "烤翅",
+    "奥尔良烤翅"
+   ],
+   "unit": "个",
+   "grams": 25,
+   "protein_g": 5,
+   "kcal": 55,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡翅根",
+   "aliases": [
+    "翅根"
+   ],
+   "unit": "个",
+   "grams": 35,
+   "protein_g": 7,
+   "kcal": 60,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡胸肉",
+   "aliases": [
+    "鸡胸",
+    "鸡肉",
+    "鸡丁",
+    "鸡丝",
+    "宫保鸡丁",
+    "辣子鸡"
+   ],
+   "unit": "份",
+   "grams": 100,
+   "protein_g": 28,
+   "kcal": 150,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡排",
+   "aliases": [
+    "炸鸡排",
+    "大鸡排"
+   ],
+   "unit": "块",
+   "grams": 150,
+   "protein_g": 25,
+   "kcal": 400,
+   "kind": "protein"
+  },
+  {
+   "name": "鸡柳",
+   "aliases": [
+    "鸡块",
+    "鸡米花",
+    "炸鸡块"
+   ],
+   "unit": "份",
+   "grams": 80,
+   "protein_g": 12,
+   "kcal": 220,
+   "kind": "protein"
+  },
+  {
+   "name": "鸭腿",
+   "aliases": [
+    "烤鸭腿",
+    "卤鸭腿"
+   ],
+   "unit": "只",
+   "grams": 120,
+   "protein_g": 22,
+   "kcal": 300,
+   "kind": "protein"
+  },
+  {
+   "name": "鸭肉",
+   "aliases": [
+    "烤鸭"
+   ],
+   "unit": "份",
+   "grams": 60,
+   "protein_g": 10,
+   "kcal": 150,
+   "kind": "protein"
+  },
+  {
+   "name": "猪瘦肉",
+   "aliases": [
+    "里脊",
+    "肉丝",
+    "肉片",
+    "瘦肉",
+    "鱼香肉丝",
+    "回锅肉",
+    "青椒肉丝",
+    "小炒肉"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 12,
+   "kcal": 90,
+   "kind": "protein"
+  },
+  {
+   "name": "猪肉",
+   "aliases": [
+    "五花肉",
+    "卤肉",
+    "红烧肉",
+    "腊汁肉",
+    "肉"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 9,
+   "kcal": 170,
+   "kind": "protein"
+  },
+  {
+   "name": "排骨",
+   "aliases": [
+    "糖醋排骨",
+    "红烧排骨",
+    "小排"
+   ],
+   "unit": "份",
+   "grams": 90,
+   "protein_g": 16,
+   "kcal": 250,
+   "kind": "protein"
+  },
+  {
+   "name": "牛肉",
+   "aliases": [
+    "肥牛",
+    "牛腩",
+    "牛肉片",
+    "土豆烧牛肉"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 13,
+   "kcal": 95,
+   "kind": "protein"
+  },
+  {
+   "name": "羊肉",
+   "aliases": [
+    "羊肉片"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 11,
+   "kcal": 110,
+   "kind": "protein"
+  },
+  {
+   "name": "肉串",
+   "aliases": [
+    "羊肉串",
+    "牛肉串",
+    "烤串"
+   ],
+   "unit": "串",
+   "grams": 20,
+   "protein_g": 4,
+   "kcal": 50,
+   "kind": "protein"
+  },
+  {
+   "name": "里脊串",
+   "aliases": [
+    "炸里脊",
+    "烤里脊"
+   ],
+   "unit": "串",
+   "grams": 30,
+   "protein_g": 6,
+   "kcal": 70,
+   "kind": "protein"
+  },
+  {
+   "name": "肉末",
+   "aliases": [
+    "肉馅",
+    "肉酱",
+    "肉沫"
+   ],
+   "unit": "份",
+   "grams": 30,
+   "protein_g": 5,
+   "kcal": 70,
+   "kind": "protein"
+  },
+  {
+   "name": "肉丸",
+   "aliases": [
+    "丸子",
+    "狮子头",
+    "贡丸"
+   ],
+   "unit": "个",
+   "grams": 20,
+   "protein_g": 2.5,
+   "kcal": 45,
+   "kind": "protein"
+  },
+  {
+   "name": "火腿肠",
+   "aliases": [
+    "烤肠",
+    "淀粉肠",
+    "香肠",
+    "热狗肠"
+   ],
+   "unit": "根",
+   "grams": 60,
+   "protein_g": 5,
+   "kcal": 130,
+   "kind": "protein"
+  },
+  {
+   "name": "腊肠",
+   "aliases": [
+    "广式腊肠"
+   ],
+   "unit": "根",
+   "grams": 40,
+   "protein_g": 9,
+   "kcal": 200,
+   "kind": "protein"
+  },
+  {
+   "name": "培根",
+   "aliases": [],
+   "unit": "片",
+   "grams": 15,
+   "protein_g": 2.5,
+   "kcal": 60,
+   "kind": "protein"
+  },
+  {
+   "name": "午餐肉",
+   "aliases": [],
+   "unit": "片",
+   "grams": 30,
+   "protein_g": 3,
+   "kcal": 70,
+   "kind": "protein"
+  },
+  {
+   "name": "鱼块",
+   "aliases": [
+    "鱼排",
+    "鱼片",
+    "酸菜鱼",
+    "红烧鱼",
+    "带鱼",
+    "水煮鱼"
+   ],
+   "unit": "份",
+   "grams": 100,
+   "protein_g": 18,
+   "kcal": 130,
+   "kind": "protein"
+  },
+  {
+   "name": "虾仁",
+   "aliases": [
+    "虾",
+    "大虾",
+    "基围虾"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 9,
+   "kcal": 45,
+   "kind": "protein"
+  },
+  {
+   "name": "鱼丸",
+   "aliases": [
+    "蟹棒",
+    "鱼豆腐"
+   ],
+   "unit": "个",
+   "grams": 15,
+   "protein_g": 1.5,
+   "kcal": 20,
+   "kind": "protein"
+  },
+  {
+   "name": "鸭血",
+   "aliases": [
+    "血旺"
+   ],
+   "unit": "份",
+   "grams": 50,
+   "protein_g": 6.5,
+   "kcal": 55,
+   "kind": "protein"
+  },
+  {
+   "name": "米饭",
+   "aliases": [
+    "饭",
+    "白饭",
+    "盖饭",
+    "盖浇饭"
+   ],
+   "unit": "碗",
+   "grams": 200,
+   "protein_g": 5,
+   "kcal": 232,
+   "kind": "staple"
+  },
+  {
+   "name": "面条",
+   "aliases": [
+    "面",
+    "拉面",
+    "刀削面",
+    "拌面",
+    "汤面"
+   ],
+   "unit": "碗",
+   "grams": 300,
+   "protein_g": 10,
+   "kcal": 330,
+   "kind": "staple"
+  },
+  {
+   "name": "米线",
+   "aliases": [
+    "米粉",
+    "河粉",
+    "粉丝",
+    "酸辣粉"
+   ],
+   "unit": "碗",
+   "grams": 300,
+   "protein_g": 5,
+   "kcal": 330,
+   "kind": "staple"
+  },
+  {
+   "name": "凉皮",
+   "aliases": [
+    "擀面皮",
+    "凉面皮"
+   ],
+   "unit": "份",
+   "grams": 250,
+   "protein_g": 4,
+   "kcal": 300,
+   "kind": "staple"
+  },
+  {
+   "name": "馒头",
+   "aliases": [
+    "花卷"
+   ],
+   "unit": "个",
+   "grams": 100,
+   "protein_g": 7,
+   "kcal": 223,
+   "kind": "staple"
+  },
+  {
+   "name": "馍",
+   "aliases": [
+    "白吉馍",
+    "烧饼",
+    "火烧",
+    "面饼",
+    "饼",
+    "汉堡胚",
+    "面包"
+   ],
+   "unit": "个",
+   "grams": 80,
+   "protein_g": 6.5,
+   "kcal": 220,
+   "kind": "staple"
+  },
+  {
+   "name": "手抓饼皮",
+   "aliases": [
+    "手抓饼",
+    "葱油饼",
+    "鸡蛋饼皮"
+   ],
+   "unit": "张",
+   "grams": 90,
+   "protein_g": 6,
+   "kcal": 300,
+   "kind": "staple"
+  },
+  {
+   "name": "煎饼面糊",
+   "aliases": [
+    "煎饼"
+   ],
+   "unit": "张",
+   "grams": 50,
+   "protein_g": 5,
+   "kcal": 175,
+   "kind": "staple"
+  },
+  {
+   "name": "烤冷面皮",
+   "aliases": [
+    "冷面皮",
+    "烤冷面"
+   ],
+   "unit": "张",
+   "grams": 100,
+   "protein_g": 6,
+   "kcal": 250,
+   "kind": "staple"
+  },
+  {
+   "name": "薄脆",
+   "aliases": [
+    "果篦",
+    "脆饼"
+   ],
+   "unit": "片",
+   "grams": 20,
+   "protein_g": 2,
+   "kcal": 110,
+   "kind": "staple"
+  },
+  {
+   "name": "油条",
+   "aliases": [],
+   "unit": "根",
+   "grams": 60,
+   "protein_g": 4,
+   "kcal": 230,
+   "kind": "staple"
+  },
+  {
+   "name": "肉包",
+   "aliases": [
+    "包子",
+    "小笼包",
+    "生煎"
+   ],
+   "unit": "个",
+   "grams": 90,
+   "protein_g": 6,
+   "kcal": 200,
+   "kind": "protein"
+  },
+  {
+   "name": "素包",
+   "aliases": [
+    "菜包"
+   ],
+   "unit": "个",
+   "grams": 90,
+   "protein_g": 4,
+   "kcal": 170,
+   "kind": "staple"
+  },
+  {
+   "name": "饺子",
+   "aliases": [
+    "水饺",
+    "煎饺",
+    "锅贴",
+    "蒸饺"
+   ],
+   "unit": "个",
+   "grams": 20,
+   "protein_g": 1.8,
+   "kcal": 45,
+   "kind": "protein"
+  },
+  {
+   "name": "馄饨",
+   "aliases": [
+    "抄手",
+    "云吞"
+   ],
+   "unit": "个",
+   "grams": 12,
+   "protein_g": 1,
+   "kcal": 25,
+   "kind": "protein"
+  },
+  {
+   "name": "蔬菜",
+   "aliases": [
+    "青菜",
+    "时蔬",
+    "土豆丝",
+    "西兰花",
+    "白菜",
+    "生菜"
+   ],
+   "unit": "份",
+   "grams": 100,
+   "protein_g": 1.5,
+   "kcal": 40,
+   "kind": "veg"
+  },
+  {
+   "name": "花生",
+   "aliases": [],
+   "unit": "份",
+   "grams": 20,
+   "protein_g": 5,
+   "kcal": 115,
+   "kind": "protein"
+  }
+ ]
+}

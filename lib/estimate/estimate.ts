@@ -218,21 +218,28 @@ export async function estimate(
     if (!r.output) return { ok: false, error: "模型返回格式异常,请再试一次", retryable: true };
     return postProcess(r.output, input);
   } catch (e) {
-    if (e instanceof Anthropic.AuthenticationError) {
-      return { ok: false, error: "服务端 API key 无效", retryable: false };
-    }
-    if (e instanceof Anthropic.RateLimitError) {
-      return { ok: false, error: "请求太频繁,稍等几秒再试", retryable: true };
-    }
-    if (e instanceof Anthropic.BadRequestError) {
-      return { ok: false, error: `请求被拒绝:${e.message}`, retryable: false };
-    }
-    if (e instanceof Anthropic.APIConnectionError) {
-      return { ok: false, error: "网络连不上模型服务,请检查网络后重试", retryable: true };
-    }
-    if (e instanceof Anthropic.APIError) {
-      return { ok: false, error: `模型服务错误 (${e.status})`, retryable: true };
-    }
+    const mapped = mapApiError(e);
+    if (mapped) return mapped;
     throw e;
   }
+}
+
+/** Friendly message for an Anthropic API error, or null when `e` is something else. Shared with the menu parser. */
+export function mapApiError(e: unknown): { ok: false; error: string; retryable: boolean } | null {
+  if (e instanceof Anthropic.AuthenticationError) {
+    return { ok: false, error: "服务端 API key 无效", retryable: false };
+  }
+  if (e instanceof Anthropic.RateLimitError) {
+    return { ok: false, error: "请求太频繁,稍等几秒再试", retryable: true };
+  }
+  if (e instanceof Anthropic.BadRequestError) {
+    return { ok: false, error: `请求被拒绝:${e.message}`, retryable: false };
+  }
+  if (e instanceof Anthropic.APIConnectionError) {
+    return { ok: false, error: "网络连不上模型服务,请检查网络后重试", retryable: true };
+  }
+  if (e instanceof Anthropic.APIError) {
+    return { ok: false, error: `模型服务错误 (${e.status})`, retryable: true };
+  }
+  return null;
 }

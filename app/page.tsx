@@ -10,6 +10,7 @@ import { adviceSentence, centsPerGram, cpgUnit, fmtMoney, mid, proteinDeficit, p
 import { buildFeedback, feedbackLine } from "@/lib/feedback";
 import { currencyOf } from "@/lib/money";
 import { fmtTime } from "@/lib/dates";
+import { buildNextMeal, type NextMeal, type NextOption } from "@/lib/next-meal";
 import { isSupplement, presetMeal, scoopPrice } from "@/lib/supplement";
 import type { Meal, Settings, WheyPreset } from "@/lib/types";
 
@@ -58,6 +59,7 @@ export default function Home() {
   const [today, setToday] = useState<Meal[]>([]);
   const [week, setWeek] = useState<Meal[]>([]);
   const [recent, setRecent] = useState<Frequent[]>([]);
+  const [next, setNext] = useState<NextMeal | null>(null); // 下一顿卡片 (PRD F0-1)
   const [editing, setEditing] = useState<Meal | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -68,6 +70,7 @@ export default function Home() {
     setToday(t);
     setWeek(w);
     setRecent(frequentMeals(r, t, !!s?.whey));
+    setNext(s ? buildNextMeal(r, w, t, s, Date.now()) : null);
   }, []);
 
   useEffect(() => {
@@ -92,7 +95,13 @@ export default function Home() {
     return quickAdd(makeScoop(settings.whey), "preset");
   }
 
-  async function quickAdd(copy: Meal, kind: "repeat" | "preset") {
+  /** 下一顿卡片: a tap on a ranked row re-logs that dish. `rank_picked` is the decision-line metric. */
+  function pick(o: NextOption, position: number) {
+    void logEvent("rank_picked", { where: "next_meal", position, cpg: Math.round(o.cpg * 10) / 10, over: o.over });
+    return quickAdd(cloneForRepeat(o.meal), "next");
+  }
+
+  async function quickAdd(copy: Meal, kind: "repeat" | "preset" | "next") {
     const m = copy;
     await addMeal(copy);
     void logEvent("record_saved", { input_type: kind, n: 1, corrected: false, duration_ms: 0 });
@@ -201,6 +210,58 @@ export default function Home() {
         </p>
       </section>
 
+      {/* 下一顿: the user's own priced dishes that fit today's money, cheapest protein first. Facts only, no "should". */}
+      {next && next.state !== "met" && (
+        <section className="card p-4" data-testid="next-meal">
+          <div className="flex items-baseline justify-between gap-2">
+            <h2 className="text-sm font-semibold text-ink-900">下一顿</h2>
+            <span className="text-[11px] text-ink-400">你记过的 · 按每块钱蛋白排</span>
+          </div>
+          <p className="mt-1 text-sm text-ink-600" data-testid="next-meal-line">
+            还差 {Math.round(next.deficit)} g,今天还能花 {fmtMoney(next.spendable, cur)}。
+          </p>
+          {next.state === "no_history" && (
+            <p className="mt-2 text-sm text-ink-400">还没有带价格的记录。先拍一张菜单,没吃过的也能比。</p>
+          )}
+          {next.state === "over_budget" && (
+            <p className="mt-2 text-xs font-medium text-dining-700">你记过的都超过今天能花的钱。下面是每块钱蛋白最多的三样。</p>
+          )}
+          {next.options.length > 0 && (
+            <ol className="mt-2 divide-y divide-ink-100">
+              {next.options.map((o, i) => (
+                <li key={o.meal.id}>
+                  <button
+                    onClick={() => pick(o, i + 1)}
+                    className="flex w-full items-center gap-3 py-2.5 text-left active:opacity-70"
+                    data-testid="next-meal-row"
+                  >
+                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === 0 ? "bg-brand-600 text-white" : "bg-ink-100 text-ink-600"}`}>{i + 1}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium">{o.meal.meal_name}</span>
+                      <span className="block text-xs text-ink-400">
+                        {o.meal.merchant ? `${o.meal.merchant} · ` : ""}约 {Math.round(o.proteinMid)} g · {fmtMoney(o.amount, cur)}
+                        {o.times > 1 ? ` · 吃过 ${o.times} 次` : ""}
+                        {o.over ? " · 超出今天额度" : ""}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-base font-semibold tabular-nums">
+                        {o.cpg.toFixed(1)}
+                        <span className="text-xs font-normal text-ink-400">{cpgUnit(cur)}</span>
+                      </span>
+                      <span className="block text-[11px] font-medium text-brand-700">点一下记上</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          <Link href="/log?mode=menu" className="mt-2 block rounded-xl bg-brand-50 py-2 text-center text-sm font-medium text-brand-700" data-testid="menu-link">
+            拍菜单 · 没吃过的也能比
+          </Link>
+        </section>
+      )}
+
       {(recent.length > 0 || whey) && (
         <section className="space-y-2" data-testid="repeat">
           <h2 className="label-xs">常吃 · 点一下就记上</h2>
@@ -245,9 +306,14 @@ export default function Home() {
         <Link href="/log" className="btn-primary block py-4 text-center text-lg shadow-[0_10px_24px_-10px_rgb(21_128_61/0.7)]">
           + 记一餐
         </Link>
-        <Link href="/log?mode=day" className="btn-secondary block py-3 text-center text-sm" data-testid="day-link">
-          日结 · 睡前一句话记一天
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link href="/log?mode=menu" className="btn-secondary block py-3 text-center text-sm" data-testid="menu-link-main">
+            拍菜单 · 吃之前比一比
+          </Link>
+          <Link href="/log?mode=day" className="btn-secondary block py-3 text-center text-sm" data-testid="day-link">
+            日结 · 一句话记一天
+          </Link>
+        </div>
       </div>
 
       <section className="space-y-2">

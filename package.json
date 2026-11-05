@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx scripts/test-estimate.ts && tsx scripts/test-weekly.ts && tsx scripts/test-feedback.ts",
+    "test": "tsx scripts/test-estimate.ts && tsx scripts/test-weekly.ts && tsx scripts/test-feedback.ts && tsx scripts/test-next-meal.ts && tsx scripts/test-menu.ts",
     "eval": "tsx eval/run.ts"
   },
   "dependencies": {

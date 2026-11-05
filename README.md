@@ -3,6 +3,7 @@
 给在健身房练、想增肌、生活费有限的大学生和年轻人:蛋白粉一天一勺只补得上需求的两成,剩下的七八成得从三餐来,而同样一克蛋白在三餐内部差 10 倍(鸡蛋约 9 分,食堂 25-50,外卖约 100)。拍一张餐食、外卖订单或小票,同时记下花销和营养(热量 / 蛋白质区间),回答一个问题:
 **在每月 2000 元左右的生活费里,每一块钱换到了多少克蛋白质。**
 
+- 主线调整(2026-11-04,见 PRD):从"记下吃了什么"转为"预算内吃什么"。吃之前的决策功能里,下一顿卡片(`lib/next-meal.ts`)和拍菜单做决策(`/api/menu`、`lib/estimate/menu.ts`、`lib/menu-rank.ts`:模型读菜名价格并拆蛋白来源,代码查 `data/ingredients.json` / `data/street.json` 算数并按 分/g 排序)已上线,拍营养成分表尚未实现;两张食材表是参考数据,未逐行核对《中国食物成分表》;现有的记录和周报保留,成为决策的数据来源
 - 核心指标:蛋白质单价 **分/g**
 - 设计哲学:诚实的模糊,所有估算都是「区间 + 置信度 + 依据」,永不假装精确
 - 三级估算:先匹配连锁官方营养表(`data/chains.json`),再匹配学校食堂官方菜品库(`data/dining/`),都匹配不上才让模型目测;算术一律由代码完成
@@ -32,7 +33,7 @@ npm run dev                  # http://localhost:3000
 | 命令 | 作用 |
 | --- | --- |
 | `npm run dev` / `npm run build` | 开发 / 生产构建 |
-| `npm test` | 离线单元测试:估算后处理(连锁匹配、区间宽度规则、金额守卫)+ 周报手算对照 + 保存后即时回报手算对照 |
+| `npm test` | 离线单元测试:估算后处理(连锁匹配、区间宽度规则、金额守卫)+ 周报手算对照 + 保存后即时回报手算对照 + 下一顿卡片手算对照 + 拍菜单(查表、后处理、排序)|
 | `npm run eval` | 评测脚本,见 [eval/README.md](eval/README.md) |
 | `npm run lint` | ESLint |
 
@@ -43,7 +44,7 @@ app/            页面:/ 今日  /log 记录流  /weekly 周报  /settings 设�
 components/     Onboarding、ConfirmCard(可编辑确认卡 + 一键份量修正)、MealEditor(改已保存记录)、ConfidenceBadge、BottomNav、VoiceButton(Web Speech API 语音输入,不支持的浏览器不显示)
 lib/db.ts       IndexedDB:meals / settings / events,导出导入
 lib/estimate/   schema(zod)、prompt、chains 匹配、estimate(调模型 + 后处理)、mock
-lib/derive.ts   今日差额、周花销、分/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/supplement.ts 蛋白粉预设与补剂判定;lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
+lib/derive.ts   今日差额、周花销、分/g;lib/weekly.ts 周报;lib/feedback.ts 保存后即时回报(本周排名 + 差额换算);lib/supplement.ts 蛋白粉预设与补剂判定;lib/next-meal.ts 下一顿卡片(今天可花金额 + 按 分/g 排序);lib/menu-rank.ts 菜单排序(浏览器里算);lib/estimate/menu.ts 菜单解析(服务端);lib/money.ts 货币(只有人民币,¥ 和 分/g;字段名 amount_usd 等沿用,含义是元);lib/share-image.ts 周报分享图(canvas 1080×1350)
 data/chains.json  17 家连锁营养数据;data_status 决定能不能标"官方":official 5 家(Chipotle / McDonald's / Shake Shack / Sweetgreen / KFC)、partial 3 家、unverified 9 家
 data/dining/      芝大食堂:halls.json(4 个食堂)+ catalog.json(640 道菜的官方每份营养,Dine On Campus 快照),见 data/dining/README.md
 eval/           评测集(samples/truth.json)、评测脚本(run.ts)、迭代日志(log.md)

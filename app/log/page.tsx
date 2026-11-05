@@ -4,12 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConfirmCard from "@/components/ConfirmCard";
 import FeedbackCard from "@/components/FeedbackCard";
+import MenuRanking from "@/components/MenuRanking";
 import VoiceButton from "@/components/VoiceButton";
 import { addMeal, getSettings, listMealsByDay, listMealsByWeek, listMealsSince, logEvent } from "@/lib/db";
 import type { EstimateResponse } from "@/lib/estimate/schema";
+import { proteinDeficit } from "@/lib/derive";
 import { buildFeedback, type Feedback } from "@/lib/feedback";
 import { compressImage } from "@/lib/image";
+import { toEstimateItem, type MenuItem, type MenuResponse, type MenuSort, type RankedDish } from "@/lib/menu-rank";
 import { currencyOf } from "@/lib/money";
+import { spendableToday } from "@/lib/next-meal";
 import type { InputType, Meal, Settings } from "@/lib/types";
 
 type Phase =
@@ -17,11 +21,25 @@ type Phase =
   | { kind: "loading"; inputType: InputType; preview?: string }
   | { kind: "confirm"; inputType: InputType; result: Extract<EstimateResponse, { ok: true }> }
   | { kind: "error"; inputType: InputType; message: string; retryable: boolean }
-  | { kind: "saved"; feedback: Feedback };
+  | { kind: "saved"; feedback: Feedback }
+  | { kind: "ranked"; ranking: Ranking };
+
+// A parsed menu plus today's context, kept so "取消" on the confirm card returns to the list.
+interface Ranking {
+  merchant: string | null;
+  items: MenuItem[];
+  spendable: number | null;
+  deficit: number | null;
+}
 
 // 记一餐 = one meal now (photo / receipt / sentence). 日结 = one sentence for the whole day,
-// split into one record per 顿 (PRD 2026-11-04 记录成本方案 #1).
-type Mode = "meal" | "day";
+// split into one record per 顿 (PRD 2026-11-04 记录成本方案 #1). 拍菜单 = before eating:
+// a menu is parsed and ranked by 分/g, and picking a dish records it (PRD F0-2).
+type Mode = "meal" | "day" | "menu";
+const MODE_LABEL: Record<Mode, string> = { meal: "记一餐", day: "日结", menu: "拍菜单" };
+const MODE_TITLE: Record<Mode, string> = { meal: "记一餐", day: "日结", menu: "拍菜单" };
+// Menu boards are text-heavy: keep more pixels than for a plate photo.
+const MENU_IMAGE_PX = 1568;
 const HISTORY_DAYS = 30;
 
 type PhotoType = Exclude<InputType, "text">;
@@ -73,14 +91,16 @@ export default function LogPage() {
   const startTs = useRef(0); // set in useEffect: Date.now() must not run during prerender
   const voiceBase = useRef(""); // text already in the box when a voice session starts
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const rankingRef = useRef<Ranking | null>(null); // last parsed menu, to come back to from the confirm card
 
   useEffect(() => {
     startTs.current = Date.now();
     // /log?mode=day comes from the home page's 日结 link; read it here so the page stays static.
-    const day = new URLSearchParams(window.location.search).get("mode") === "day";
+    const q = new URLSearchParams(window.location.search).get("mode");
+    const initial: Mode = q === "day" || q === "menu" ? q : "meal";
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (day) setMode("day");
-    void logEvent("record_start", { mode: day ? "day" : "meal" });
+    if (initial !== "meal") setMode(initial);
+    void logEvent("record_start", { mode: initial });
     getSettings().then(setSettings);
   }, []);
 
@@ -115,16 +135,72 @@ export default function LogPage() {
     }
   }
 
+  /** 拍菜单: parse a menu (photo or typed), then rank it on the client by 分/g. */
+  async function runMenu(body: { type: "photo" | "text"; content: string }, preview?: string) {
+    setPhase({ kind: "loading", inputType: "menu", preview });
+    try {
+      const res = await fetch("/api/menu", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = (await res.json()) as MenuResponse;
+      if (!data.ok) {
+        void logEvent("record_failed", { input_type: "menu", error: data.error });
+        setPhase({ kind: "error", inputType: body.type === "text" ? "text" : "menu", message: data.error, retryable: data.retryable });
+        return;
+      }
+      // Today's context for the "超出今天额度" flag and the summary line.
+      const s = settings ?? (await getSettings());
+      const [today, week] = await Promise.all([listMealsByDay(), listMealsByWeek()]);
+      const ranking: Ranking = {
+        merchant: data.merchant,
+        items: data.items,
+        spendable: s ? spendableToday(week, s, Date.now()) : null,
+        deficit: s ? proteinDeficit(today, s) : null,
+      };
+      rankingRef.current = ranking;
+      void logEvent("menu_ranked", {
+        input: body.type,
+        n: data.items.length,
+        priced: data.items.filter((i) => i.price != null).length,
+        from_table: data.items.filter((i) => i.source === "ingredient_table").length,
+        ms: Date.now() - startTs.current,
+      });
+      setPhase({ kind: "ranked", ranking });
+    } catch {
+      void logEvent("record_failed", { input_type: "menu", error: "network" });
+      setPhase({ kind: "error", inputType: body.type === "text" ? "text" : "menu", message: "网络出错,请重试", retryable: true });
+    }
+  }
+
+  /** A row of the ranking was tapped: hand the dish to the normal confirm card. */
+  function pickDish(d: RankedDish, position: number, sort: MenuSort) {
+    void logEvent("rank_picked", { where: "menu", position, sort, cpg: Math.round(d.cpg * 10) / 10, over: d.over, source: d.source });
+    const merchant = rankingRef.current?.merchant ?? null;
+    setPhase({
+      kind: "confirm",
+      inputType: "menu",
+      result: { ok: true, kind: "meal", merchant, total_usd: d.price, items: [toEstimateItem(d, merchant)] },
+    });
+  }
+
+  function backToRanking() {
+    if (rankingRef.current) setPhase({ kind: "ranked", ranking: rankingRef.current });
+    else setPhase({ kind: "input" });
+  }
+
   function submitText() {
     const content = text.trim();
     if (!content) return;
-    void runEstimate({ type: "text", content });
+    if (mode === "menu") void runMenu({ type: "text", content });
+    else void runEstimate({ type: "text", content });
   }
 
   async function onFile(type: PhotoType, file: File) {
     let dataUrl: string;
     try {
-      dataUrl = await compressImage(file);
+      dataUrl = type === "menu" ? await compressImage(file, MENU_IMAGE_PX, 0.85) : await compressImage(file);
     } catch (e) {
       setPhase({
         kind: "error",
@@ -134,7 +210,8 @@ export default function LogPage() {
       });
       return;
     }
-    void runEstimate({ type, content: dataUrl }, dataUrl);
+    if (type === "menu") void runMenu({ type: "photo", content: dataUrl }, dataUrl);
+    else if (type === "photo" || type === "receipt" || type === "grocery") void runEstimate({ type, content: dataUrl }, dataUrl);
   }
 
   async function onSave(meals: Meal[], meta: { corrected: boolean }) {
@@ -194,14 +271,16 @@ export default function LogPage() {
   const example =
     mode === "day"
       ? "早饭鸡蛋牛奶 5 元、午饭食堂鸡腿饭 12 元、晚饭外卖黄焖鸡 22 元、一勺蛋白粉"
-      : "例如:食堂红烧鸡腿 + 米饭 12 元";
+      : mode === "menu"
+        ? "鸡腿饭 12、番茄炒蛋盖饭 8、牛肉面 16、煎饼果子加蛋 8"
+        : "例如:食堂红烧鸡腿 + 米饭 12 元";
 
   return (
     <div className="space-y-4 py-2">
       <div className="flex items-end justify-between">
         <div>
           <p className="label-xs">记录</p>
-          <h1 className="text-2xl font-bold tracking-tight">{mode === "day" ? "日结" : "记一餐"}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{MODE_TITLE[mode]}</h1>
         </div>
         {phase.kind !== "saved" && (
           <button onClick={cancel} className="text-sm text-ink-400">
@@ -213,7 +292,7 @@ export default function LogPage() {
       {phase.kind === "input" && (
         <div className="space-y-4">
           <div className="flex rounded-2xl bg-ink-100 p-1" role="tablist" data-testid="mode-toggle">
-            {(["meal", "day"] as Mode[]).map((m) => {
+            {(["meal", "day", "menu"] as Mode[]).map((m) => {
               const active = mode === m;
               return (
                 <button
@@ -226,7 +305,7 @@ export default function LogPage() {
                   }}
                   className={`flex-1 rounded-xl py-2 text-sm transition ${active ? "bg-white font-semibold text-ink-900 shadow-sm" : "text-ink-600"}`}
                 >
-                  {m === "meal" ? "记一餐" : "日结 · 一句话记一天"}
+                  {MODE_LABEL[m]}
                 </button>
               );
             })}
@@ -236,6 +315,26 @@ export default function LogPage() {
             <p className="text-sm text-ink-600" data-testid="day-hint">
               睡前一句话,把今天吃的按顿写出来,用顿号分开,带上价格。会拆成一条一条,保存前可以改。
             </p>
+          )}
+
+          {mode === "menu" && (
+            <>
+              <p className="text-sm text-ink-600" data-testid="menu-hint">
+                吃之前拍一下窗口价目牌、路边摊招牌或外卖店铺菜单,按每一块钱换多少克蛋白排好。只是排序,吃什么你定;点一样就记上。
+              </p>
+              <section className="grid grid-cols-2 gap-2">
+                <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-[1.25rem] bg-brand-600 px-2 py-4 text-center text-white shadow-[0_10px_24px_-12px_rgb(21_128_61/0.8)] transition active:scale-[0.97]">
+                  <PhotoInput type="menu" onFile={onFile} />
+                  <span className="text-sm font-semibold">拍价目牌</span>
+                  <span className="text-[11px] leading-tight text-green-100">窗口、招牌、纸质菜单</span>
+                </label>
+                <label className="card flex cursor-pointer flex-col items-center gap-1.5 px-2 py-4 text-center text-ink-900 transition active:scale-[0.97]">
+                  <PhotoInput type="menu" onFile={onFile} capture={false} testId="input-menu-file" />
+                  <span className="text-sm font-semibold">选菜单截图</span>
+                  <span className="text-[11px] leading-tight text-ink-400">美团 / 饿了么店铺页</span>
+                </label>
+              </section>
+            </>
           )}
 
           {mode === "meal" && (
@@ -261,8 +360,8 @@ export default function LogPage() {
 
           <section className="card p-4">
             <div className="flex items-baseline justify-between">
-              <p className="text-sm font-medium text-ink-900">{mode === "day" ? "今天吃了什么" : "或者说一句、打一句"}</p>
-              <span className="text-[11px] text-ink-400">{mode === "day" ? "一顿一个价格" : "带上价格更好"}</span>
+              <p className="text-sm font-medium text-ink-900">{mode === "day" ? "今天吃了什么" : mode === "menu" ? "或者把菜单打出来" : "或者说一句、打一句"}</p>
+              <span className="text-[11px] text-ink-400">{mode === "day" ? "一顿一个价格" : mode === "menu" ? "菜名 + 价格" : "带上价格更好"}</span>
             </div>
             <textarea
               ref={textareaRef}
@@ -285,7 +384,7 @@ export default function LogPage() {
                 disabled={!text.trim()}
                 className="btn-primary h-12 flex-1"
               >
-                {mode === "day" ? "拆成一条条" : "解析"}
+                {mode === "day" ? "拆成一条条" : mode === "menu" ? "按每块钱蛋白排" : "解析"}
               </button>
             </div>
           </section>
@@ -299,7 +398,7 @@ export default function LogPage() {
             <img src={phase.preview} alt="" className="max-h-48 rounded-xl object-contain" />
           )}
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-ink-100 border-t-brand-600" />
-          <p>AI 解析中…</p>
+          <p>{phase.inputType === "menu" ? "在读菜单…" : "AI 解析中…"}</p>
         </div>
       )}
 
@@ -334,7 +433,19 @@ export default function LogPage() {
           inputType={phase.inputType}
           currency={currency}
           onSave={onSave}
-          onCancel={cancel}
+          onCancel={phase.inputType === "menu" ? backToRanking : cancel}
+        />
+      )}
+
+      {phase.kind === "ranked" && (
+        <MenuRanking
+          merchant={phase.ranking.merchant}
+          items={phase.ranking.items}
+          spendable={phase.ranking.spendable}
+          deficit={phase.ranking.deficit}
+          currency={currency}
+          onPick={pickDish}
+          onBack={() => setPhase({ kind: "input" })}
         />
       )}
 
@@ -346,14 +457,24 @@ export default function LogPage() {
 }
 
 /** Hidden file input; wrapped in a <label> so taps open the camera without JS click(). */
-function PhotoInput({ type, onFile }: { type: PhotoType; onFile: (t: PhotoType, f: File) => void }) {
+function PhotoInput({
+  type,
+  onFile,
+  capture = true,
+  testId,
+}: {
+  type: PhotoType;
+  onFile: (t: PhotoType, f: File) => void;
+  capture?: boolean; // false = pick an existing image (a screenshot) instead of opening the camera
+  testId?: string;
+}) {
   return (
     <input
       type="file"
       accept="image/*"
-      capture="environment"
+      capture={capture ? "environment" : undefined}
       className="hidden"
-      data-testid={`input-${type}`}
+      data-testid={testId ?? `input-${type}`}
       onChange={(e) => {
         const f = e.target.files?.[0];
         if (f) onFile(type, f);
