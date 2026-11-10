@@ -26,6 +26,17 @@
 
 当前自带的 16 条 chain `text` 样本以 `chains.json` 作真值、4 条 dining `text` 样本以 `catalog.json` 作真值,只能检验"匹配 + 算术"链路,不能代替照片集。注意 9 家凭记忆录入的连锁(`data_status: unverified`)的 text 样本,真值和参考表同源,命中只说明算术对,不说明数据对。
 
+## 国内连锁真值:`cn-mcd.json`(2026-11-09)
+
+30 条文字样本(20 个单品 + 10 个组合),真值来自 `data/chains.json` 里麦当劳中国官网的 76 行,组合取各项之和。两种跑法同一份样本:
+
+```bash
+npm run eval -- --samples cn-mcd.json                      # 默认:有官方表,测匹配 + 算术(2026-11-09:30/30)
+ESTIMATE_NO_CHAINS=1 npm run eval -- --samples cn-mcd.json # 裸估:提示词不带表、匹配关闭,测模型目测(2026-11-09:20/30)
+```
+
+`ESTIMATE_NO_CHAINS` 只用于评测,线上不要设。换模型用 `ESTIMATE_MODEL=claude-sonnet-5-5 npm run eval -- …`(2026-11-09 横评:三个模型接表后都是 30/30,裸估 opus 20、sonnet 26、haiku 22,中点误差中位都是 2 g)。肯德基、必胜客、萨莉亚中国官网不公开营养成分表(2026-11-09 查过),暂时只有麦当劳能当真值。
+
 ## 运行
 
 ```bash

@@ -1,5 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import { chainsForPrompt } from "./chains";
+import { NO_CHAINS, chainsForPrompt } from "./chains";
 import { catalogForPrompt, findHall } from "./dining";
 import type { EstimateInput } from "./schema";
 
@@ -50,7 +50,13 @@ export function diningHall(input: EstimateInput) {
  */
 export function systemBlocks(input?: EstimateInput): Anthropic.TextBlockParam[] {
   const blocks: Anthropic.TextBlockParam[] = [
-    { type: "text", text: RULES + chainsForPrompt(), cache_control: { type: "ephemeral" } },
+    {
+      type: "text",
+      text: NO_CHAINS
+        ? RULES.replace(/## 连锁参考表[\s\S]*$/, "## 连锁参考表\n本次没有连锁参考表:chain_match 一律填 null,所有食物按你对该品牌 / 菜品的常识目测估算,置信度最高 medium。\n")
+        : RULES + chainsForPrompt(),
+      cache_control: { type: "ephemeral" },
+    },
   ];
   if (input && diningHall(input)) {
     blocks.push({ type: "text", text: catalogForPrompt(), cache_control: { type: "ephemeral" } });

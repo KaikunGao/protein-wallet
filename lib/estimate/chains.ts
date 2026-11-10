@@ -29,8 +29,12 @@ function norm(s: string): string {
     .trim();
 }
 
+/** 评测专用:ESTIMATE_NO_CHAINS=1 时关闭连锁匹配(提示词里也不给参考表),用来测模型裸估的准确度。线上永远不设。 */
+export const NO_CHAINS = process.env.ESTIMATE_NO_CHAINS === "1";
+
 /** Resolve a merchant string (or alias) to a chain, or null. */
 export function findChain(name: string | null | undefined): Chain | null {
+  if (NO_CHAINS) return null;
   if (!name) return null;
   const n = norm(name);
   if (!n) return null;

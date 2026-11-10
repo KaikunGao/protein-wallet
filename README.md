@@ -65,7 +65,7 @@ docs/使用说明.md  给种子用户的一页说明
               "portion": { "unit": "份", "assumed": 1, "unsure": false } }] }
 ```
 
-失败时 `{ ok: false, error, retryable }`。模型输出用 zod schema 校验,失败自动重试一次。
+失败时 `{ ok: false, error, retryable }`。模型输出用 zod schema 校验,失败自动重试一次。模型:文字输入默认 `claude-sonnet-5-5`(`ESTIMATE_TEXT_MODEL`),照片 / 小票 / 菜单默认 `claude-opus-5-5`(`ESTIMATE_MODEL`;设了它两条路径都用它)。依据见 CHANGELOG 2026-11-09 的横评。
 
 `source` 一共五档,对应界面上的标签:
 

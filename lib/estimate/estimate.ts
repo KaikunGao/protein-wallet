@@ -15,7 +15,18 @@ import {
 // DECISION: model/effort are env-overridable so the eval loop can compare settings
 // without code changes. Default is the current Opus at medium effort (fast enough
 // for the 10-second record goal, still careful on vision).
+// 图片路径(餐盘 / 小票 / 菜单)的模型;文字路径见 modelFor。ESTIMATE_MODEL 设了就两条路径都用它(评测切模型用)。
 export const ESTIMATE_MODEL = process.env.ESTIMATE_MODEL ?? "claude-opus-5-5";
+// 文字路径默认 sonnet-5-5:2026-11-09 用 30 条麦当劳官方真值横评三个模型,接官方表后全部 30/30,
+// 裸估时中点误差中位同为 2 g,差别只在速度(sonnet 2.8 s / opus 6.5 s)。照片路径没测,仍用 opus。
+export const ESTIMATE_TEXT_MODEL = process.env.ESTIMATE_MODEL ?? process.env.ESTIMATE_TEXT_MODEL ?? "claude-sonnet-5-5";
+export function modelFor(input: Pick<EstimateInput, "type">): string {
+  return input.type === "text" ? ESTIMATE_TEXT_MODEL : ESTIMATE_MODEL;
+}
+/** 评测日志用的模型标签 */
+export function modelLabel(): string {
+  return ESTIMATE_TEXT_MODEL === ESTIMATE_MODEL ? ESTIMATE_MODEL : `${ESTIMATE_TEXT_MODEL}(text) / ${ESTIMATE_MODEL}(image)`;
+}
 const EFFORT = (process.env.ESTIMATE_EFFORT ?? "medium") as "low" | "medium" | "high";
 
 // Minimum relative width (high-low)/mid per confidence. Narrower outputs are widened
@@ -213,7 +224,7 @@ export async function callModel(
   client: Anthropic,
 ): Promise<{ output: ModelOutput | null; refusal?: string }> {
   const res = await client.messages.parse({
-    model: ESTIMATE_MODEL,
+    model: modelFor(input),
     max_tokens: 8000,
     system: systemBlocks(input),
     messages: [{ role: "user", content: userContent(input) }],

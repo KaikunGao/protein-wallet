@@ -2,7 +2,7 @@
 // uses, and prints the metric table from the PRD. Run with `npm run eval`.
 import fs from "node:fs";
 import path from "node:path";
-import { estimate, postProcess, ESTIMATE_MODEL } from "../lib/estimate/estimate";
+import { estimate, postProcess, modelLabel } from "../lib/estimate/estimate";
 import { mockModelOutput } from "../lib/estimate/mock";
 import { PROMPT_VERSION } from "../lib/estimate/prompt";
 import { findChain } from "../lib/estimate/chains";
@@ -67,6 +67,8 @@ const only = flag("--only");
 const note = flag("--log");
 const from = flag("--from");
 const concurrency = Number(flag("--concurrency") ?? 2);
+// --samples <file>: another truth file under eval/samples (default truth.json)
+const samplesFile = flag("--samples") ?? "truth.json";
 
 const RANK: Record<Confidence, number> = { low: 0, medium: 1, high: 2 };
 
@@ -160,7 +162,7 @@ async function mapLimit<T, R>(xs: T[], n: number, fn: (x: T) => Promise<R>): Pro
 }
 
 async function main() {
-  const samples: Sample[] = JSON.parse(fs.readFileSync(path.join(ROOT, "samples", "truth.json"), "utf8"));
+  const samples: Sample[] = JSON.parse(fs.readFileSync(path.join(ROOT, "samples", samplesFile), "utf8"));
   const onlySet = flag("--set");
   const picked = samples.filter((s) => s.type !== "grocery" && (!only || s.type === only) && (!onlySet || s.set === onlySet));
   const mock = process.env.ESTIMATE_MOCK === "1";
@@ -176,7 +178,7 @@ async function main() {
       console.error("ANTHROPIC_API_KEY is not set. Use ESTIMATE_MOCK=1 to dry-run or --from <results.json>.");
       process.exit(1);
     }
-    label = `${mock ? "MOCK" : ESTIMATE_MODEL} · prompt ${PROMPT_VERSION}`;
+    label = `${mock ? "MOCK" : modelLabel()} · prompt ${PROMPT_VERSION}`;
     console.log(`Running ${picked.length} samples · ${label}\n`);
     rows = await mapLimit(picked, concurrency, async (s) => {
       const input = toInput(s);
