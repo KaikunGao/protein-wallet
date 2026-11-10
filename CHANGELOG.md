@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-11-10 · 加 Cloudflare 部署(Worker + Pages 代理),给国内不翻墙的面试官一个能打开的链接
+
+**改了什么**:
+- 新增 `wrangler.jsonc`、`open-next.config.ts`、`public/_headers`,`package.json` 加 `cf:build / cf:preview / cf:deploy / cf:typegen` 脚本,依赖加 `@opennextjs/cloudflare`、`wrangler`;`next` 从 16.4.3 升到 16.4.6(OpenNext 要求 ≥ 16.4.5)。
+- 新增 `cf-pages/`:一个只有 `_worker.js` 的 Cloudflare Pages 项目,把 `protein-wallet.pages.dev` 的请求经 Service Binding 原样转给 Worker。
+- `next.config.ts`:加 `CF_BUILD=1` 开关,Cloudflare 构建时关掉 `cacheComponents` 和 `partialPrefetching`;Vercel 构建不受影响。原因:本地 workerd 预览里 API 路由正常、每个页面都挂死到被运行时取消,日志里 Next 自己警告「Cache Components 依赖的 setTimeout 实现在当前运行时不保证」。关掉后页面正常。
+- `.gitignore` 忽略 `.open-next/`、`.wrangler/`、`.dev.vars*`。业务代码一行没改。
+- 已上线:Worker `protein-wallet`(gzip 后 1.4 MB,冷启动 14 ms),Pages 代理 **https://protein-wallet.pages.dev/**。踩的坑:`wrangler pages project create` 在 2026-11 的 wrangler 4.159 里默认建成「Pages on Workers」,只给 `*.workers.dev` 地址,要加 `--force` 才是带 `*.pages.dev` 的经典 Pages;`wrangler pages deploy` 不接受 `--config` 指向别的目录,要进 `cf-pages/` 跑。密钥用 `wrangler secret put` 单独设,不在仓库里。
+- 第二个坑:OpenNext 构建时会把所有 `.env*`(包括 `.env.local`)的值写进 `.open-next/cloudflare/next-env.mjs` 一起上传,第一次部署就这样把本地 key 带上去了(线上因此「莫名」能调模型)。加 `scripts/cf-build.mjs`:构建期间把 `.env.local` 挪开、结束后放回,`cf:*` 脚本都走它;线上密钥只走 `wrangler secret put`。
+
+**为什么**:
+- 简历链接必须让国内 HR 不挂 VPN 直接点开。2026-11-10 实测:`*.vercel.app` 和 `*.workers.dev` 在五个国内 DNS 节点全部被污染;`*.pages.dev` 29 个国内 HTTP 节点 21 个通、平均 3 秒;GitHub Pages 23 个通但只能放静态页。免费又能跑 Next.js API 的只剩 Cloudflare,而 OpenNext 只能部署成 Worker,所以多加一层 Pages 拿到能打开的域名。
+- 不买域名、不备案:两个免费额度(Worker 每天 10 万请求、10 ms CPU)对简历用途足够;照片上传前客户端已压到 1024 px,服务端只做 JSON 转发,CPU 在限额内。
+
+**简历 / 面试可用的素材**:
+- 「先验证可达性再动手」的过程:DNS 污染检测(viewdns)→ 国内 29 节点 HTTP 测速(站长之家)→ 排除 Vercel 默认域名、Workers 默认域名、腾讯 EdgeOne 默认域名(31 节点全超时)→ 选 Pages 代理。
+- 代价说清楚:Cloudflare 边缘在国内仍有约四分之一节点超时,不是「稳」,是「免费里最好」;更稳要域名 + 国内 CDN + 备案。
+
+---
+
 ## 2026-11-09 · 文字路径的默认模型换成 claude-sonnet-5-5,图片路径仍用 opus-5-5
 
 **改了什么**:

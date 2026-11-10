@@ -1,0 +1,26 @@
+{
+  // Cloudflare Workers config for the OpenNext build (npm run cf:build / cf:deploy).
+  // The public URL is the Pages proxy (cf-pages/), because *.workers.dev is DNS-poisoned in mainland China.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "protein-wallet",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "protein-wallet"
+    }
+  ],
+  "observability": { "enabled": true },
+  // Secrets (set with `npx wrangler secret put <NAME>`, never in this file):
+  //   ANTHROPIC_API_KEY
+  // Plain vars that are safe to commit:
+  "vars": {
+    "ESTIMATE_TEXT_MODEL": "claude-sonnet-5-5"
+  }
+}

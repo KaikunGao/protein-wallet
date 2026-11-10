@@ -1,0 +1,17 @@
+{
+  // Cloudflare Pages project that fronts the OpenNext worker.
+  // Why: HR in mainland China can open *.pages.dev (tested 2026-11-10, 21/29 nodes),
+  // but *.workers.dev and *.vercel.app are DNS-poisoned there. Pages gives us a
+  // reachable hostname for free; the worker does the actual rendering.
+  // Deploy: npx wrangler pages deploy --config cf-pages/wrangler.jsonc
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "protein-wallet",
+  "pages_build_output_dir": "./public",
+  "compatibility_date": "2026-10-01",
+  "services": [
+    {
+      "binding": "APP",
+      "service": "protein-wallet"
+    }
+  ]
+}

@@ -45,3 +45,8 @@ next-env.d.ts
 # eval photos are personal and large: keep them out of git (truth.json already is)
 /eval/samples/photos/*
 !/eval/samples/photos/.gitkeep
+
+# cloudflare (OpenNext build output, local worker state, local secrets)
+/.open-next/
+/.wrangler/
+.dev.vars*

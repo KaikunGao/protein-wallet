@@ -85,6 +85,38 @@ docs/使用说明.md  给种子用户的一页说明
 2. 环境变量加 `ANTHROPIC_API_KEY`(不要加 `ESTIMATE_MOCK`)。
 3. 部署后用手机浏览器打开,iOS Safari「分享 → 添加到主屏幕」,Android Chrome「安装应用」。
 
+## 部署到 Cloudflare(国内不翻墙能打开)
+
+Vercel 的 `*.vercel.app` 域名在大陆被 DNS 污染(2026-11-10 五个国内节点实测全部返回假 IP),所以另有一套 Cloudflare 部署:
+OpenNext 把 Next.js 构建成一个 Worker(`wrangler.jsonc`),再用一个 Cloudflare Pages 项目(`cf-pages/`)把 `protein-wallet.pages.dev` 的所有请求经 Service Binding 转给这个 Worker。
+为什么要多一层 Pages:`*.workers.dev` 在大陆同样被污染,`*.pages.dev` 能开(29 个国内节点 21 个通)。Worker 本身不对外暴露。
+
+一次性准备(本机):
+
+```bash
+npx wrangler login
+```
+
+```bash
+npx wrangler secret put ANTHROPIC_API_KEY
+```
+
+```bash
+npx wrangler pages project create protein-wallet --production-branch main --force
+```
+
+之后每次发布:
+
+```bash
+npm run cf:deploy
+```
+
+它依次执行 `opennextjs-cloudflare build`、`opennextjs-cloudflare deploy`(Worker)和 `npm run cf:pages`(进入 `cf-pages/` 目录 `wrangler pages deploy`;Pages 不接受 `--config` 指到别的目录)。
+`project create` 要带 `--force`:2026-11 起不带它会建成「Pages on Workers」,只给 `*.workers.dev` 地址,那个域名国内打不开;`--force` 建的是经典 Pages 项目,才有 `*.pages.dev`。
+本地在 Workers 运行时里预览:`npm run cf:preview`,环境变量放 `.dev.vars`(已忽略,示例 `ESTIMATE_MOCK=1`)。
+模型等非密钥配置在 `wrangler.jsonc` 的 `vars` 里,密钥一律 `wrangler secret put`。Vercel 部署照旧,两边同时在线。
+`cf:*` 脚本通过 `scripts/cf-build.mjs` 构建:它在构建期间把 `.env.local` 挪开(OpenNext 会把所有 `.env*` 的值直接写进 Worker 包里,不挪开就等于把本地密钥上传了),构建完再放回;同时设 `CF_BUILD=1`:这个构建关掉 `cacheComponents`(Next 的 Cache Components 在 workerd 里会让页面挂死),Vercel 构建仍然开着。
+
 ## 数据
 
 全部数据只在浏览器的 IndexedDB 里,没有账号。设置页可导出 / 导入 JSON(含 meals、settings、events 埋点)。
