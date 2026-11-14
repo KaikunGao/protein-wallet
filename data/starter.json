@@ -34,7 +34,7 @@
   {
    "name": "生鸡腿 1 只(琵琶腿)",
    "price": 2.3,
-   "protein_g": 17,
+   "protein_g": 18,
    "kcal": 150,
    "from": "鸡腿×1",
    "price_note": "常见超市价约 9 元/斤、一斤约 4 只,未逐地查证"
@@ -43,7 +43,7 @@
    "name": "豆干 1 袋(约 100 g)",
    "price": 4,
    "protein_g": 16,
-   "kcal": 140,
+   "kcal": 180,
    "from": "豆干×2",
    "price_note": "常见超市价,未逐地查证"
   },

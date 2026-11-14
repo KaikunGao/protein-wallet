@@ -185,7 +185,52 @@ export function postProcess(out: ModelOutput, input: EstimateInput): EstimateRes
     };
   });
 
-  return { ok: true, kind: "meal", merchant, total_usd, items: input.type === "receipt" ? allocateToPaid(items, total_usd) : items };
+  const priced = input.type === "receipt" ? allocateToPaid(items, total_usd) : input.type === "text" && !input.batch ? attachTotal(items, total_usd) : items;
+  return { ok: true, kind: "meal", merchant, total_usd, items: priced };
+}
+
+// 哪个来源更「弱」：合成一条时取最弱的那个，不让估算借官方数据的标签。
+const SOURCE_RANK: Record<Source, number> = { text_estimate: 0, visual_estimate: 0, ingredient_table: 1, reference_table: 1, dining_menu: 2, label: 3, official_table: 3 };
+
+/**
+ * 一句话里有几样东西、只写了一个总价(「板烧鸡腿堡 + 薯条 36 元」)。
+ * 模型按规则不给每样东西编价格,2026-11-13 之前总价就此丢了:确认卡上每项金额都是空的,
+ * 用户不逐项补,这顿就不计入当天花销,也进不了「下一顿」的排序(走查 15 句里有 6 句)。
+ * 价格属于这一组而不是其中某一样,所以:
+ *  - 几样都没标价:合成一条。名字用「+」连起来,营养区间相加,金额记总价,置信度和来源取最弱的。
+ *  - 只有一样没标价、总价比已标的多:差额记给它(「鸡腿饭 12,加了个卤蛋,一共 14」)。
+ * 其余情况不动。日结(batch)不走这里:那是一天里的几顿,不是一顿里的几样。
+ */
+export function attachTotal(items: EstimateItem[], total: number | null): EstimateItem[] {
+  if (total == null || !(total > 0) || items.length < 2) return items;
+  const unpriced = items.filter((i) => i.amount_usd == null);
+  if (unpriced.length === 0) return items;
+  if (unpriced.length === items.length) {
+    const sum = (f: (i: EstimateItem) => number) => items.reduce((a, i) => a + f(i), 0);
+    const weakest = items.reduce((a, i) => (SOURCE_RANK[i.source] < SOURCE_RANK[a.source] ? i : a));
+    const comps = items.flatMap((i) => i.matched_components ?? []);
+    return [
+      {
+        meal_name: items.map((i) => i.meal_name).join(" + "),
+        merchant: items.find((i) => i.merchant)?.merchant ?? null,
+        amount_usd: total,
+        kcal_low: sum((i) => i.kcal_low),
+        kcal_high: sum((i) => i.kcal_high),
+        protein_low_g: sum((i) => i.protein_low_g),
+        protein_high_g: sum((i) => i.protein_high_g),
+        confidence: items.reduce<Confidence>((a, i) => minConf(a, i.confidence), "high"),
+        basis: `${items.length} 样合成一顿,按总价 ¥${total} 记;${items.map((i) => i.basis).join(";")}`.slice(0, 240),
+        source: weakest.source,
+        matched_components: comps.length ? comps : undefined,
+        portion: null,
+      },
+    ];
+  }
+  if (unpriced.length === 1) {
+    const rest = Math.round((total - items.reduce((a, i) => a + (i.amount_usd ?? 0), 0)) * 100) / 100;
+    if (rest > 0) return items.map((i) => (i === unpriced[0] ? { ...i, amount_usd: rest, basis: `${i.basis}(总价 ¥${total} 减去其他项)` } : i));
+  }
+  return items;
 }
 
 // 外卖订单 (PRD 国内版 step 3): the menu price of each dish is not what the user paid.

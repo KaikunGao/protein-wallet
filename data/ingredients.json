@@ -5,7 +5,14 @@
   "note": "食材级蛋白来源表:每个常见单位(一个蛋、一只鸡腿、一份肉)的蛋白质和热量。数值按常见份量估算,口径参照《中国食物成分表(标准版)》的每 100 g 数值乘以典型可食部重量,但没有逐行对照原书,所以整张表是参考数据:代码用它算出的蛋白最高只给中置信度,界面标「食材表·未核实」,不标官方。逐行核对原书并写上页码后,data_status 才能改。",
   "how_used": "拍菜单(lib/estimate/menu.ts):模型把每道菜拆成蛋白来源 [{name, qty}],代码查这张表相加。只算蛋白;热量仍用模型给的区间,因为油和酱不在表里。",
   "unit_note": "grams 是该单位的典型可食部重量(熟重),只用于说明份量,不参与计算。",
-  "kind_note": "kind: protein = 肉蛋豆奶等蛋白来源;staple = 主食;veg = 蔬菜。一道菜的蛋白如果只来自 staple / veg(白米饭、凉皮、清炒时蔬),拍菜单的排序里不参与排名,单列在下面:它们每块钱的蛋白看起来很多,但不是增肌要找的那种蛋白来源。"
+  "kind_note": "kind: protein = 肉蛋豆奶等蛋白来源;staple = 主食;veg = 蔬菜。一道菜的蛋白如果只来自 staple / veg(白米饭、凉皮、清炒时蔬),拍菜单的排序里不参与排名,单列在下面:它们每块钱的蛋白看起来很多,但不是增肌要找的那种蛋白来源。",
+  "check": {
+   "checked_on": "2026-11-13",
+   "scope": "52 行里查了前 33 行（肉、蛋、奶、豆制品这些蛋白来源）；后 19 行（鱼丸、鸭血、主食、包子饺子、蔬菜、花生）没查",
+   "method": "每行按熟重可食部折算：中国食物成分表（第 6 版，生重）乘出成率，缺的条目参照 USDA 熟重数据；和表里的数差 15% 以上才算不符。单次检索，没有做第二遍独立复核，也没有对原书页码",
+   "result": "33 行里 16 行相符；13 行改了（蛋白 10 行，全部是改高：原来多是拿生重的每 100 g 数值乘了熟重；热量 5 行；份量 2 行）；4 行存疑没改（鸭腿、猪肉、鸡大腿、培根：来源之间出入大）",
+   "still_reference": "整张表仍是参考数据，界面继续标「食材表·未核实」"
+  }
  },
  "items": [
   {
@@ -51,7 +58,7 @@
    "aliases": [],
    "unit": "杯",
    "grams": 300,
-   "protein_g": 6,
+   "protein_g": 8,
    "kcal": 100,
    "kind": "protein"
   },
@@ -92,7 +99,7 @@
    "unit": "份",
    "grams": 50,
    "protein_g": 8,
-   "kcal": 70,
+   "kcal": 90,
    "kind": "protein"
   },
   {
@@ -112,7 +119,7 @@
    "name": "腐竹",
    "aliases": [],
    "unit": "份",
-   "grams": 20,
+   "grams": 60,
    "protein_g": 9,
    "kcal": 95,
    "kind": "protein"
@@ -127,8 +134,8 @@
     "小鸡腿"
    ],
    "unit": "只",
-   "grams": 85,
-   "protein_g": 17,
+   "grams": 70,
+   "protein_g": 18,
    "kcal": 150,
    "kind": "protein"
   },
@@ -156,7 +163,7 @@
    ],
    "unit": "个",
    "grams": 25,
-   "protein_g": 5,
+   "protein_g": 6,
    "kcal": 55,
    "kind": "protein"
   },
@@ -167,8 +174,8 @@
    ],
    "unit": "个",
    "grams": 35,
-   "protein_g": 7,
-   "kcal": 60,
+   "protein_g": 8,
+   "kcal": 84,
    "kind": "protein"
   },
   {
@@ -232,7 +239,7 @@
    "unit": "份",
    "grams": 60,
    "protein_g": 10,
-   "kcal": 150,
+   "kcal": 195,
    "kind": "protein"
   },
   {
@@ -277,8 +284,8 @@
    ],
    "unit": "份",
    "grams": 90,
-   "protein_g": 16,
-   "kcal": 250,
+   "protein_g": 20,
+   "kcal": 330,
    "kind": "protein"
   },
   {
@@ -315,7 +322,7 @@
    ],
    "unit": "串",
    "grams": 20,
-   "protein_g": 4,
+   "protein_g": 5,
    "kcal": 50,
    "kind": "protein"
   },
@@ -340,8 +347,8 @@
    ],
    "unit": "份",
    "grams": 30,
-   "protein_g": 5,
-   "kcal": 70,
+   "protein_g": 6.5,
+   "kcal": 90,
    "kind": "protein"
   },
   {
@@ -367,7 +374,7 @@
    ],
    "unit": "根",
    "grams": 60,
-   "protein_g": 5,
+   "protein_g": 7,
    "kcal": 130,
    "kind": "protein"
   },
@@ -412,7 +419,7 @@
    ],
    "unit": "份",
    "grams": 100,
-   "protein_g": 18,
+   "protein_g": 20,
    "kcal": 130,
    "kind": "protein"
   },
@@ -425,7 +432,7 @@
    ],
    "unit": "份",
    "grams": 50,
-   "protein_g": 9,
+   "protein_g": 10,
    "kcal": 45,
    "kind": "protein"
   },

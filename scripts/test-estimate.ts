@@ -83,6 +83,13 @@ const base: ModelOutput = {
   grocery_ingredients: null,
 };
 
+/** 单独跑一项,拿它经过区间处理后的蛋白下限(合并时各项先各自处理、再相加)。 */
+function r0low(item: (typeof base.items)[number]): number {
+  const r = postProcess({ ...base, total_usd: null, items: [item] }, { type: "text", content: "x 1" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad kind");
+  return r.items[0].protein_low_g;
+}
+
 test("full chain match -> official_table, high, ±10%", () => {
   const r = postProcess(base, { type: "text", content: "Chipotle 鸡肉碗 $11.5" });
   assert.equal(r.ok, true);
@@ -129,6 +136,37 @@ test("text input with no digits never reports an amount", () => {
   if (!r.ok || r.kind !== "meal") throw new Error("bad");
   assert.equal(r.items[0].amount_usd, null);
   assert.equal(r.total_usd, null);
+});
+
+test("一句话几样东西只有一个总价:合成一条,金额不丢", () => {
+  const two = { ...base, total_usd: 36, items: [{ ...base.items[0], meal_name: "板烧鸡腿堡", amount_usd: null }, { ...base.items[0], meal_name: "薯条", amount_usd: null, chain_match: null, kcal_low: 200, kcal_high: 300, protein_low_g: 2, protein_high_g: 4, confidence: "low" as const }] };
+  const r = postProcess(two, { type: "text", content: "鸡肉碗 + 薯条 36 元" });
+  if (!r.ok || r.kind !== "meal") throw new Error("bad kind");
+  assert.equal(r.items.length, 1);
+  const it = r.items[0];
+  assert.equal(it.meal_name, "板烧鸡腿堡 + 薯条");
+  assert.equal(it.amount_usd, 36);
+  // 官方那项 40–48 g 加估算那项:区间相加;置信度和来源取最弱的,不借官方的标签
+  assert.equal(it.protein_low_g, 40 + r0low(two.items[1]));
+  assert.equal(it.confidence, "low");
+  assert.equal(it.source, "text_estimate");
+  assert.match(it.basis, /2 样合成一顿/);
+});
+
+test("只有一样没标价:差额记给它;各项都有价或日结模式不动", () => {
+  const mk = (a: number | null, b: number | null, total: number | null) => ({ ...base, total_usd: total, items: [{ ...base.items[0], meal_name: "鸡腿饭", amount_usd: a }, { ...base.items[0], meal_name: "卤蛋", amount_usd: b }] });
+  const rest = postProcess(mk(12, null, 14), { type: "text", content: "鸡腿饭 12,加了个卤蛋,一共 14" });
+  if (!rest.ok || rest.kind !== "meal") throw new Error("bad kind");
+  assert.deepEqual(rest.items.map((i) => i.amount_usd), [12, 2]);
+  const both = postProcess(mk(12, 2, 14), { type: "text", content: "鸡腿饭 12 卤蛋 2" });
+  if (!both.ok || both.kind !== "meal") throw new Error("bad kind");
+  assert.deepEqual(both.items.map((i) => i.amount_usd), [12, 2]);
+  const day = postProcess(mk(null, null, 30), { type: "text", content: "早饭鸡腿饭,午饭卤蛋,一共 30", batch: true });
+  if (!day.ok || day.kind !== "meal") throw new Error("bad kind");
+  assert.equal(day.items.length, 2);
+  const noTotal = postProcess(mk(null, null, null), { type: "text", content: "鸡腿饭和卤蛋 2 样" });
+  if (!noTotal.ok || noTotal.kind !== "meal") throw new Error("bad kind");
+  assert.equal(noTotal.items.length, 2);
 });
 
 test("grocery -> ingredients only, no items", () => {

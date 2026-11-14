@@ -32,8 +32,8 @@ test("findIngredient: exact name or alias only", () => {
 test("street recipes: base plus add-ons named in the dish", () => {
   const r = findRecipe("煎饼果子加蛋加肠")!;
   assert.equal(r.name, "煎饼果子");
-  // 煎饼面糊 5 + 鸡蛋 2×6.5 + 薄脆 2 + 火腿肠 5 = 25
-  assert.equal(sourceTotals(resolveSources(recipeSources("煎饼果子加蛋加肠", r))).protein_g, 25);
+  // 煎饼面糊 5 + 鸡蛋 2×6.5 + 薄脆 2 + 火腿肠 7 = 27（火腿肠 2026-11-13 核对后由 5 改为 7）
+  assert.equal(sourceTotals(resolveSources(recipeSources("煎饼果子加蛋加肠", r))).protein_g, 27);
   // 双蛋 = one more egg on top of the base one: 5 + 13 + 2 = 20
   assert.equal(sourceTotals(resolveSources(recipeSources("杂粮煎饼双蛋", findRecipe("杂粮煎饼双蛋")!))).protein_g, 20);
   // longest alias wins: 黄焖鸡米饭, not a shorter match
@@ -75,8 +75,8 @@ test("post-process: table arithmetic replaces the model's protein, capped at med
   assert.equal(items.length, 7); // duplicate dropped
   assert.deepEqual(items.map((i) => !!i.side), [false, false, false, false, false, true, true]); // 免费小菜, 白米饭
   const leg = items[0];
-  // 鸡腿 17 + 米饭 5 + 蔬菜 1.5 = 23.5 → ±25% = 17.6–29.4 → 18–29
-  assert.deepEqual([leg.protein_low_g, leg.protein_high_g, leg.source, leg.confidence], [18, 29, "ingredient_table", "medium"]);
+  // 鸡腿 18 + 米饭 5 + 蔬菜 1.5 = 24.5 → ±25% = 18.4–30.6 → 18–31（鸡腿 2026-11-13 核对后由 17 改为 18）
+  assert.deepEqual([leg.protein_low_g, leg.protein_high_g, leg.source, leg.confidence], [18, 31, "ingredient_table", "medium"]);
   assert.deepEqual(leg.components, ["鸡腿×1", "米饭×1", "蔬菜×1"]);
   assert.deepEqual([leg.kcal_low, leg.kcal_high], [595, 805]); // model kcal kept, widened to the medium minimum
   assert.ok(leg.basis.includes("未逐行核实"));
@@ -105,11 +105,11 @@ test("post-process: prices are never invented or negative", () => {
 
 test("ranking: by 分/g with a range, unpriced and near-zero-protein dishes listed apart", () => {
   const { ranked, unranked } = rankMenu(items, "cpg", 10);
-  // 煎饼果子加蛋 8/20 = 40.0; 卤鸡腿饭 12/23.5 = 51.1; 招牌秘制套餐 18/22.5 = 80.0
+  // 煎饼果子加蛋 8/20 = 40.0; 卤鸡腿饭 12/24.5 = 49.0; 招牌秘制套餐 18/22.5 = 80.0
   assert.deepEqual(ranked.map((r) => r.name), ["煎饼果子加蛋", "卤鸡腿饭", "招牌秘制套餐"]);
-  assert.deepEqual(ranked.map((r) => r.cpg.toFixed(1)), ["40.0", "51.1", "80.0"]);
+  assert.deepEqual(ranked.map((r) => r.cpg.toFixed(1)), ["40.0", "49.0", "80.0"]);
   const leg = ranked[1];
-  assert.deepEqual([leg.cpgLow.toFixed(1), leg.cpgHigh.toFixed(1)], ["41.4", "66.7"]); // 1200/29, 1200/18
+  assert.deepEqual([leg.cpgLow.toFixed(1), leg.cpgHigh.toFixed(1)], ["38.7", "66.7"]); // 1200/31, 1200/18
   assert.deepEqual(ranked.map((r) => r.over), [false, true, true]); // spendable ¥10
   // 白米饭 is ¥1 for ~5 g (20 分/g, "better" than everything) but is a plain staple: never ranked
   assert.deepEqual(unranked.map((u) => u.name), ["可乐", "每日例汤", "免费小菜", "白米饭"]);
@@ -118,7 +118,7 @@ test("ranking: by 分/g with a range, unpriced and near-zero-protein dishes list
 
 test("a picked dish becomes a normal estimate item with the same numbers", () => {
   const e = toEstimateItem(items[0], "二食堂 3 号窗口");
-  assert.deepEqual([e.meal_name, e.merchant, e.amount_usd, e.protein_low_g, e.protein_high_g, e.source], ["卤鸡腿饭", "二食堂 3 号窗口", 12, 18, 29, "ingredient_table"]);
+  assert.deepEqual([e.meal_name, e.merchant, e.amount_usd, e.protein_low_g, e.protein_high_g, e.source], ["卤鸡腿饭", "二食堂 3 号窗口", 12, 18, 31, "ingredient_table"]);
 });
 
 test("mock: a typed menu goes through the same pipeline", () => {
